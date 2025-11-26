@@ -31,7 +31,6 @@ const userSchema = new Schema<IUser>(
 
     phone: {
       type: String,
-      required: true,
       minlength: 10,
       maxlength: 15,
     },

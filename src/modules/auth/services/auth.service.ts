@@ -28,7 +28,7 @@ export const Authservice = {
 
         await sendOtpEmail(user.email, otp)
 
-        return user.email
+        return {email:user.email,message:"Registerd Succesffully"}
     },
     login: async (data: LoginDTO) => {
         const user = await AuthRepository.findByEmail(data.email);
