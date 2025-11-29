@@ -1,25 +1,48 @@
 import redis from "../../../config/redis"
-import UserModel from "../models/user.model"
 import { AuthRepository } from "../repository/auth.repository"
 
-export const saveOtp=async (email:string,otp:string)=>{
-    await redis.set(`otp:${email}`,otp,{EX:300})
+
+//---------------REGISTER-----------------------------------
+
+export const saveRegisterOtp=async (email:string,otp:string)=>{
+    await redis.del(`otp:register:${email}`);
+    await redis.set(`otp:register:${email}`,otp,{EX:600})
 }
 
-export const verifyOtp=async(email:string,otp:string)=>{
-    const storedOtp=await redis.get(`otp:${email}`)
+export const verifyRegisterOtp=async(email:string,otp:string)=>{
+    const storedOtp=await redis.get(`otp:register:${email}`)
     if (!storedOtp) {
-        return { success: false, message: "OTP expired or not found" };
+        return { success: false, message: "OTP expired" };
     }
     if (storedOtp !== otp) {
         return { success: false, message: "Invalid OTP" };
     }
 
      await AuthRepository.updateByEmail( email,{ isVerified: true }  );
-    
+
+    await redis.del(`otp:register:${email}`);
+
      return { success: true,message:"OTP verified successfully" };
 }
 
-export const deleteOtp = async (email: string) => {
-  await redis.del(`otp:${email}`);
-};
+//-----------------FORGET PASSWORD------------------
+
+export const saveResetOtp=async (email:string,otp:string)=>{
+    await redis.set(`otp:reset:${email}`,otp,{EX:300})
+}
+
+export const verifyResetOtp=async(email:string,otp:string)=>{
+    const storedOtp=await redis.get(`otp:reset:${email}`)
+    if (!storedOtp) {
+        return { success: false, message: "Invalid OTP or email." };
+    }
+    if (storedOtp !== otp) {
+        return { success: false, message: "Invalid OTP or email." };
+    }
+
+   await redis.set(`reset-verified:${email}`, "true", { EX: 300 });
+
+   await redis.del(`otp:reset:${email}`);
+
+     return { success: true,message:"OTP verified successfully" };
+}

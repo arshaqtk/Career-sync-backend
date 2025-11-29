@@ -1,69 +1,64 @@
 import { Request, Response } from "express";
+import asyncHandler from "express-async-handler";
 import { Authservice } from "../services/auth.service";
-import { verifyOtp } from "../services/otp.service";
 
 export const AuthController = {
-    register: async (req: Request, res: Response) => {
-        try {
-            const result = await Authservice.register(req.body)
+    register: asyncHandler(async (req: Request, res: Response) => {
+        const result = await Authservice.register(req.body);
+        res.status(201).json(result);
+        return;
+    }),
 
-            res.status(201).json(result)
+    login: asyncHandler(async (req: Request, res: Response) => {
+        const result = await Authservice.login(req.body);
 
-        } catch (err: any) {
-            res.status(400).json({ message: err.message })
+        if (!result.success) {
+            res.status(400).json({
+                success: false,
+                message: result.message,
+                status: result.status,
+                email: result.email
+            });
+            return;
         }
-    },
 
+        res.cookie("accessToken", result.accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 15 * 60 * 1000
+        });
 
-    login: async (req: Request, res: Response) => {
-        try {
-            const result = await Authservice.login(req.body);
+        res.cookie("refreshToken", result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
 
-            res.cookie("accessToken", result.accessToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: "strict",
-                    maxAge: 15 * 60 * 1000
-                })
-                .cookie("refreshToken", result.refreshToken, {
-                    httpOnly: true,
-                    secure: true,
-                    sameSite: "strict",
-                    maxAge: 7 * 24 * 60 * 60 * 1000
-                })
-                .json({ message: "Logged in successfully" });
+        res.json({
+            success: true,
+            message: result.message
+        });
+        return;
+    }),
 
+    verifyRegisterOtp: asyncHandler(async (req: Request, res: Response) => {
+        const { email, otp } = req.body;
+        const result = await Authservice.verifyRegisterOtp(email, otp);
 
-        } catch (err: any) {
-            res.status(400).json({ message: err.message })
+        if (!result.success) {
+            res.status(400).json({
+                success: false,
+                message: result.message
+            });
+            return;
         }
-    },
 
-
-    verifyOtp: async (req: Request, res: Response) => {
-        try {
-            const email: string = req.body.email
-            const otp: string = req.body.otp
-            const result = await verifyOtp(email, otp)
-            if (!result.success) {
-                return res.status(400).json({ message: result.message });
-            }
-            return res.json({ message: result.message });
-        } catch (err: any) {
-            res.status(400).json({ message: err.message })
-        }
-    },
-
-
-    resendOtp: async (req: Request, res: Response) => {
-        try {
-            const email: string = req.body.email
-            const result = await Authservice.resendOtp(email)
-
-            return res.json({ message: result.message });
-
-        } catch (err: any) {
-            res.status(400).json({ message: err.message })
-        }
-    }
-}
+        res.json({
+            success: true,
+            message: "OTP verified successfully",
+        });
+        return;
+    }),
+};

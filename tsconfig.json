@@ -13,12 +13,14 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": "./src",
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["*"],
-      "@config/*": ["config/*"],
-      "@core/*": ["core/*"],
-      "@modules/*": ["modules/*"]
+      "@/*": ["src/*"],
+      "@utils/*": ["src/utils/*"],
+      "@modules/*": ["src/modules/*"],
+      "@middlewares/*": ["src/middlewares/*"],
+      "@config/*": ["src/config/*"],
+      "@core/*": ["src/core/*"]
     }
   },
   "include": ["src/**/*"],

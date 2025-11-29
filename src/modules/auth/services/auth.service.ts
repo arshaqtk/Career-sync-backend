@@ -1,53 +1,81 @@
 import bcrypt from "bcryptjs"
 import { AuthRepository } from "../repository/auth.repository"
 import { RegisterDTO, LoginDTO } from "../types/auth.types"
-import { generateTokens } from "../../../core/utils/jwt"
-import { generateOtp } from "../../../core/utils/generateOtp"
-import { saveOtp, verifyOtp } from "./otp.service"
-import { sendOtpEmail } from "./email.service"
+import { generateTokens } from "../../../utils/jwt"
+import { generateOtp } from "../../../utils/generateOtp"
+import { sendRegisterOtpEmail, sendResetOtpEmail } from "./email.service"
+import { saveRegisterOtp, verifyRegisterOtp } from "./otp.service"
+import { CustomError } from "../../../utils/customError"
 
 
 export const Authservice = {
     register: async (data: RegisterDTO) => {
-        const exists = await AuthRepository.findByEmail(data.email);
+        const { confirmPassword, email, name, password, role } = data
+
+        const exists = await AuthRepository.findByEmail(email);
+
         if (exists) {
-            throw new Error("User already exists");
-
+            throw new CustomError("User already exists", 400);
         }
-        const hashedPassword = await bcrypt.hash(data.password, 10)
+        if (confirmPassword != password) {
+            throw new CustomError("Password and Confirm password Doesn't Match");
+        }
 
-        const user = await AuthRepository.createUser({
-            ...data,
+        const hashedPassword = await bcrypt.hash(password, 10)
+
+        await AuthRepository.createUser({
+            email, name, role,
             password: hashedPassword,
             isVerified: false
         })
 
         const otp = generateOtp()
 
-        await saveOtp(user.email, otp)
+        await saveRegisterOtp(email, otp)
 
-        await sendOtpEmail(user.email, otp)
+        await sendRegisterOtpEmail(email, otp)
 
-        return {email:user.email,message:"Registerd Succesffully"}
+        return { email, message: "Registerd Succesffully" }
     },
     login: async (data: LoginDTO) => {
         const user = await AuthRepository.findByEmail(data.email);
-        if (!user) { throw new Error("Invalid email or password"); }
+        if (!user) { 
+       
+            throw new CustomError("Invalid email or password", 400);  }
 
         const match = await bcrypt.compare(data.password, user.password)
-        if (!match) throw new Error("Invalid email or password");
+        if (!match){
+            throw new CustomError("Invalid email or password", 400); 
+        } 
+            
+
+        if (!user.isVerified) {
+            const otp = generateOtp();
+            await saveRegisterOtp(user.email, otp);
+            await sendRegisterOtpEmail(user.email, otp);
+
+            return {
+                success: false, 
+                status: "NOT_VERIFIED",
+                message: "Your account is not verified. A new OTP has been sent.",
+                email: user.email
+            };
+        }
 
         const token = generateTokens({
             id: user._id,
             role: user.role
         });
 
-        return { refreshToken: token.refreshToken, accessToken: token.accessToken };
+        return { success: true, 
+                status: "VERIFIED",
+                message: "Logged in successfully",
+                refreshToken: token.refreshToken, 
+                accessToken: token.accessToken };
     },
 
-    verifyOtp: async (email: string, otp: string) => {
-        const result = await verifyOtp(email, otp)
-        return result
+    verifyRegisterOtp: async (email: string, otp: string) => {
+        return await verifyRegisterOtp(email, otp);
     },
 
     resendOtp: async (email: string) => {
@@ -60,9 +88,9 @@ export const Authservice = {
         }
         const otp = generateOtp()
 
-        await saveOtp(email, otp)
+        await saveRegisterOtp(email, otp)
 
-        await sendOtpEmail(email, otp)
+        await sendResetOtpEmail(email, otp)
 
         return { success: true, message: "OTP sent successfully" };
     }
