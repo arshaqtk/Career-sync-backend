@@ -1,6 +1,6 @@
 import redis from "../../../config/redis"
 import { AuthRepository } from "../repository/auth.repository"
-
+import crypto from "crypto";
 
 //---------------REGISTER-----------------------------------
 
@@ -10,6 +10,7 @@ export const saveRegisterOtp=async (email:string,otp:string)=>{
 }
 
 export const verifyRegisterOtp=async(email:string,otp:string)=>{
+    console.log(otp,email)
     const storedOtp=await redis.get(`otp:register:${email}`)
     if (!storedOtp) {
         return { success: false, message: "OTP expired" };
@@ -39,10 +40,12 @@ export const verifyResetOtp=async(email:string,otp:string)=>{
     if (storedOtp !== otp) {
         return { success: false, message: "Invalid OTP or email." };
     }
+    const resetToken = crypto.randomBytes(32).toString("hex");
 
-   await redis.set(`reset-verified:${email}`, "true", { EX: 300 });
+  await redis.set(`resetToken:${email}`, resetToken, {EX:900});
+
 
    await redis.del(`otp:reset:${email}`);
 
-     return { success: true,message:"OTP verified successfully" };
+     return { success: true,message:"OTP verified successfully",resetToken,email };
 }

@@ -48,8 +48,9 @@ export const Authservice = {
             throw new CustomError("Invalid email or password", 400); 
         } 
             
-
+        console.log(user.isVerified)
         if (!user.isVerified) {
+           
             const otp = generateOtp();
             await saveRegisterOtp(user.email, otp);
             await sendRegisterOtpEmail(user.email, otp);
@@ -57,6 +58,7 @@ export const Authservice = {
             return {
                 success: false, 
                 status: "NOT_VERIFIED",
+                isVerified:false,
                 message: "Your account is not verified. A new OTP has been sent.",
                 email: user.email
             };
@@ -67,9 +69,11 @@ export const Authservice = {
             role: user.role
         });
 
-        return { success: true, 
+        return { success: true,  
                 status: "VERIFIED",
-                message: "Logged in successfully",
+                message: "Logged successfully",
+                isVerified:true,
+                 email: user.email,
                 refreshToken: token.refreshToken, 
                 accessToken: token.accessToken };
     },

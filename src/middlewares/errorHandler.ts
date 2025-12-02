@@ -7,10 +7,11 @@ export const errorHandler = (
     res: Response,
     next: NextFunction
 ) => {
-    console.error("❌ ERROR:", err);
+    // console.error("❌ ERROR:", err.message);
 
     // If it is our custom error
     if (err instanceof CustomError) {
+         console.error("❌ ERROR:", err.message);
         return res.status(err.statusCode).json({
             success: false,
             message: err.message,

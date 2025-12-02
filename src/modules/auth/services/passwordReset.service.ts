@@ -10,7 +10,6 @@ import redis from "../../../config/redis";
 
 export const passWordService = {
     sendForgetPasswordOtp: async (email: string) => {
-
         const user = await AuthRepository.findByEmail(email)
         if (user) {
             const otp = generateOtp()
@@ -25,13 +24,14 @@ export const passWordService = {
     verifyResetOtp: async (email: string, otp: string) => {
         return await verifyResetOtp(email, otp);
     },
-    resetPassword: async ({ email, password, confirmPassword }: ResetPasswordDTO) => {
+    resetPasswordService: async ({ email, password, confirmPassword,resetToken}: ResetPasswordDTO) => {
         const user = await AuthRepository.findByEmail(email)
-        const verified = await redis.get(`reset-verified:${email}`)
+        const storedToken = await redis.get(`resetToken:${email}`);
 
-        if (!verified) {
-            return { success: false, message: "Invalid verification attempt" };
-        }
+  if (!storedToken || storedToken !== resetToken) {
+     return { success: false, message: "Invalid verification attempt" };
+  }
+        
         if (!user) {
             return { success: false, message: "Invalid credentials" };
         }
@@ -42,7 +42,7 @@ export const passWordService = {
         const hashedPassword = await bcrypt.hash(password, 10)
         await AuthRepository.updateByEmail(email, { password: hashedPassword })
 
-        await redis.del(`reset-verified:${email}`);
+       await redis.del(`resetToken:${email}`);
 
         return { success: true, message: "Password reset successfully" };
     }

@@ -6,41 +6,52 @@ export const AuthController = {
     register: asyncHandler(async (req: Request, res: Response) => {
         const result = await Authservice.register(req.body);
         res.status(201).json(result);
-        return;
+        return; 
     }),
 
     login: asyncHandler(async (req: Request, res: Response) => {
         const result = await Authservice.login(req.body);
 
         if (!result.success) {
-            res.status(400).json({
+             res.status(200).json({
                 success: false,
                 message: result.message,
-                status: result.status,
-                email: result.email
+                user:{
+                    status: result.status,
+                    email: result.email,
+                    isVerified:result.isVerified
+                }
             });
-            return;
+            return ;
+            
         }
 
-        res.cookie("accessToken", result.accessToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 15 * 60 * 1000
-        });
+res.cookie("accessToken", result.accessToken, {
+    httpOnly: true,
+    secure: false,       // local dev
+    sameSite: "lax",     // allow SPA frontend
+    maxAge: 15 * 60 * 1000
+});
 
-        res.cookie("refreshToken", result.refreshToken, {
-            httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-            sameSite: "strict",
-            maxAge: 7 * 24 * 60 * 60 * 1000
-        });
+res.cookie("refreshToken", result.refreshToken, {
+    httpOnly: true,
+    secure: false,
+    sameSite: "lax",
+    maxAge: 7 * 24 * 60 * 60 * 1000
+});
 
-        res.json({
+
+        res.status(200).json({
             success: true,
-            message: result.message
+                message: result.message,
+                user:{
+                    status: result.status,
+                    email: result.email,
+                    isVerified:result.isVerified
+                }
         });
         return;
+        
     }),
 
     verifyRegisterOtp: asyncHandler(async (req: Request, res: Response) => {
