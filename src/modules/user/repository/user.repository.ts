@@ -1,6 +1,7 @@
+import { Types } from "mongoose";
 import UserModel from "../models/user.model";
 
-export const AuthRepository = {
+export const UserRepository = {
   createUser: (data: any) => {
     return UserModel.create(data);
   },
@@ -15,5 +16,8 @@ export const AuthRepository = {
   
   updateByEmail(email: string, updateData: any) {
         return UserModel.updateOne({ email }, { $set: updateData });
+    },
+     updateById(id:string | Types.ObjectId, updateData: any) {
+        return UserModel.findByIdAndUpdate(id, { $set: updateData }, { new: true });
     }
 };

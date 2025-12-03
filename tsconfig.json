@@ -15,7 +15,7 @@
     "emitDecoratorMetadata": true,
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
+      "@/*": ["./src/*"],
       "@utils/*": ["src/utils/*"],
       "@modules/*": ["src/modules/*"],
       "@middlewares/*": ["src/middlewares/*"],

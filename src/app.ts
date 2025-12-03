@@ -3,10 +3,11 @@ import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
 import { rateLimit } from 'express-rate-limit'
-
+import cookieParser from "cookie-parser"
 import authRoutes from "./modules/auth/routes/auth.routes"
+import userRoutes from "./modules/user/routes/user.route"
 import { errorHandler } from "./middlewares/errorHandler";
-
+ 
 
 const app=express()
 
@@ -19,12 +20,14 @@ app.use(
 );
 app.use(morgan('combined'))
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
-
+app.use(cookieParser());
 app.use(express.json({limit:'10mb'}))
 app.use(express.urlencoded({extended:true}))
 
 
 app.use("/api/auth", authRoutes);
+app.use("/api/user", userRoutes);
+
  
 
 app.use(errorHandler);

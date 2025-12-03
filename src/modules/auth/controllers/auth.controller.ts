@@ -4,7 +4,7 @@ import { Authservice } from "../services/auth.service";
 
 export const AuthController = {
     register: asyncHandler(async (req: Request, res: Response) => {
-        const result = await Authservice.register(req.body);
+        const result = await Authservice.register(req.body); 
         res.status(201).json(result);
         return; 
     }),
@@ -28,8 +28,8 @@ export const AuthController = {
 
 res.cookie("accessToken", result.accessToken, {
     httpOnly: true,
-    secure: false,       // local dev
-    sameSite: "lax",     // allow SPA frontend
+    secure: false,       
+    sameSite: "lax",     
     maxAge: 15 * 60 * 1000
 });
 

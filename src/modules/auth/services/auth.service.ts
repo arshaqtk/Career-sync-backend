@@ -1,5 +1,5 @@
 import bcrypt from "bcryptjs"
-import { AuthRepository } from "../repository/auth.repository"
+import { UserRepository } from "../../user/repository/user.repository"
 import { RegisterDTO, LoginDTO } from "../types/auth.types"
 import { generateTokens } from "../../../utils/jwt"
 import { generateOtp } from "../../../utils/generateOtp"
@@ -12,7 +12,7 @@ export const Authservice = {
     register: async (data: RegisterDTO) => {
         const { confirmPassword, email, name, password, role } = data
 
-        const exists = await AuthRepository.findByEmail(email);
+        const exists = await UserRepository.findByEmail(email);
 
         if (exists) {
             throw new CustomError("User already exists", 400);
@@ -23,7 +23,7 @@ export const Authservice = {
 
         const hashedPassword = await bcrypt.hash(password, 10)
 
-        await AuthRepository.createUser({
+        await UserRepository.createUser({
             email, name, role,
             password: hashedPassword,
             isVerified: false
@@ -38,15 +38,18 @@ export const Authservice = {
         return { email, message: "Registerd Succesffully" }
     },
     login: async (data: LoginDTO) => {
-        const user = await AuthRepository.findByEmail(data.email);
+        const user = await UserRepository.findByEmail(data.email).select("+password");
         if (!user) { 
        
             throw new CustomError("Invalid email or password", 400);  }
 
         const match = await bcrypt.compare(data.password, user.password)
-        if (!match){
+        const roleAuthenticated=user.role===data.role
+        
+        if (!match||!roleAuthenticated){
             throw new CustomError("Invalid email or password", 400); 
-        } 
+        }
+        
             
         console.log(user.isVerified)
         if (!user.isVerified) {
@@ -66,6 +69,7 @@ export const Authservice = {
 
         const token = generateTokens({
             id: user._id,
+            email:user.email,
             role: user.role
         });
 
@@ -83,7 +87,7 @@ export const Authservice = {
     },
 
     resendOtp: async (email: string) => {
-        const user = await AuthRepository.findByEmail(email);
+        const user = await UserRepository.findByEmail(email);
         if (!user) {
             throw new Error("User does not exist");
         }

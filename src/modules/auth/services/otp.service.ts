@@ -1,5 +1,5 @@
 import redis from "../../../config/redis"
-import { AuthRepository } from "../repository/auth.repository"
+import { UserRepository } from "../../user/repository/user.repository"
 import crypto from "crypto";
 
 //---------------REGISTER-----------------------------------
@@ -19,7 +19,7 @@ export const verifyRegisterOtp=async(email:string,otp:string)=>{
         return { success: false, message: "Invalid OTP" };
     }
 
-     await AuthRepository.updateByEmail( email,{ isVerified: true }  );
+     await UserRepository.updateByEmail( email,{ isVerified: true }  );
 
     await redis.del(`otp:register:${email}`);
 

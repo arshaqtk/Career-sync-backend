@@ -3,14 +3,14 @@ import { sendResetOtpEmail } from "./email.service";
 import { saveResetOtp, verifyResetOtp } from "./otp.service";
 import { ResetPasswordDTO } from "../types/resetPassword.types";
 import bcrypt from "bcryptjs"
-import { AuthRepository } from "../repository/auth.repository";
+import { UserRepository } from "../../user/repository/user.repository";
 import redis from "../../../config/redis";
 
 
 
 export const passWordService = {
     sendForgetPasswordOtp: async (email: string) => {
-        const user = await AuthRepository.findByEmail(email)
+        const user = await UserRepository.findByEmail(email)
         if (user) {
             const otp = generateOtp()
 
@@ -25,7 +25,7 @@ export const passWordService = {
         return await verifyResetOtp(email, otp);
     },
     resetPasswordService: async ({ email, password, confirmPassword,resetToken}: ResetPasswordDTO) => {
-        const user = await AuthRepository.findByEmail(email)
+        const user = await UserRepository.findByEmail(email).select("+password");
         const storedToken = await redis.get(`resetToken:${email}`);
 
   if (!storedToken || storedToken !== resetToken) {
@@ -40,7 +40,7 @@ export const passWordService = {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10)
-        await AuthRepository.updateByEmail(email, { password: hashedPassword })
+        await UserRepository.updateByEmail(email, { password: hashedPassword })
 
        await redis.del(`resetToken:${email}`);
 
