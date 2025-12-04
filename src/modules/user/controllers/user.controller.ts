@@ -7,13 +7,13 @@ import { CloudinaryService } from "../services/cloudinary.service";
 declare global {
   namespace Express {
     interface Request {
-      user?: { id: string };
+      user?: { id: string; role?: "candidate"|"recruiter" ;email:string };
     }
   }
 }
 export const UserController = {
   getProfile: asyncHandler(async (req: Request, res: Response) => {
-    const id = req.user?.id; 
+    const id = req.user?.id;
     if (!id) {
       throw new CustomError("Unauthorized", 401);
     }
@@ -23,42 +23,66 @@ export const UserController = {
   }),
 
 
-  updateUserProfile:asyncHandler(async(req:Request,res:Response)=>{
-  const id = req.user?.id as string; 
-  if(!id){
-    throw new CustomError("Unauthorized", 401);
-  }
-  const dto = req.body;
-  if (req.file) {
-      const imageUrl = await CloudinaryService.uploadProfilePic(req.file);
-      dto.profilePictureUrl = imageUrl as string; 
-      
-  }
-    const result=await UserService.updateUserProfile(id,dto)
+  updateUserProfileBasic: asyncHandler(async (req: Request, res: Response) => {
+    const id = req.user?.id as string;
+    if (!id) {
+      throw new CustomError("Unauthorized", 401);
+    }
+    const dto = req.body;
+
+    const result = await UserService.updateUserProfile(id, dto)
     res.status(200).json({
-    success: true,
-    message: "Profile updated successfully",
-    data: result,
-  });
+      success: true,
+      message: "Profile updated successfully",
+      data: result,
+    });
   }),
 
-  updateuserAvatar:asyncHandler(async(req:Request,res:Response)=>{
+  updateuserAvatar: asyncHandler(async (req: Request, res: Response) => {
     const id = req.user?.id
-     if(!id){
-    throw new CustomError("Unauthorized", 401);
-  }
-  if (!req.file) {
-    throw new CustomError("Image can't find", 401);
-}
-const imageUrl = await CloudinaryService.uploadProfilePic(req.file);
-const profilePictureUrl = imageUrl as string; 
-const result=await UserService.updateUserAvatar(id,profilePictureUrl)
- res.status(200).json({
-    success: true,
-    message: "Profile updated successfully",
-    data: result,
-  });
-})
+    console.log(req.file)
+    if (!id) {
+      throw new CustomError("Unauthorized", 401);
+    }
+    if (!req.file) {
+      throw new CustomError("Image can't find", 401);
+    }
+    const imageUrl = await CloudinaryService.uploadProfilePic(req.file);
+    const profilePictureUrl = imageUrl as string;
+    const result = await UserService.updateUserAvatar(id, profilePictureUrl)
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: result,
+    });
+  }),
   
+  updateUserProfileAbout: asyncHandler(async (req: Request, res: Response) => {
+    const id = req.user?.id as string;
+    if (!id) {
+      throw new CustomError("Unauthorized", 401);
+    }
+    const {about}=req.body
+    const result = await UserService.updateUserNestedField(id,"candidateData.about",about)
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: result,
+    });
+  }),
+  updateUserProfileExperience: asyncHandler(async (req: Request, res: Response) => {
+    const id = req.user?.id as string;
+    if (!id) {
+      throw new CustomError("Unauthorized", 401);
+    }
+    const {experience}=req.body
+    const result = await UserService.updateUserNestedField(id,"candidateData.experience",experience)
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: result,
+    });
+  }),
+
 };
 

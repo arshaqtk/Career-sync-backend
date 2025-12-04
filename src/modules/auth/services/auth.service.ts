@@ -1,11 +1,12 @@
 import bcrypt from "bcryptjs"
 import { UserRepository } from "../../user/repository/user.repository"
 import { RegisterDTO, LoginDTO } from "../types/auth.types"
-import { generateTokens } from "../../../utils/jwt"
+import { generateAccessToken, generateTokens, verifyRefreshToken } from "../../../utils/jwt"
 import { generateOtp } from "../../../utils/generateOtp"
 import { sendRegisterOtpEmail, sendResetOtpEmail } from "./email.service"
 import { saveRegisterOtp, verifyRegisterOtp } from "./otp.service"
 import { CustomError } from "../../../utils/customError"
+
 
 
 export const Authservice = {
@@ -45,7 +46,7 @@ export const Authservice = {
 
         const match = await bcrypt.compare(data.password, user.password)
         const roleAuthenticated=user.role===data.role
-        
+
         if (!match||!roleAuthenticated){
             throw new CustomError("Invalid email or password", 400); 
         }
@@ -101,6 +102,9 @@ export const Authservice = {
         await sendResetOtpEmail(email, otp)
 
         return { success: true, message: "OTP sent successfully" };
-    }
+    },
+    refreshTokens:(async(refreshToken:string)=>{
+        return await verifyRefreshToken(refreshToken)
+    })
 
 }

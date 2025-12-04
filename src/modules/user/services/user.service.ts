@@ -29,9 +29,24 @@ return {
   },
 
   updateUserAvatar:async(id:string,profilePictureUrl:string)=>{
-    const updatedUser=await UserRepository.updateById(id,profilePictureUrl)
+    console.log(profilePictureUrl)
+    const updatedUser=await UserRepository.updateById(id,{profilePictureUrl})
     return updatedUser
-  }
+  },
 
+  updateUserNestedField:async (
+  userId: string,
+  fieldPath: string,  
+  value: any
+) => {
+  const updateData: Record<string, any> = {
+    [fieldPath]: value,
+  };
+  console.log(updateData)
+
+  const updatedUser = await UserRepository.updateById(userId, updateData);
+  return updatedUser;
+}
+ 
 };
 

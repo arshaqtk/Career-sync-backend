@@ -5,8 +5,9 @@ export interface ICandidateData {
   experienceYears?: number;
    companyName?: string;
   skills?: string[];
-  education?: string;
+  education?: string[];
   portfolioUrl?: string;
+  about?:string;
 }
 
 export interface IRecruiterData {
@@ -89,11 +90,12 @@ const userSchema = new Schema<IUser>(
 
     // CANDIDATE FIELDS ------------------------------------------------------
     candidateData: {
+      about:{ type: String },
       resumeUrl: { type: String },
       experienceYears: { type: Number },
        companyName: { type: String },
       skills: { type: [String], default: [] },
-      education: { type: String },
+      education: { type: [String], default: [] },
       portfolioUrl: { type: String },
     },
 

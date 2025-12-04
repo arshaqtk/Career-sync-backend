@@ -6,11 +6,12 @@ import { rateLimit } from 'express-rate-limit'
 import cookieParser from "cookie-parser"
 import authRoutes from "./modules/auth/routes/auth.routes"
 import userRoutes from "./modules/user/routes/user.route"
+import jobRoutes from "./modules/jobs/routes/job.routes"
 import { errorHandler } from "./middlewares/errorHandler";
  
 
 const app=express()
-
+  
 app.use(helmet())
 app.use( 
   cors({
@@ -27,7 +28,7 @@ app.use(express.urlencoded({extended:true}))
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
-
+app.use("/api/job", jobRoutes);
  
 
 app.use(errorHandler);

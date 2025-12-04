@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { Authservice } from "../services/auth.service";
+import { CustomError } from "../../../utils/customError";
 
 export const AuthController = {
     register: asyncHandler(async (req: Request, res: Response) => {
@@ -72,4 +73,20 @@ res.cookie("refreshToken", result.refreshToken, {
         });
         return;
     }),
+    refreshTokens:asyncHandler(async(req:Request,res:Response)=>{
+        const refreshToken=req.cookies.refreshToken
+        if(!refreshToken){
+            throw new CustomError("Unauthorized",404)
+        }
+        const accessToken=await Authservice.refreshTokens(refreshToken)
+        res.cookie("accessToken", accessToken, {
+    httpOnly: true,
+    secure: false,       
+    sameSite: "lax",     
+    maxAge: 15 * 60 * 1000
+});
+
+res.status(200).json({ message: "Token refreshed successfully" });
+        
+    })
 };

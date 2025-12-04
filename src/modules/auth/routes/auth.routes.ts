@@ -12,6 +12,7 @@ router.post("/verify-register-otp", AuthController.verifyRegisterOtp);
 router.post("/forgot-password",passwordController.sendForgetPasswordOtp)
 router.post("/verify-reset-password",passwordController.verifyResetOtp)
 router.post("/reset-password",validate(passwordSchema),passwordController.resetPassword)
+router.get("/refresh-token",AuthController.refreshTokens)
 
 
 
