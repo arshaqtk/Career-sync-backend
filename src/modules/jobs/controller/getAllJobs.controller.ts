@@ -1,4 +1,4 @@
-import { CustomError } from "../../../utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { Request,Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { getAllJobsService } from "../services/getAlljob.service";

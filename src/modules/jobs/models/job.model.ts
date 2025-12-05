@@ -1,13 +1,7 @@
 import { Schema, model, Types } from "mongoose";
 import { IJob } from "../types/JobModel.type";
 
-const SalaryRangeSchema = new Schema(
-  {
-    min: { type: Number, required: false },
-    max: { type: Number, required: false },
-  },
-  { _id: false } // prevents mongoose from creating _id for sub-object
-);
+
 
 const JobSchema = new Schema<IJob>(
   {
@@ -43,8 +37,8 @@ const JobSchema = new Schema<IJob>(
       required: false,
     },
 
-    salaryRange: {
-      type: SalaryRangeSchema,
+    salary: {
+      type: String,
       required: false,
     },
 

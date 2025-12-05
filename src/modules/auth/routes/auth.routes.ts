@@ -3,11 +3,13 @@ import { AuthController } from "../controllers/auth.controller";
 import { validate } from "../../../middlewares/validate.middleware";
 import { loginSchema, passwordSchema, registerSchema } from "../validators/auth.schema";
 import { passwordController } from "../controllers/passwordreset.controller";
+import { authMiddleware } from "../../../middlewares/auth.middleware";
 
 const router=Router();
 
 router.post("/register",validate(registerSchema),AuthController.register)
 router.post("/login",validate(loginSchema),AuthController.login)
+router.post("/logout",authMiddleware,AuthController.logout)
 router.post("/verify-register-otp", AuthController.verifyRegisterOtp);
 router.post("/forgot-password",passwordController.sendForgetPasswordOtp)
 router.post("/verify-reset-password",passwordController.verifyResetOtp)
@@ -16,4 +18,5 @@ router.get("/refresh-token",AuthController.refreshTokens)
 
 
 
+ 
 export default router

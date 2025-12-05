@@ -1,7 +1,7 @@
 import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
-import { CustomError } from "../../../utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { CloudinaryService } from "../services/cloudinary.service";
 
 declare global {
@@ -70,19 +70,7 @@ export const UserController = {
       data: result,
     });
   }),
-  updateUserProfileExperience: asyncHandler(async (req: Request, res: Response) => {
-    const id = req.user?.id as string;
-    if (!id) {
-      throw new CustomError("Unauthorized", 401);
-    }
-    const {experience}=req.body
-    const result = await UserService.updateUserNestedField(id,"candidateData.experience",experience)
-    res.status(200).json({
-      success: true,
-      message: "Profile updated successfully",
-      data: result,
-    });
-  }),
+  
 
 };
 

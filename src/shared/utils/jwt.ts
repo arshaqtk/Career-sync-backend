@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken"
-import { ENV } from "../config/env";
+import { ENV } from "../../config/env";
 import { CustomError } from "./customError";
 
 export const generateAccessToken = (payload: any) => {

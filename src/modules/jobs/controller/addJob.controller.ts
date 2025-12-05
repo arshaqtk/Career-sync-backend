@@ -3,7 +3,7 @@ import expressAsyncHandler from "express-async-handler";
 import { IJob } from "../types/JobModel.type";
 import {  addJobService } from "../services/addJob.service";
 import { Schema } from "mongoose";
-import { CustomError } from "../../../utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 
 export const addJobController =expressAsyncHandler(async (req:Request, res:Response) => {
     const id=req.user?.id

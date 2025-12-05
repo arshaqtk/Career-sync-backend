@@ -1,14 +1,13 @@
-import { Schema } from "mongoose";
+import { Document, Schema } from "mongoose";
 
-export interface IJob {
-  _id?: string;
+export interface IJob extends Document {
   title: string;
   company: string;
   description?: string;
   skills?: string[];
   experienceMin?: number;
   experienceMax?: number;
-  salaryRange?: { min?: number; max?: number };
+  salary?: string
   location?: string;
   remote?: boolean;
   jobType: "full-time" | "part-time" | "internship";

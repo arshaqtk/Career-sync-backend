@@ -1,11 +1,11 @@
 import bcrypt from "bcryptjs"
 import { UserRepository } from "../../user/repository/user.repository"
 import { RegisterDTO, LoginDTO } from "../types/auth.types"
-import { generateAccessToken, generateTokens, verifyRefreshToken } from "../../../utils/jwt"
-import { generateOtp } from "../../../utils/generateOtp"
+import { generateAccessToken, generateTokens, verifyRefreshToken } from "../../../shared/utils/jwt"
+import { generateOtp } from "../../../shared/utils/generateOtp"
 import { sendRegisterOtpEmail, sendResetOtpEmail } from "./email.service"
 import { saveRegisterOtp, verifyRegisterOtp } from "./otp.service"
-import { CustomError } from "../../../utils/customError"
+import { CustomError } from "../../../shared/utils/customError"
 
 
 

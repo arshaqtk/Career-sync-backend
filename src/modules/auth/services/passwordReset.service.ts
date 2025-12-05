@@ -1,4 +1,4 @@
-import { generateOtp } from "../../../utils/generateOtp";
+import { generateOtp } from "../../../shared/utils/generateOtp";
 import { sendResetOtpEmail } from "./email.service";
 import { saveResetOtp, verifyResetOtp } from "./otp.service";
 import { ResetPasswordDTO } from "../types/resetPassword.types";

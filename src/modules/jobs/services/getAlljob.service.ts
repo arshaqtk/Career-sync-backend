@@ -24,7 +24,7 @@ export const getAllJobsService = async (query: JobQuery) => {
   if (jobType) {
     filter.jobType = jobType;
   }
-console.log(filter)
+
   const jobs = await JobModel.find(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)

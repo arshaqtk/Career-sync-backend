@@ -7,6 +7,7 @@ import cookieParser from "cookie-parser"
 import authRoutes from "./modules/auth/routes/auth.routes"
 import userRoutes from "./modules/user/routes/user.route"
 import jobRoutes from "./modules/jobs/routes/job.routes"
+import candidateRoutes from "./modules/candidate/routes/candidate.routes"
 import { errorHandler } from "./middlewares/errorHandler";
  
 
@@ -29,6 +30,7 @@ app.use(express.urlencoded({extended:true}))
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/job", jobRoutes);
+app.use("/api/candidate",candidateRoutes)
  
 
 app.use(errorHandler);

@@ -1,4 +1,4 @@
-import { CustomError } from "../../../utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { UpdateUserProfileDTO } from "../dtos/user.dto";
 import { UserRepository } from "../repository/user.repository"
 

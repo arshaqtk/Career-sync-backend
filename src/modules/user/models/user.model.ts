@@ -1,23 +1,5 @@
 import { Schema, model, Document } from "mongoose";
-
-export interface ICandidateData {
-  resumeUrl?: string;
-  experienceYears?: number;
-   companyName?: string;
-  skills?: string[];
-  education?: string[];
-  portfolioUrl?: string;
-  about?:string;
-}
-
-export interface IRecruiterData {
-  companyName?: string;
-  companyWebsite?: string;
-  companyLogo?: string;
-  companyLocation?: string;
-  companyDescription?: string;
-}
-
+import { ICandidateData, IRecruiterData } from "../types/user.schema";
 export interface IUser extends Document {
   // COMMON FIELDS
   name: string;
@@ -36,6 +18,17 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
+
+const ExperienceSchema = new Schema({
+  company: { type: String, required: true },
+  role: { type: String, required: true },
+  startDate: { type: Date, required: true },
+  endDate: { type: Date },
+  description: { type: String },
+  location: { type: String },
+   jobType:{type:String, enum: ["Onsite", "Hybrid", "Remote"],}
+});
+
 
 const userSchema = new Schema<IUser>(
   {
@@ -65,7 +58,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 6,
-       select: false,
+      select: false,
     },
 
     profilePictureUrl: {
@@ -90,14 +83,14 @@ const userSchema = new Schema<IUser>(
 
     // CANDIDATE FIELDS ------------------------------------------------------
     candidateData: {
-      about:{ type: String },
+      about: { type: String },
       resumeUrl: { type: String },
-      experienceYears: { type: Number },
-       companyName: { type: String },
+      experience: { type: [ExperienceSchema], default: [] },
       skills: { type: [String], default: [] },
       education: { type: [String], default: [] },
       portfolioUrl: { type: String },
     },
+
 
     // RECRUITER FIELDS ------------------------------------------------------
     recruiterData: {

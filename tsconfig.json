@@ -16,7 +16,7 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"], 
-      "@utils/*": ["src/utils/*"],
+      "@utils/*": ["src/shared/utils/*"],
       "@modules/*": ["src/modules/*"],
       "@middlewares/*": ["src/middlewares/*"],
       "@config/*": ["src/config/*"],
