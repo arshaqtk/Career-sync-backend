@@ -4,8 +4,8 @@ import jwt from "jsonwebtoken";
 
 
 export const authMiddleware=(req:Request,res:Response,next:NextFunction)=>{
-  
- const token = req.cookies?.accessToken;
+  const token = req.cookies?.accessToken;
+  console.log(token)
 
     if(!token){
         return res.status(401).json({message:"Access Denied"})

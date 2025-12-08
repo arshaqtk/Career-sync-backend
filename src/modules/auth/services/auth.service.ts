@@ -79,6 +79,7 @@ export const Authservice = {
                 message: "Logged successfully",
                 isVerified:true,
                  email: user.email,
+                 role: user.role,
                 refreshToken: token.refreshToken, 
                 accessToken: token.accessToken };
     },

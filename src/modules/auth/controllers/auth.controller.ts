@@ -46,6 +46,7 @@ export const AuthController = {
             success: true,
             message: result.message,
             user: {
+                role:result.role,
                 status: result.status,
                 email: result.email,
                 isVerified: result.isVerified

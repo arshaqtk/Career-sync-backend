@@ -23,6 +23,8 @@ return {
   recruiterData: undefined
 };
   },
+
+  
   updateUserProfile:async(id:string,dto:UpdateUserProfileDTO)=>{
     const updatedUser=await UserRepository.updateById(id,dto)
     return updatedUser

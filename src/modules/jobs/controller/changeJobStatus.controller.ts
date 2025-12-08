@@ -14,10 +14,11 @@ export const updateJobStatusController =expressAsyncHandler(async (req:Request, 
     if (!jobId) {
    throw new CustomError("Job ID is required", 400);
 }
-    const data:UpdateJobStatusDTO = req.body;
+    const data:UpdateJobStatusDTO = req.body; 
+  
     const job = await updateJobService({data,employerId,jobId});
     res.status(200).json({
       message: "Job updated successfully",
-      job,
+      job, 
     });
 })

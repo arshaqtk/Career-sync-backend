@@ -1,5 +1,7 @@
 import { Schema, model, Document } from "mongoose";
 import { ICandidateData, IRecruiterData } from "../types/user.schema";
+import {EducationSchema,ExperienceSchema} from "../schemas/index"
+
 export interface IUser extends Document {
   // COMMON FIELDS
   name: string;
@@ -18,17 +20,6 @@ export interface IUser extends Document {
   createdAt: Date;
   updatedAt: Date;
 }
-
-const ExperienceSchema = new Schema({
-  company: { type: String, required: true },
-  role: { type: String, required: true },
-  startDate: { type: Date, required: true },
-  endDate: { type: Date },
-  description: { type: String },
-  location: { type: String },
-   jobType:{type:String, enum: ["Onsite", "Hybrid", "Remote"],}
-});
-
 
 const userSchema = new Schema<IUser>(
   {
@@ -87,7 +78,7 @@ const userSchema = new Schema<IUser>(
       resumeUrl: { type: String },
       experience: { type: [ExperienceSchema], default: [] },
       skills: { type: [String], default: [] },
-      education: { type: [String], default: [] },
+      education: { type: [EducationSchema], default: [] },
       portfolioUrl: { type: String },
     },
 

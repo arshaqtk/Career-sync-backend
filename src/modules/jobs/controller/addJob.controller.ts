@@ -12,7 +12,7 @@ export const addJobController =expressAsyncHandler(async (req:Request, res:Respo
     }
 //    const userId = new Schema.Types.ObjectId(id);
     const data:IJob = req.body;
-    const job = await addJobService(data,id);
+    const job = await addJobService(data,id); 
     res.status(201).json({
       message: "Job created successfully",
       job,

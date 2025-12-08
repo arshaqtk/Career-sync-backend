@@ -12,7 +12,7 @@ export const getAllJobs=expressAsyncHandler(async (req:Request, res:Response)=>{
 
     const jobs = await getAllJobsService({
       page: Number(page),
-      limit: Number(limit),
+      limit: Number(limit), 
       search: search as string,
       location: location as string,
       jobType: jobType as string,

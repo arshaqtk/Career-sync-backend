@@ -9,12 +9,24 @@ export interface IExperience {
   jobType?:string
 }
 
+export interface IEducation {
+  _id?:string;
+  school:string;
+  standard:"High School"|"Higher Secondary"|   "Diploma"|   "Undergraduate"|   "Postgraduate"| "Doctorate"|  "Other";
+  startDate:Date;
+  endDate?:Date;
+  isCurrent?:boolean;
+  location?:string;
+  description?:string;
+  gradeOrPercentage?:string;
+}
+
 export interface ICandidateData {
   about?: string;
   resumeUrl?: string;
   experience?: IExperience[];
   skills?: string[];
-  education?: string[];
+  education?: IEducation[];
   portfolioUrl?: string;
 }
 

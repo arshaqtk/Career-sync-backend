@@ -9,7 +9,7 @@ const router=Router();
 
 router.post("/register",validate(registerSchema),AuthController.register)
 router.post("/login",validate(loginSchema),AuthController.login)
-router.post("/logout",authMiddleware,AuthController.logout)
+router.post("/logout",AuthController.logout)
 router.post("/verify-register-otp", AuthController.verifyRegisterOtp);
 router.post("/forgot-password",passwordController.sendForgetPasswordOtp)
 router.post("/verify-reset-password",passwordController.verifyResetOtp)

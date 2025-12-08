@@ -13,6 +13,7 @@ export const updateJobController =expressAsyncHandler(async (req:Request, res:Re
     if (!jobId) {
    throw new CustomError("Job ID is required", 400);
 }
+
     const data:Partial<IJob> = req.body;
     const job = await updateJobService({data,employerId,jobId});
     res.status(200).json({
