@@ -10,7 +10,7 @@ export const saveRegisterOtp=async (email:string,otp:string)=>{
 }
 
 export const verifyRegisterOtp=async(email:string,otp:string)=>{
-    console.log(otp,email)
+   
     const storedOtp=await redis.get(`otp:register:${email}`)
     if (!storedOtp) {
         return { success: false, message: "OTP expired" };

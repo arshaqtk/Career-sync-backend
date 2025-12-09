@@ -1,3 +1,4 @@
+import expressAsyncHandler from "express-async-handler";
 import { passWordService } from "../services/passwordReset.service";
 import { Request, Response } from "express";
 
@@ -14,6 +15,27 @@ export const passwordController = {
             res.status(500).json({ message: "Issue With sending Otp" });
         }
     }, 
+
+     resendForgetPasswordOtp:expressAsyncHandler(async(req:Request,res:Response)=>{
+            const {email}=req.body
+    
+             const result = await passWordService.resendResetPasswordOtp(email);
+    
+            if (!result.success) {
+                res.status(400).json({
+                    success: false,
+                    message: result.message
+                });
+                return;
+            }
+    
+            res.json({
+                success: true,
+                message: "OTP verified successfully",
+            });
+            return;
+    
+        }),
     verifyResetOtp: async (req: Request, res: Response) => {
         try {
             const { email, otp } = req.body;

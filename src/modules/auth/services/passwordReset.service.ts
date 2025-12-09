@@ -24,6 +24,21 @@ export const passWordService = {
     verifyResetOtp: async (email: string, otp: string) => {
         return await verifyResetOtp(email, otp);
     },
+
+       resendResetPasswordOtp: async (email: string) => {
+            const user = await UserRepository.findByEmail(email);
+            if (!user) {
+                throw new Error("User does not exist");
+            }
+            const otp = generateOtp()
+    
+            await saveResetOtp(email, otp)
+    
+            await sendResetOtpEmail(email, otp)
+    
+            return { success: true, message: "OTP sent successfully" };
+        },
+
     resetPasswordService: async ({ email, password, confirmPassword,resetToken}: ResetPasswordDTO) => {
         const user = await UserRepository.findByEmail(email).select("+password");
         const storedToken = await redis.get(`resetToken:${email}`);

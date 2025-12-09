@@ -75,6 +75,26 @@ export const AuthController = {
         return;
     }),
 
+    resendOtp:asyncHandler(async(req:Request,res:Response)=>{
+        const {email}=req.body
+
+         const result = await Authservice.resendRegisterOtp(email);
+
+        if (!result.success) {
+            res.status(400).json({
+                success: false,
+                message: result.message
+            });
+            return;
+        }
+
+        res.json({
+            success: true,
+            message: "OTP verified successfully",
+        });
+        return;
+
+    }),
     refreshTokens: asyncHandler(async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
         if (!refreshToken) {

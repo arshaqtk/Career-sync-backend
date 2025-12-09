@@ -4,6 +4,8 @@ import { addCandidateProfileExperienceController, updateCandidateProfileExperien
 import { updateCandidateProfileSkill } from "../controllers/candidateSkill.controller";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { addCandidateEducationController, updateCandidateEducationController } from "../controllers/candidateEducation.controller";
+import { upload } from "../../../middlewares/upload";
+import { updateResumeController } from "../controllers/candidateResume.controller";
 
 const router=Router();
 // router.put("/update-profile-about",authMiddleware,UserController.updateUserProfileAbout)
@@ -12,6 +14,7 @@ router.put("/profile/experience/:id",authMiddleware,authorizeRoles("candidate"),
 router.put("/profile/skill",authMiddleware,authorizeRoles("candidate"),updateCandidateProfileSkill) 
 router.post("/profile/education",authMiddleware,authorizeRoles("candidate"),addCandidateEducationController)
 router.put("/profile/education/:id",authMiddleware,authorizeRoles("candidate"),updateCandidateEducationController)
+router.put("/profile/resume",authMiddleware,upload.single("resume"),updateResumeController)
 
 
 

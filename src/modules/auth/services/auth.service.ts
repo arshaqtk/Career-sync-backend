@@ -88,7 +88,7 @@ export const Authservice = {
         return await verifyRegisterOtp(email, otp);
     },
 
-    resendOtp: async (email: string) => {
+    resendRegisterOtp: async (email: string) => {
         const user = await UserRepository.findByEmail(email);
         if (!user) {
             throw new Error("User does not exist");
@@ -100,7 +100,7 @@ export const Authservice = {
 
         await saveRegisterOtp(email, otp)
 
-        await sendResetOtpEmail(email, otp)
+        await sendRegisterOtpEmail(email, otp)
 
         return { success: true, message: "OTP sent successfully" };
     },

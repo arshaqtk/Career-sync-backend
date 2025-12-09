@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 import { addCandidateExperienceService, updateCandidateProfileExperienceService } from "../services/candidateExperience.service";
 
 export const addCandidateProfileExperienceController=expressAsyncHandler(async (req: Request, res: Response) => {
+  console.log(req.body)
     const userId = req.user?.id as string;
     if (!userId) {
       throw new CustomError("Unauthorized", 401);
