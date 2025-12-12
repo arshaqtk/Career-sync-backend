@@ -16,10 +16,10 @@ export const jobRepository = {
     return JobModel.findOne(query)
   },
   countByQuery: (query: QueryFilter<IJob>) => {
-    return JobModel.countDocuments(query);
+    return JobModel.countDocuments(query); 
   },
   updateById: (id: string, updateData: any) => {
-    return JobModel.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+    return JobModel.findByIdAndUpdate(id, updateData, { new: true });
   },
   deleteById: (id: string) => {
     return JobModel.findByIdAndDelete(id)

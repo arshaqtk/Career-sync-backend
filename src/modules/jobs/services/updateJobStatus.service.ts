@@ -16,5 +16,5 @@ export const updateJobStatusService = async ({data,employerId,jobId}:UpdateJobSt
   if (Object.keys(data).length === 0) {
   throw new CustomError("No update data provided", 400);
 }
-  return jobRepository.updateById(jobId,data);
+  return jobRepository.updateById(jobId,{ $set: data });
 }; 
