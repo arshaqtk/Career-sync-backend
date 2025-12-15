@@ -5,27 +5,50 @@ import { ApplicationService } from "../services/createApplication.service";
 
 const applicationService = ApplicationService();
 
+//--------------------Candidate------------------------
+
 export const applyToJob=async(req:Request,res:Response)=>{    
-  console.log(req.body)
-    const data=await applicationService.applyForJob(req.user?.id as string,req.body)
-     res.status(201).json({ success: true, data,message:"Applied to job successfully" });
+  const data=await applicationService.applyForJob(req.user?.id as string,req.body)
+  res.status(201).json({ success: true, data,message:"Applied to job successfully" });
 }
 
-//detail view
-export const getApplicationController = expressAsyncHandler(async (req, res) => {
+
+//application by candidate
+export const getMyApplicationsController = expressAsyncHandler(async (req:Request,res:Response) => {  
+  const response = await applicationService.getMyApplications(req.user?.id as string);
+  res.status(200).json(response);
+});
+ 
+//candidate application detail view
+export const getApplicationController = expressAsyncHandler(async (req:Request,res:Response) => {
   const response = await applicationService.getApplication(req.params.id);
   res.status(200).json(response); 
 }); 
 
-//application by candidate
-export const getMyApplicationsController = expressAsyncHandler(async (req, res) => {  
-  const response = await applicationService.getMyApplications(req.user?.id as string);
+
+ 
+//-----------------------Recruiter--------------------------------
+
+//application by recruiter based on job
+export const getApplicationsByJobController = expressAsyncHandler(async (req:Request,res:Response) => {
+  const response = await applicationService.getApplicationsByJob(req.params.jobId);
   res.status(200).json(response);
 });
 
-//application by recruiter based on job
-export const getApplicationsByJobController = expressAsyncHandler(async (req, res) => {
-  const response = await applicationService.getApplicationsByJob(req.params.jobId);
-  console.log(response)
+//Recruiter  applicant detail view 
+export const getApplicantDetailsController=async(req:Request,res:Response)=>{
+  const response=await applicationService.getApplicantDetails(req.params.applicationId)
   res.status(200).json(response);
-});
+}
+
+export const updateApplicationStatusController=async(req:Request,res:Response)=>{
+
+  const applicationId=req.params.applicationId
+  const {status}=req.body
+
+  const updated=await applicationService.updateApplicationStatusService(applicationId,status)
+    return res.status(200).json({
+      message: "Application status updated",
+      data: updated
+    })
+  }

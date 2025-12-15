@@ -20,6 +20,7 @@ export interface IPopulatedJob {
   title: string;
   company: string;
   location: string;
+  jobType?:string;
 }
 
 export interface IPopulatedCandidate {

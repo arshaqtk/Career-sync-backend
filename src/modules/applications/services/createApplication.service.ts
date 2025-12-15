@@ -5,6 +5,9 @@ import { ApplicationRepository } from "../repository/application.repositories";
 import { CandidateApplicationDTO } from "../dto/candiateApplication.dto";
 import { RecruiterApplicationDTO } from "../dto/recruiterApplication.dto";
 import { IApplicationPopulated } from "../types/applicatioModel.types";
+import { APPLICATION_STATUS, ApplicationStatus } from "../types/applicationStatus.types";
+import { sendApplicationStatusUpdateEmail } from "./sendEmail.service";
+import { populate } from "dotenv";
 
 const applicationRepository = ApplicationRepository()
 
@@ -30,8 +33,8 @@ export const ApplicationService = () => {
       jobId: data.jobId,
       resumeUrl: data.resumeUrl,
       coverLetter: data.coverLetter,
-      currentRole:data.currentRole,
-      experience:data.experience,
+      currentRole: data.currentRole,
+      experience: data.experience,
       status: "Pending"
     });
     if (application) {
@@ -44,7 +47,7 @@ export const ApplicationService = () => {
 
   const getApplication = async (applicationId: string) => {
     if (!applicationId) throw new CustomError("Id Not Found")
-    return await applicationRepository.findById(applicationId);
+    return await applicationRepository.findById({ id: applicationId });
   };
 
 
@@ -90,7 +93,7 @@ export const ApplicationService = () => {
         title: app.jobId.title,
         company: app.jobId.company
       },
-      currentRole:app.currentRole,
+      currentRole: app.currentRole,
       experience: app.experience,
       status: app.status,
       coverLetter: app.coverLetter,
@@ -102,10 +105,57 @@ export const ApplicationService = () => {
     )
   };
 
+  const getApplicantDetails = async (applicationId: string) => {
+
+    const applicant = await applicationRepository.findById({
+      id: applicationId, populate: [
+        {
+          path: "candidateId", select: "name email phone profilePictureUrl location"
+        }, {
+          path: "jobId", select: "title company location jobType salary",
+        },],
+      select: "status resumeUrl coverLetter experience currentRole expectedSalary noticePeriod createdAt"
+    });
+
+    if (!applicant) throw new CustomError("Application not found", 404);
+
+    return applicant;
+  }
+
+  const updateApplicationStatusService=async(applicationId:string,status:ApplicationStatus)=>{
+console.log(applicationId,status)
+    if (!Object.values(APPLICATION_STATUS).includes(status)) {
+    throw new CustomError("Invalid application status", 400);}
+
+    const application=await applicationRepository.findById(
+      {id:applicationId,populate:[{path:"candidateId", select:"name email "},{
+          path: "jobId", select: "title company location jobType",
+        },]})as unknown as IApplicationPopulated
+
+    if (!application) {throw new CustomError("Application not found", 404);}
+
+    const updated=await applicationRepository.update(applicationId,{status})
+
+    await sendApplicationStatusUpdateEmail({
+  email: application.candidateId?.email,
+  candidateName: application.candidateId.name,
+  jobTitle: application.jobId.title,
+  newStatus: status,
+  companyName: application.jobId.company,
+  jobLocation: application.jobId.location, 
+  employmentType: application.jobId.jobType
+});
+
+  return updated
+  }
+
+
   return {
     applyForJob,
     getApplication,
     getMyApplications,
     getApplicationsByJob,
+    getApplicantDetails,
+    updateApplicationStatusService
   };
 };

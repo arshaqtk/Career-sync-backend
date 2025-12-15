@@ -1,6 +1,6 @@
 import { authMiddleware } from "../../../middlewares/auth.middleware";
 import { Router } from "express";
-import { applyToJob, getApplicationController, getApplicationsByJobController, getMyApplicationsController } from "../controllers/application.controller";
+import { applyToJob, getApplicantDetailsController, getApplicationController, getApplicationsByJobController, getMyApplicationsController, updateApplicationStatusController } from "../controllers/application.controller";
 import { catchAsync } from "../../../middlewares/asyncHandler";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 
@@ -14,7 +14,7 @@ router.get("/my/:id",authMiddleware,catchAsync(getApplicationController))
 //recruiter
 
 router.get("/job/:jobId",authMiddleware,authorizeRoles("recruiter"),catchAsync(getApplicationsByJobController))
-// router.put("/status/:id")
-router.get("/:applicationId",getApplicationController)
+router.patch( "/:applicationId/status",authMiddleware,authorizeRoles("recruiter"),catchAsync(updateApplicationStatusController));
+router.get("/:applicationId",catchAsync(getApplicantDetailsController))
 // router.get("/:applicationId/resume/download")
 export default router

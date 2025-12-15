@@ -5,5 +5,11 @@ export interface FindManyOptions {
   sort?: Record<string, 1 | -1>;
   limit?: number;
   populate?: string | string[] | PopulateOptions | PopulateOptions[];
-  select?: string | Record<string, 1 | 0>;
+  select?: string | Record<string, 1 |object| 0>;
+}
+
+export interface FindByIdOptions{
+  id:string,
+ populate?: string | string[] | PopulateOptions | PopulateOptions[];
+  select?: string | Record<string, 1 |object| 0>;
 }
