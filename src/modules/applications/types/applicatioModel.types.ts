@@ -3,6 +3,7 @@ import { Document, Types } from "mongoose";
 
 export interface IApplication extends Document {
   candidateId: Types.ObjectId | string;
+  recruiterId:Types.ObjectId | string;
   jobId: Types.ObjectId |string ;
   resumeUrl: string;
   status: "Pending" | "Shortlisted" | "Selected" | "Rejected";

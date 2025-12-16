@@ -29,11 +29,19 @@ export const getApplicationController = expressAsyncHandler(async (req:Request,r
  
 //-----------------------Recruiter--------------------------------
 
+export const getRecruiterApplicationsController=async(req:Request,res:Response)=>{
+  const recruiterId=req.user?.id
+  if(!recruiterId){
+    throw new CustomError("unAuthorized",401)
+  }
+    const response = await applicationService.getRecruiterApplications(recruiterId);
+  res.status(200).json(response);
+}
 //application by recruiter based on job
-export const getApplicationsByJobController = expressAsyncHandler(async (req:Request,res:Response) => {
+export const getApplicationsByJobController = async (req:Request,res:Response) => {
   const response = await applicationService.getApplicationsByJob(req.params.jobId);
   res.status(200).json(response);
-});
+}
 
 //Recruiter  applicant detail view 
 export const getApplicantDetailsController=async(req:Request,res:Response)=>{

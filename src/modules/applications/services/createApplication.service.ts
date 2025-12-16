@@ -25,11 +25,12 @@ export const ApplicationService = () => {
       jobId: data.jobId
     });
 
-
     if (existing) throw new CustomError("Already applied", 409);
+    if(!job.postedBy) throw new CustomError("Something went wrong", 500);
 
     const application = await applicationRepository.create({
       candidateId,
+      recruiterId:job.postedBy as string,
       jobId: data.jobId,
       resumeUrl: data.resumeUrl,
       coverLetter: data.coverLetter,
@@ -67,6 +68,45 @@ export const ApplicationService = () => {
       createdAt: app.createdAt,
     }));
   };
+//---------------------------------Recruiter----------------------------------------
+
+const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterApplicationDTO[]> =>{
+  
+  const applications=await applicationRepository.findMany({
+    filter:{recruiterId} ,populate: [
+        { path: "jobId" },
+        { path: "candidateId" }
+      ]
+    }) as unknown as IApplicationPopulated[]
+    
+    return applications.map((app) => ({
+
+      id: app._id.toString(),
+      candidate: {
+        id: app.candidateId._id,
+        name: app.candidateId.name,
+        email: app.candidateId.email,
+        skills: app.candidateId.candidateData.skills,
+        resumeUrl: app.candidateId.candidateData.resumeUrl?.url
+      },
+      job: {
+        id: app.jobId._id,
+        title: app.jobId.title,
+        company: app.jobId.company
+      },
+      currentRole: app.currentRole,
+      experience: app.experience,
+      status: app.status,
+      coverLetter: app.coverLetter,
+      expectedSalary: app.expectedSalary,
+      noticePeriod: app.noticePeriod,
+      createdAt: app.createdAt
+
+    })
+    )
+  };
+
+
 
   const getApplicationsByJob = async (jobId: string): Promise<RecruiterApplicationDTO[]> => {
     if (!jobId) throw new CustomError("Id Not Found")
@@ -77,7 +117,6 @@ export const ApplicationService = () => {
       ]
     }) as unknown as IApplicationPopulated[]
 
-    console.log(applications)
     return applications.map((app) => ({
 
       id: app._id.toString(),
@@ -110,7 +149,7 @@ export const ApplicationService = () => {
     const applicant = await applicationRepository.findById({
       id: applicationId, populate: [
         {
-          path: "candidateId", select: "name email phone profilePictureUrl location"
+          path: "candidateId", select: "_id name email phone profilePictureUrl location"
         }, {
           path: "jobId", select: "title company location jobType salary",
         },],
@@ -122,31 +161,36 @@ export const ApplicationService = () => {
     return applicant;
   }
 
-  const updateApplicationStatusService=async(applicationId:string,status:ApplicationStatus)=>{
-console.log(applicationId,status)
+
+
+  const updateApplicationStatusService = async (applicationId: string, status: ApplicationStatus) => {
+   
     if (!Object.values(APPLICATION_STATUS).includes(status)) {
-    throw new CustomError("Invalid application status", 400);}
+      throw new CustomError("Invalid application status", 400);
+    }
 
-    const application=await applicationRepository.findById(
-      {id:applicationId,populate:[{path:"candidateId", select:"name email "},{
+    const application = await applicationRepository.findById(
+      {
+        id: applicationId, populate: [{ path: "candidateId", select: "name email " }, {
           path: "jobId", select: "title company location jobType",
-        },]})as unknown as IApplicationPopulated
+        },]
+      }) as unknown as IApplicationPopulated
 
-    if (!application) {throw new CustomError("Application not found", 404);}
+    if (!application) { throw new CustomError("Application not found", 404); }
 
-    const updated=await applicationRepository.update(applicationId,{status})
+    const updated = await applicationRepository.update(applicationId, { status })
 
     await sendApplicationStatusUpdateEmail({
-  email: application.candidateId?.email,
-  candidateName: application.candidateId.name,
-  jobTitle: application.jobId.title,
-  newStatus: status,
-  companyName: application.jobId.company,
-  jobLocation: application.jobId.location, 
-  employmentType: application.jobId.jobType
-});
+      email: application.candidateId?.email,
+      candidateName: application.candidateId.name,
+      jobTitle: application.jobId.title,
+      newStatus: status,
+      companyName: application.jobId.company,
+      jobLocation: application.jobId.location,
+      employmentType: application.jobId.jobType
+    });
 
-  return updated
+    return updated
   }
 
 
@@ -154,6 +198,8 @@ console.log(applicationId,status)
     applyForJob,
     getApplication,
     getMyApplications,
+
+    getRecruiterApplications,
     getApplicationsByJob,
     getApplicantDetails,
     updateApplicationStatusService

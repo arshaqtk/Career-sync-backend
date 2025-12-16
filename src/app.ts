@@ -9,7 +9,9 @@ import userRoutes from "./modules/user/routes/user.route"
 import jobRoutes from "./modules/jobs/routes/job.routes"
 import candidateRoutes from "./modules/candidate/routes/candidate.routes"
 import applicationRoutes from "./modules/applications/routes/application.routes"
+import recruiterRoutes from "./modules/recruiter/routes/recruiter.routes"
 import { errorHandler } from "./middlewares/errorHandler";
+
  
 
 const app=express()
@@ -32,6 +34,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/job", jobRoutes);
 app.use("/api/candidate",candidateRoutes)
+app.use("/api/recruiter",recruiterRoutes)
 app.use("/api/application",applicationRoutes)
 
  

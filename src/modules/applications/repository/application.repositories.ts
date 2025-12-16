@@ -6,6 +6,7 @@ import { FindByIdOptions, FindManyOptions } from "./application.repository.types
 
 
 export const ApplicationRepository = (): IApplicationRepository => {
+  
   const create = async (data: Partial<IApplication>): Promise<IApplication> => {
     return await ApplicationModel.create(data);
   };
