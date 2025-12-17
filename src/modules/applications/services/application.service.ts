@@ -7,7 +7,8 @@ import { RecruiterApplicationDTO } from "../dto/recruiterApplication.dto";
 import { IApplicationPopulated } from "../types/applicatioModel.types";
 import { APPLICATION_STATUS, ApplicationStatus } from "../types/applicationStatus.types";
 import { sendApplicationStatusUpdateEmail } from "./sendEmail.service";
-import { populate } from "dotenv";
+import { ApplicationQuery } from "../types/applicationQuery.types";
+
 
 const applicationRepository = ApplicationRepository()
 
@@ -45,6 +46,53 @@ export const ApplicationService = () => {
     return application
   };
 
+const getMyApplications = async (
+  candidateId: string,query: ApplicationQuery): Promise<CandidateApplicationDTO[]> => {
+
+  if (!candidateId) {
+    throw new CustomError("User Not Found", 404);
+  }
+
+  const {
+    status,
+    sortBy = "newest",
+    page = "1",
+    limit = "10",
+  } = query;
+
+  const filter: Record<string, any> = {
+    candidateId,
+  };
+
+  if (status && status !== "all") {
+    filter.status = status;
+  }
+
+  const sortOrder = sortBy === "newest" ? -1 : 1;
+
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const applications = await applicationRepository.findMany({
+    filter,
+    populate: "jobId",
+    sort: { createdAt: sortOrder },
+    skip,
+    limit: Number(limit),
+  });
+
+  return applications.map((app) => ({
+    id: app._id.toString(),
+    job: {
+      id: app.jobId._id.toString(),
+      title: app.jobId.title,
+      company: app.jobId.company,
+      location: app.jobId.location,
+    },
+    status: app.status,
+    createdAt: app.createdAt,
+  }));
+};
+
 
   const getApplication = async (applicationId: string) => {
     if (!applicationId) throw new CustomError("Id Not Found")
@@ -52,22 +100,6 @@ export const ApplicationService = () => {
   };
 
 
-  const getMyApplications = async (candidateId: string): Promise<CandidateApplicationDTO[]> => {
-    if (!candidateId) throw new CustomError("User Not Found")
-    const applications = await applicationRepository.findMany({ filter: { candidateId }, populate: "jobId" }) as unknown as IApplicationPopulated[]
-
-    return applications.map((app) => ({
-      id: app._id.toString(),
-      job: {
-        id: app.jobId._id.toString(),
-        title: app.jobId.title,
-        company: app.jobId.company,
-        location: app.jobId.location,
-      },
-      status: app.status,
-      createdAt: app.createdAt,
-    }));
-  };
 //---------------------------------Recruiter----------------------------------------
 
 const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterApplicationDTO[]> =>{
@@ -164,7 +196,7 @@ const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterAppli
 
 
   const updateApplicationStatusService = async (applicationId: string, status: ApplicationStatus) => {
-   
+   console.log(status)
     if (!Object.values(APPLICATION_STATUS).includes(status)) {
       throw new CustomError("Invalid application status", 400);
     }

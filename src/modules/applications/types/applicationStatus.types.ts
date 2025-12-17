@@ -1,8 +1,8 @@
 export const APPLICATION_STATUS = {
-  PENDING: "PENDING",
-  SHORTLISTED: "SHORTLISTED",
-  REJECTED: "REJECTED",
-  INTERVIEW: "INTERVIEW"
+  PENDING: "Pending",
+  SHORTLISTED: "Shortlisted",
+  REJECTED: "Rejected",
+  INTERVIEW: "Interview"
 } as const;
 
-export type ApplicationStatus = keyof typeof APPLICATION_STATUS;
+export type ApplicationStatus =(typeof APPLICATION_STATUS)[keyof typeof APPLICATION_STATUS];

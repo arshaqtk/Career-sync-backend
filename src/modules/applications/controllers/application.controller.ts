@@ -1,9 +1,11 @@
 import expressAsyncHandler from "express-async-handler";
 import { Request,Response } from "express";
 import { CustomError } from "../../../shared/utils/customError";
-import { ApplicationService } from "../services/createApplication.service";
+import { ApplicationService } from "../services/application.service";
+import { ApplicationQuery } from "../types/applicationQuery.types";
 
 const applicationService = ApplicationService();
+
 
 //--------------------Candidate------------------------
 
@@ -15,7 +17,9 @@ export const applyToJob=async(req:Request,res:Response)=>{
 
 //application by candidate
 export const getMyApplicationsController = expressAsyncHandler(async (req:Request,res:Response) => {  
-  const response = await applicationService.getMyApplications(req.user?.id as string);
+  const id=req.user?.id as string
+      const { page = 1, limit = 10,sortBy,status } = req.query as ApplicationQuery
+  const response = await applicationService.getMyApplications(id,{status,sortBy});
   res.status(200).json(response);
 });
  

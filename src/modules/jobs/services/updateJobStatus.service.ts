@@ -14,7 +14,7 @@ export const updateJobStatusService = async ({data,employerId,jobId}:UpdateJobSt
     throw new CustomError("Job not found or you are not allowed to update this job",403)
   }
   if (Object.keys(data).length === 0) {
-  throw new CustomError("No update data provided", 400);
+  throw new CustomError("No update data provided", 400); 
 }
-  return jobRepository.updateById(jobId,{ $set: data });
+  return jobRepository.updateById(jobId,{ $set: data }); 
 }; 

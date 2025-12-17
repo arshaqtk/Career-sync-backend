@@ -9,7 +9,7 @@ export const addJobController =expressAsyncHandler(async (req:Request, res:Respo
     const id=req.user?.id
     if(!id){
         throw new CustomError("unAuthorized",401)
-    }
+    } 
 //    const userId = new Schema.Types.ObjectId(id);
     const data:IJob = req.body;
     const job = await addJobService(data,id); 
