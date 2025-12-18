@@ -8,9 +8,12 @@ import { IApplicationPopulated } from "../types/applicatioModel.types";
 import { APPLICATION_STATUS, ApplicationStatus } from "../types/applicationStatus.types";
 import { sendApplicationStatusUpdateEmail } from "./sendEmail.service";
 import { ApplicationQuery } from "../types/applicationQuery.types";
+import { InterviewRepository } from "../../../modules/Interview/repository/interview.repository";
+import { InterviewRoundType, InterviewStatus } from "../../../modules/Interview/types/interview.type";
 
 
 const applicationRepository = ApplicationRepository()
+const interviewRepository=InterviewRepository()
 
 export const ApplicationService = () => {
 
@@ -25,10 +28,12 @@ export const ApplicationService = () => {
       candidateId,
       jobId: data.jobId
     });
-
+    if (job.status === "closed") {
+  throw new CustomError("This job is no longer accepting applications", 410);
+}
     if (existing) throw new CustomError("Already applied", 409);
     if(!job.postedBy) throw new CustomError("Something went wrong", 500);
-
+console.log(data)
     const application = await applicationRepository.create({
       candidateId,
       recruiterId:job.postedBy as string,
@@ -37,6 +42,8 @@ export const ApplicationService = () => {
       coverLetter: data.coverLetter,
       currentRole: data.currentRole,
       experience: data.experience,
+      noticePeriod:data.noticePeriod,
+      expectedSalary:data.expectedSalary,
       status: "Pending"
     });
     if (application) {
@@ -83,11 +90,11 @@ const getMyApplications = async (
   return applications.map((app) => ({
     id: app._id.toString(),
     job: {
-      id: app.jobId._id.toString(),
-      title: app.jobId.title,
-      company: app.jobId.company,
-      location: app.jobId.location,
-    },
+    id: (app.jobId as any)._id.toString(),
+    title: (app.jobId as any).title,
+    company: (app.jobId as any).company,
+    location: (app.jobId as any).location,
+  },
     status: app.status,
     createdAt: app.createdAt,
   }));
@@ -212,6 +219,32 @@ const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterAppli
 
     const updated = await applicationRepository.update(applicationId, { status })
 
+//----------------------------interview setuping------------------------------------
+if (status === APPLICATION_STATUS.INTERVIEW){
+  
+  const existingInterview = await interviewRepository.findOne({
+    applicationId,
+  });
+   if (!existingInterview) {
+       await interviewRepository.create(
+        {candidateId:application.candidateId._id,
+          applicationId,
+          jobId:application.jobId._id,
+          recruiterId:application.recruiterId,
+          roundType:InterviewRoundType.NOT_DEFINED,
+      status: InterviewStatus.PENDING,
+      statusHistory: [
+        {
+          status: InterviewStatus.PENDING,
+          changedBy:application.recruiterId,
+          note: "Candidate moved to interview stage",
+          changedAt:new Date()
+        },
+      ],
+        })
+      }
+    }
+
     await sendApplicationStatusUpdateEmail({
       email: application.candidateId?.email,
       candidateName: application.candidateId.name,
@@ -224,6 +257,7 @@ const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterAppli
 
     return updated
   }
+
 
 
   return {

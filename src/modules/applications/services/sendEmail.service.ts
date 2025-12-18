@@ -4,10 +4,10 @@ import { mailer } from "../../../config/mailer";
 import { ApplicationStatus } from "../types/applicationStatus.types";
 
 const templates = {
-  PENDING: genericStatusUpdateTemplate,
-  SHORTLISTED: shortlistedTemplate,
-  REJECTED: rejectedTemplate,
-  INTERVIEW: interviewTemplate
+  Pending: genericStatusUpdateTemplate,
+  Shortlisted: shortlistedTemplate,
+  Rejected: rejectedTemplate,
+  Interview: interviewTemplate
 };
 
 export const sendApplicationStatusUpdateEmail = async ({

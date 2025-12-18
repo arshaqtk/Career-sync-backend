@@ -1,0 +1,10 @@
+import { FindByIdOptions, FindManyOptions } from "../types/interview.repository.types";
+import { IInterview } from "../types/interviewModel.types";
+
+export interface IInterviewRepository{
+    create(data:Partial<IInterview>):Promise<IInterview>;
+    findOne(filter: Record<string, any>): Promise<IInterview | null>;
+    findMany(options?: FindManyOptions): Promise<IInterview[]>;
+    findById(options:FindByIdOptions):Promise<IInterview>;
+    
+}
