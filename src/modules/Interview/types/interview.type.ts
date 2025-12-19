@@ -8,7 +8,7 @@ export const InterviewRoundType = {
 export type InterviewRoundType =
   (typeof InterviewRoundType)[keyof typeof InterviewRoundType];
 
-export const InterviewStatus = {
+export const INTERVIEW_STATUS = {
   PENDING:"Pending",
   SCHEDULED: "Scheduled",
   RESCHEDULED: "Rescheduled",
@@ -17,7 +17,7 @@ export const InterviewStatus = {
 } as const;
 
 export type InterviewStatus =
-  (typeof InterviewStatus)[keyof typeof InterviewStatus];
+  (typeof INTERVIEW_STATUS)[keyof typeof INTERVIEW_STATUS];
 
 export type InterviewMode =
   "Online" | "Offline"

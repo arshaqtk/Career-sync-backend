@@ -6,5 +6,5 @@ export interface IInterviewRepository{
     findOne(filter: Record<string, any>): Promise<IInterview | null>;
     findMany(options?: FindManyOptions): Promise<IInterview[]>;
     findById(options:FindByIdOptions):Promise<IInterview>;
-    
+    updateById(id:string,payload:any):Promise<IInterview|null>;
 }

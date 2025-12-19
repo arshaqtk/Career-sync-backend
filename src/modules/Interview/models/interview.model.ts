@@ -1,7 +1,7 @@
 import { model, Schema } from "mongoose";
 import { IInterview } from "../types/interviewModel.types";
 import { InterviewStatusHistorySchema } from "./interviewHistory.schema";
-import { InterviewRoundType, InterviewStatus } from "../types/interview.type";
+import { INTERVIEW_STATUS, InterviewRoundType, InterviewStatus } from "../types/interview.type";
 
 
 const interviewSchema = new Schema<IInterview>(
@@ -59,8 +59,8 @@ const interviewSchema = new Schema<IInterview>(
 
     status: {
       type: Schema.Types.String,
-      enum: Object.values(InterviewStatus),
-      default: InterviewStatus.PENDING,
+      enum: Object.values(INTERVIEW_STATUS),
+      default: INTERVIEW_STATUS.PENDING,
     },
     statusHistory: {
       type: [InterviewStatusHistorySchema],
@@ -73,10 +73,17 @@ const interviewSchema = new Schema<IInterview>(
     },
 
     meetingLink: {
-      type: String,
-      trim: true,
-    },
-
+  type: String,
+  required: function () {
+    return this.mode === "Online";
+  },
+},
+location: {
+  type: String,
+  required: function () {
+    return this.mode === "Offline";
+  },
+},
 
 
     notes: {

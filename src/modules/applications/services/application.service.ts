@@ -33,7 +33,7 @@ export const ApplicationService = () => {
 }
     if (existing) throw new CustomError("Already applied", 409);
     if(!job.postedBy) throw new CustomError("Something went wrong", 500);
-console.log(data)
+
     const application = await applicationRepository.create({
       candidateId,
       recruiterId:job.postedBy as string,

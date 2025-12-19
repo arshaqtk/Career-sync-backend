@@ -1,12 +1,11 @@
-// interviewStatusHistory.schema.ts
 import { Schema, Types } from "mongoose";
-import {InterviewStatus}from "../types/interview.type"
+import {INTERVIEW_STATUS, InterviewStatus}from "../types/interview.type"
 
 export const InterviewStatusHistorySchema = new Schema(
   {
     status: {
       type: String,
-      enum: Object.values(InterviewStatus),
+      enum: Object.values(INTERVIEW_STATUS),
       required: true,
     },
     changedAt: {

@@ -19,13 +19,34 @@ export const recruiterGetInterviewsController=async(req:Request,res:Response)=>{
 
 export const recruiterGetInterviewByIdController=async(req:Request,res:Response)=>{
     const {interviewId}=req.params
-    console.log(interviewId)
+   
   const response=await interviewServices.recruiterGetInterviewById(interviewId)
   res.status(200).json({
   success: true,
   message: "Interview fetched successfully",
   data: response,
 });
+}
+export const recruiterScheduleInterviewController=async(req:Request,res:Response)=>{
+  const {interviewId}=req.params
+  const recruiterId=req.user?.id as string
+  const payload=req.body
+  const response=await interviewServices.recruiterScheduleInterview({recruiterId,interviewId,payload})
+  res.status(200).json({
+  success: true,
+  message: "Interview scheduled successfully",
+  data: response,
+});
+}
 
-
+export const recruiterUpdateInterviewStatusController=async(req:Request,res:Response)=>{
+  const {interviewId}=req.params
+  const recruiterId=req.user?.id as string
+  const payload=req.body
+   const response=await interviewServices.recruiterUpdateInterviewStatus({recruiterId,interviewId,payload})
+  res.status(200).json({
+  success: true,
+  message: `Interview ${payload.status} successfully`,
+  data: response,
+});
 }

@@ -1,3 +1,4 @@
+import { CustomError } from "../../../shared/utils/customError";
 import { InterviewModel } from "../models/interview.model";
 import { FindByIdOptions, FindManyOptions } from "../types/interview.repository.types";
 import { IInterview } from "../types/interviewModel.types";
@@ -46,10 +47,23 @@ export const InterviewRepository=():IInterviewRepository=>{
 
         return query.lean().exec();
     }
+
+   const updateById = async (id: string, updateData: any):Promise<IInterview|null> => {
+  const updated= InterviewModel.findByIdAndUpdate(
+    id,
+    updateData,
+    { new: true, runValidators: true }
+  );
+   
+  return updated
+};
+
+    
     return {
         create,
         findOne,
         findMany,
-        findById
+        findById,
+        updateById
     }
 }
