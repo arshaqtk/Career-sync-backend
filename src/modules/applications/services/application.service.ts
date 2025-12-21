@@ -9,7 +9,7 @@ import { APPLICATION_STATUS, ApplicationStatus } from "../types/applicationStatu
 import { sendApplicationStatusUpdateEmail } from "./sendEmail.service";
 import { ApplicationQuery } from "../types/applicationQuery.types";
 import { InterviewRepository } from "../../../modules/Interview/repository/interview.repository";
-import { InterviewRoundType, InterviewStatus } from "../../../modules/Interview/types/interview.type";
+import { INTERVIEW_STATUS, InterviewRoundType, InterviewStatus } from "../../../modules/Interview/types/interview.type";
 
 
 const applicationRepository = ApplicationRepository()
@@ -220,30 +220,30 @@ const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterAppli
     const updated = await applicationRepository.update(applicationId, { status })
 
 //----------------------------interview setuping------------------------------------
-if (status === APPLICATION_STATUS.INTERVIEW){
+// if (status === APPLICATION_STATUS.INTERVIEW){
   
-  const existingInterview = await interviewRepository.findOne({
-    applicationId,
-  });
-   if (!existingInterview) {
-       await interviewRepository.create(
-        {candidateId:application.candidateId._id,
-          applicationId,
-          jobId:application.jobId._id,
-          recruiterId:application.recruiterId,
-          roundType:InterviewRoundType.NOT_DEFINED,
-      status: InterviewStatus.PENDING,
-      statusHistory: [
-        {
-          status: InterviewStatus.PENDING,
-          changedBy:application.recruiterId,
-          note: "Candidate moved to interview stage",
-          changedAt:new Date()
-        },
-      ],
-        })
-      }
-    }
+//   const existingInterview = await interviewRepository.findOne({
+//     applicationId,
+//   });
+//    if (!existingInterview) {
+//        await interviewRepository.create(
+//         {candidateId:application.candidateId._id,
+//           applicationId,
+//           jobId:application.jobId._id,
+//           recruiterId:application.recruiterId,
+//           roundType:InterviewRoundType.NOT_DEFINED,
+//       status: INTERVIEW_STATUS.PENDING,
+//       statusHistory: [
+//         {
+//           status: INTERVIEW_STATUS.PENDING,
+//           changedBy:application.recruiterId,
+//           note: "Candidate moved to interview stage",
+//           changedAt:new Date()
+//         },
+//       ],
+//         })
+//       }
+//     }
 
     await sendApplicationStatusUpdateEmail({
       email: application.candidateId?.email,

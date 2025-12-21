@@ -37,11 +37,14 @@ const interviewSchema = new Schema<IInterview>(
       ref: "Application",
       required: true,
     },
-
+roundNumber:{
+      type: Number,
+      required: true,
+    },
     roundType: {
        type: Schema.Types.String,
         enum: Object.values(InterviewRoundType),
-      default: InterviewRoundType.NOT_DEFINED,
+      default: InterviewRoundType.HR,
     },
 
     startTime: {

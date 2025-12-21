@@ -37,7 +37,7 @@ export const getRecruiterApplicationsController=async(req:Request,res:Response)=
   const recruiterId=req.user?.id
   if(!recruiterId){
     throw new CustomError("unAuthorized",401)
-  }
+  } 
     const response = await applicationService.getRecruiterApplications(recruiterId);
   res.status(200).json(response);
 }

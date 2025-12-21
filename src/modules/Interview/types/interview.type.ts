@@ -1,21 +1,23 @@
 export const InterviewRoundType = {
-  NOT_DEFINED: "Not Defined",
   TECHNICAL: "Technical",
   HR: "Hr",
   MANAGERIAL: "Managerial",
+  FINAL:"Final"
 } as const;
 
 export type InterviewRoundType =
   (typeof InterviewRoundType)[keyof typeof InterviewRoundType];
 
-export const INTERVIEW_STATUS = {
-  PENDING:"Pending",
-  SCHEDULED: "Scheduled",
-  RESCHEDULED: "Rescheduled",
-  COMPLETED: "Completed",
-  CANCELLED: "Cancelled",
-} as const;
-
+export enum INTERVIEW_STATUS {
+  PENDING="Pending",
+  SCHEDULED = "Scheduled",
+  RESCHEDULED = "Rescheduled",
+  IN_PROGRESS = "InProgress",
+  COMPLETED = "Completed",
+  SELECTED = "Selected",
+  REJECTED = "Rejected",
+  CANCELLED = "Cancelled",
+}
 export type InterviewStatus =
   (typeof INTERVIEW_STATUS)[keyof typeof INTERVIEW_STATUS];
 

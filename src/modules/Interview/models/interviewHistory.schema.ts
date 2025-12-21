@@ -8,6 +8,10 @@ export const InterviewStatusHistorySchema = new Schema(
       enum: Object.values(INTERVIEW_STATUS),
       required: true,
     },
+    roundNumber:{
+      type: Number,
+      required: true,
+    },
     changedAt: {
       type: Date,
       default: Date.now,

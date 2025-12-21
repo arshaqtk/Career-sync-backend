@@ -13,10 +13,11 @@ export interface IInterview extends Document{
   startTime: Date;
   endTime: Date;
   durationMinutes?: number;
-  
+  roundNumber:number;
   status:  InterviewStatus;
   statusHistory?: {
     changedBy: Types.ObjectId|string;
+    roundNumber: number;
   status: InterviewStatus;
   changedAt: Date;
   note?: string;

@@ -23,9 +23,11 @@ export interface InterviewPopulated {
   startTime: Date;
   endTime: Date;
   durationMinutes?: number;
+roundNumber:number;
 
   status: InterviewStatus;
   statusHistory?: {
+    roundNumber:number;
     changedBy: Types.ObjectId;
     status: InterviewStatus;
     changedAt: Date;

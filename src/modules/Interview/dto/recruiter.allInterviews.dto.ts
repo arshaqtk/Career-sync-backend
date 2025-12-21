@@ -2,7 +2,13 @@ export interface RecruiterInterviewsDTO {
   id: string;
   jobTitle:string;
   candidateName:string;
-  roundType: "Not Defined" | "Technical" | "Hr" | "Managerial";
-    status:  "Pending" | "Scheduled" | "Rescheduled" | "Completed" | "Cancelled";
+  roundType: "Final" | "Technical" | "Hr" | "Managerial";
+    status:  "Pending"|"Scheduled"
+  | "Rescheduled"
+  | "InProgress"
+  | "Completed"
+  | "Selected"
+  | "Rejected"
+  | "Cancelled";
   createdAt: Date;
 }
