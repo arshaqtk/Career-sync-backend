@@ -82,6 +82,7 @@ export const InterviewServices = () => {
         }
         return {
             _id: interview._id.toString(),
+            applicationId:interview.applicationId.toString(),
             candidate: {
                 _id: (interview?.candidateId as any)._id,
                 name: (interview?.candidateId as any).name,
@@ -108,12 +109,12 @@ export const InterviewServices = () => {
         recruiterId,
         applicationId,
         payload,
-        type, // "initial" | "next_round"
+        scheduleMode, // "initial" | "next_round"
     }: {
         recruiterId: string;
         applicationId: string;
         payload: ScheduleInterview;
-        type: "initial" | "next_round";
+        scheduleMode: "initial" | "next_round";
     }) => {
 
         if (!recruiterId || !applicationId) {
@@ -151,7 +152,7 @@ export const InterviewServices = () => {
         }
 
         // 🔹 Next round specific rules
-        if (type === "next_round") {
+        if (scheduleMode === "next_round") {
             const lastInterview =
                 await interviewRepository.findLatestRound(applicationId);
 
@@ -172,7 +173,7 @@ export const InterviewServices = () => {
         }
 
         //  Initial scheduling rule
-        if (type === "initial" && payload.roundNumber !== 1) {
+        if (scheduleMode === "initial" && payload.roundNumber !== 1) {
             throw new CustomError("Initial interview must be round 1", 400);
         }
 
@@ -203,7 +204,7 @@ export const InterviewServices = () => {
                     changedBy: recruiterId,
                     changedAt: new Date(),
                     note:
-                        type === "next_round"
+                        scheduleMode === "next_round"
                             ? "Next round scheduled"
                             : "Interview scheduled",
                     roundNumber: payload.roundNumber,
@@ -215,7 +216,7 @@ export const InterviewServices = () => {
     };
 
 
-    //------------------------Update interview Round Status----------------------------------------------
+    //------------------------Update interview  Status----------------------------------------------
     const recruiterUpdateInterviewStatus = async ({
         recruiterId,
         interviewId,
@@ -261,18 +262,13 @@ export const InterviewServices = () => {
 
 
 
-        // COMPLETED means round completed, interview may still continue
-        const isRoundCompleted = status === INTERVIEW_STATUS.COMPLETED;
 
-        const updatedStatus: InterviewStatus = isRoundCompleted
-            ? INTERVIEW_STATUS.IN_PROGRESS
-            : status;
 
         const updatedInterview = await interviewRepository.updateByIdAndPopulate(
             interviewId,
             {
                 updateData: {
-                    status: updatedStatus,
+                    status,
                     $push: {
                         statusHistory: {
                             roundNumber,
@@ -317,6 +313,43 @@ export const InterviewServices = () => {
         return populatedInterview;
     };
 
+    //-----------------------Finalize interview  Status----------------------------------------------------
+
+    const finalizeCandidateService = async ({
+  recruiterId,
+  applicationId,
+  decision,
+  note,
+}: {
+  recruiterId: string;
+  applicationId: string;
+  decision: "Selected"|"Rejected";
+  note?: string;
+}) => {
+
+  const application = await applicationRepository.findById({id:applicationId});
+
+  if (!application) {
+    throw new CustomError("Application not found", 404);
+  }
+
+  if (application.recruiterId.toString() !== recruiterId) {
+    throw new CustomError("Unauthorized action", 403);
+  }
+  
+
+  if (![ "Interview" ].includes(application.status)) {
+    throw new CustomError("Invalid application state", 400);
+  }
+
+  await applicationRepository.update(applicationId, {
+    status: decision,
+    decisionNote: note,
+  });
+
+  return { success: true };
+};
+
 
     const candidateGetInterviews = async ({ candidateId }: { candidateId: string }) => {
         if (!candidateId) {
@@ -332,6 +365,7 @@ export const InterviewServices = () => {
         recruiterGetInterviewById,
         recruiterScheduleInterview,
         recruiterUpdateInterviewStatus,
-        candidateGetInterviews
+        candidateGetInterviews,
+        finalizeCandidateService
     }
 }

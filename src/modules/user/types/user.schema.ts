@@ -28,6 +28,8 @@ export interface ICandidateData {
   skills?: string[];
   education?: IEducation[];
   portfolioUrl?: string;
+  field: string;              // "Healthcare", "IT", "Design"
+role?: string;
 }
 
 export interface IRecruiterData {

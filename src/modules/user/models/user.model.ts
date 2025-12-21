@@ -76,6 +76,8 @@ const userSchema = new Schema<IUser>(
 
     // CANDIDATE FIELDS ------------------------------------------------------
     candidateData: {
+      field: { type: String },              // "Healthcare", "IT", "Design"
+role?: { type: String },
       about: { type: String },
       resume: {
   url: { type: String },

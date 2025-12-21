@@ -3,6 +3,7 @@ import { InterviewRoundType, InterviewStatus } from "../types/interview.type";
 
 export type InterviewDetails = {
   _id: string;
+  applicationId:string;
   candidate: {
     _id: string;
     name: string;

@@ -3,7 +3,7 @@ import { validate } from "../../../middlewares/validate.middleware";
 import { createJobSchema } from "../validators/createJob.schema";
 import { addJobController } from "../controller/addJob.controller";
 import { authMiddleware } from "../../../middlewares/auth.middleware";
-import { getAllJobs } from "../controller/getAllJobs.controller";
+import { CandidategetJobs } from "../controller/getAllJobs.controller";
 import { getEmployerJobController } from "../controller/getEmployerJobs.controller";
 import { getJobByIdController } from "../controller/getJobById.controller";
 import { updateJobController } from "../controller/updateJob.controller";
@@ -16,7 +16,7 @@ import { authorizeRoles } from "../../../middlewares/role.middleware";
 const router = Router();
 
 // Public / user routes
-router.get("/jobs",authMiddleware, getAllJobs);
+router.get("/jobs",authMiddleware, CandidategetJobs);
 router.get("/jobs/:id", authMiddleware, getJobByIdController);
 
 

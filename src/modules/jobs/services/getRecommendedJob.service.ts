@@ -1,3 +1,4 @@
+import { UserRepository } from "@/modules/user/repository/user.repository";
 import { JobModel } from "../models/job.model";
 
 interface JobQuery {
@@ -9,7 +10,7 @@ interface JobQuery {
   status?: "open" | "closed"  | "all";
 }
 
-export const CandidategetJobsService = async (candidateId:string,query: JobQuery) => {
+export const CandidategetRecommendedJobsService = async (candidateId:string,query: JobQuery) => {
   const { page, limit, location, jobType,status,search } = query;
   const filter: any = {};
 
@@ -28,6 +29,8 @@ export const CandidategetJobsService = async (candidateId:string,query: JobQuery
   if (status && status !== "all") {
     filter.status = status;
   }
+
+  const userSkills=await UserRepository.findById(candidateId)
 
   const jobs = await JobModel.find(filter)
     .sort({ createdAt: -1 })

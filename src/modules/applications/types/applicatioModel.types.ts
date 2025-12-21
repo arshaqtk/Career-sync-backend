@@ -12,6 +12,7 @@ export interface IApplication extends Document {
   coverLetter?: string; 
   expectedSalary?: number;
   noticePeriod?: string;
+  decisionNote?:string;
   createdAt: Date;     
   updatedAt: Date;  
 }

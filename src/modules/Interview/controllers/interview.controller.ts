@@ -32,7 +32,8 @@ export const recruiterScheduleInterviewController=async(req:Request,res:Response
   const {applicationId}=req.params
   const recruiterId=req.user?.id as string
   const payload=req.body
-  const response=await interviewServices.recruiterScheduleInterview({recruiterId,applicationId,payload,type:payload.type})
+  const scheduleMode:"initial" | "next_round"=payload.scheduleMode
+  const response=await interviewServices.recruiterScheduleInterview({recruiterId,applicationId,payload,scheduleMode})
   res.status(200).json({
   success: true,
   message: "Interview scheduled successfully",
@@ -48,6 +49,18 @@ export const recruiterUpdateInterviewStatusController=async(req:Request,res:Resp
   res.status(200).json({
   success: true,
   message: `Interview ${payload.status} successfully`,
+  data: response,
+});
+}
+
+export const recruiterFinalizeCandidateController=async(req:Request,res:Response)=>{
+  const recruiterId=req.user?.id as string
+  const { applicationId } = req.params;
+  const {decision,note}=req.body
+   const response=await interviewServices.finalizeCandidateService({recruiterId,applicationId,decision,note})
+  res.status(200).json({
+  success: true,
+  message: `Candidate ${decision} successfully`,
   data: response,
 });
 }

@@ -1,5 +1,6 @@
 import mongoose, { model, Schema } from "mongoose";
 import { IApplication } from "../types/applicatioModel.types";
+import { string } from "zod";
 
 const applicationSchema = new Schema<IApplication>(
   {
@@ -45,6 +46,9 @@ const applicationSchema = new Schema<IApplication>(
     },
     noticePeriod: {
       type: String,
+    },
+    decisionNote:{
+      type:String,
     }
   },
   { timestamps: true }
