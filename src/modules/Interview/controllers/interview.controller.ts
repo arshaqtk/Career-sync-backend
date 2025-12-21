@@ -27,11 +27,12 @@ export const recruiterGetInterviewByIdController=async(req:Request,res:Response)
   data: response,
 });
 }
+
 export const recruiterScheduleInterviewController=async(req:Request,res:Response)=>{
   const {applicationId}=req.params
   const recruiterId=req.user?.id as string
   const payload=req.body
-  const response=await interviewServices.recruiterScheduleInterview({recruiterId,applicationId,payload})
+  const response=await interviewServices.recruiterScheduleInterview({recruiterId,applicationId,payload,type:payload.type})
   res.status(200).json({
   success: true,
   message: "Interview scheduled successfully",

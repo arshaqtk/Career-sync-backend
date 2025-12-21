@@ -1,4 +1,4 @@
-import { FindByIdOptions, FindManyOptions, UpdateByIdOptions } from "../types/interview.repository.types";
+import { FindByIdOptions, FindLatestByActorOptions, FindManyOptions, UpdateByIdOptions } from "../types/interview.repository.types";
 import { IInterview } from "../types/interviewModel.types";
 
 export interface IInterviewRepository{
@@ -8,4 +8,6 @@ export interface IInterviewRepository{
     findById(options:FindByIdOptions):Promise<IInterview>;
     updateById(id:string,payload:any):Promise<IInterview|null>;
     updateByIdAndPopulate(id:string,options:UpdateByIdOptions<IInterview>):Promise<IInterview|null>;
+    findLatestRound(applicationId:string):Promise<IInterview|null>
+    findLatestByActor(options?: FindLatestByActorOptions): Promise<IInterview[]>;
 }

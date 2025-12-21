@@ -15,6 +15,19 @@ export interface FindByIdOptions{
   select?: string | Record<string, 1 |object| 0>;
 }
 
+export type ActorField = "recruiterId" | "candidateId";
+
+export interface FindLatestByActorOptions {
+  actorField: ActorField;
+  actorId: string;
+  filter?: Record<string, any>;
+  sort?: Record<string, 1 | -1>;
+  skip?: number;
+  limit?: number;
+  populate?: PopulateOptions[];
+
+}
+
 
 export interface UpdateByIdOptions<T> {
   updateData: Partial<T> | Record<string, any>;

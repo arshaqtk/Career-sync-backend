@@ -8,5 +8,6 @@ export interface ScheduleInterview  {
   mode: "Online" | "Offline";
   meetingLink?: string;
   location?: string;
-  roundType:InterviewRoundType
+  roundType:InterviewRoundType;
+    scheduleMode: "initial" | "reschedule" | "next_round";
 };

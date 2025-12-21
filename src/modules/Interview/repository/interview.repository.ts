@@ -1,8 +1,11 @@
+import { Types } from "mongoose";
 import { CustomError } from "../../../shared/utils/customError";
 import { InterviewModel } from "../models/interview.model";
-import { FindByIdOptions, FindManyOptions, UpdateByIdOptions } from "../types/interview.repository.types";
+import { FindByIdOptions, FindLatestByActorOptions, FindManyOptions, UpdateByIdOptions } from "../types/interview.repository.types";
 import { IInterview } from "../types/interviewModel.types";
 import { IInterviewRepository } from "./interviewRepository.interface";
+import { buildLookupStages } from "./buildLookupStages";
+import { normalizeFilterIds } from "./normalizeFIlter";
 
 export const InterviewRepository=():IInterviewRepository=>{
     const create=async(data:Partial<IInterview>):Promise<IInterview>=>{
@@ -58,6 +61,72 @@ export const InterviewRepository=():IInterviewRepository=>{
   return updated
 };
 
+ const findLatestRound = async (applicationId: string) => {
+  return InterviewModel.findOne({
+    applicationId,
+    status: { $in: ["Scheduled", "InProgress", "Completed"] },
+  })
+    .sort({ roundNumber: -1 })
+    .exec();
+};
+
+
+const findLatestByActor = async ({
+  actorField,
+  actorId,
+  filter = {},
+  populate,
+  sort = { createdAt: -1 },
+  skip = 0,
+  limit = 10,
+}: FindLatestByActorOptions): Promise<IInterview[]> => {
+const actorObjectId =
+    typeof actorId === "string" ? new Types.ObjectId(actorId) : actorId;
+
+  const normalizedFilter = normalizeFilterIds(filter);
+  
+  return InterviewModel.aggregate<IInterview>([
+    {
+      $match: {
+        [actorField]: actorObjectId,
+        ...normalizedFilter,
+      },
+    },
+    { $sort: { roundNumber: -1 } },
+    {
+      $group: {
+        _id: "$applicationId",
+        interview: { $first: "$$ROOT" },
+      },
+    },
+    { $replaceRoot: { newRoot: "$interview" } },
+
+    ...buildLookupStages(populate),
+
+    { $sort: sort },
+    { $skip: skip },
+    { $limit: limit },
+  ]);
+
+
+// return InterviewModel.aggregate([
+//   {
+//     $match: {
+//       recruiterId: new Types.ObjectId(actorId),
+//     },
+//   },{ $sort: { roundNumber: -1 } },
+//   {
+//     $group: {
+//       _id: "$applicationId",
+//       interview: { $first: "$$ROOT" },
+//     },
+//   },{ $replaceRoot: { newRoot: "$interview" } }
+// ]);
+};
+
+
+
+
 const updateByIdAndPopulate = async (id: string,options: UpdateByIdOptions<IInterview>): Promise<IInterview | null> => {
 
   const { updateData, populate,select } = options;
@@ -96,6 +165,8 @@ const updateByIdAndPopulate = async (id: string,options: UpdateByIdOptions<IInte
         findMany,
         findById,
         updateById,
-        updateByIdAndPopulate
+        updateByIdAndPopulate,
+        findLatestRound,
+        findLatestByActor
     }
 }
