@@ -10,7 +10,7 @@ export interface IUser extends Document {
   phone?: string;
   password: string;
   profilePictureUrl?: string;
-
+field: string;              // "Healthcare", "IT", "Design"
   role: "candidate" | "recruiter" | "admin";
   isVerified: boolean;
   isActive: boolean;
@@ -73,11 +73,13 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: true,
     },
+    field: { type: String,
+      required:true
+     },              
 
     // CANDIDATE FIELDS ------------------------------------------------------
     candidateData: {
-      field: { type: String },              // "Healthcare", "IT", "Design"
-role?: { type: String },
+      role: { type: String },
       about: { type: String },
       resume: {
   url: { type: String },

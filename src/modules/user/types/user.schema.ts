@@ -21,6 +21,7 @@ export interface IEducation {
   gradeOrPercentage?:string;
 }
 
+
 export interface ICandidateData {
   about?: string;
   resumeUrl?: string;
@@ -28,7 +29,6 @@ export interface ICandidateData {
   skills?: string[];
   education?: IEducation[];
   portfolioUrl?: string;
-  field: string;              // "Healthcare", "IT", "Design"
 role?: string;
 }
 

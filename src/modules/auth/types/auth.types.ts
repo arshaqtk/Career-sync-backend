@@ -6,6 +6,7 @@ export interface RegisterDTO{
     password:string;
     confirmPassword:string;
     role:"candidate" | "recruiter";
+    field:string
 }
 
 export interface LoginDTO{

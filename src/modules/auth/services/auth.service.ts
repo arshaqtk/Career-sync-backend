@@ -11,7 +11,7 @@ import { CustomError } from "../../../shared/utils/customError"
 
 export const Authservice = {
     register: async (data: RegisterDTO) => {
-        const { confirmPassword, email, name, password, role } = data
+        const { confirmPassword, email, name, password, role,field } = data
 
         const exists = await UserRepository.findByEmail(email);
 
@@ -25,7 +25,7 @@ export const Authservice = {
         const hashedPassword = await bcrypt.hash(password, 10)
 
         await UserRepository.createUser({
-            email, name, role,
+            email, name, role,field,
             password: hashedPassword,
             isVerified: false
         })

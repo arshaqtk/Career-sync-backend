@@ -2,7 +2,7 @@ import { Types } from "mongoose";
 import UserModel, { IUser } from "../models/user.model";
 import { AllowedNestedArrayPaths, NestedArrayValueType } from "../types/candidateNestedArrayPaths.type";
 
-type CreateUserDTO = Pick<IUser, "name" | "email" | "password" | "isVerified"|"role">;
+type CreateUserDTO = Pick<IUser, "name" | "email" | "password" | "isVerified"|"role"|"field">;
 export const UserRepository = {
   createUser: (data:CreateUserDTO) => {
     
