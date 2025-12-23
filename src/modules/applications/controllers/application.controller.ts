@@ -33,6 +33,7 @@ export const getApplicationController = expressAsyncHandler(async (req:Request,r
  
 //-----------------------Recruiter--------------------------------
 
+//recruiter get all applications which have status interview 
 export const getRecruiterApplicationsController=async(req:Request,res:Response)=>{
   const recruiterId=req.user?.id
   if(!recruiterId){
@@ -41,6 +42,8 @@ export const getRecruiterApplicationsController=async(req:Request,res:Response)=
     const response = await applicationService.getRecruiterApplications(recruiterId);
   res.status(200).json(response);
 }
+
+
 //application by recruiter based on job
 export const getApplicationsByJobController = async (req:Request,res:Response) => {
   const response = await applicationService.getApplicationsByJob(req.params.jobId);

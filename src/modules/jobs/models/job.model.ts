@@ -41,6 +41,9 @@ const JobSchema = new Schema<IJob>(
       type: String,
       required: false,
     },
+    field: { type: String,
+      required:true
+     },
 
     location: {
       type: String,

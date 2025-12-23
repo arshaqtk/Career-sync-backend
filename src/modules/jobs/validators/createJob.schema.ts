@@ -12,6 +12,7 @@ export const createJobSchema = z.object({
   description: z.string().optional(),
 
   skills: z.array(z.string()).optional(),
+  field:z.string().min(1,"Field is required"),
 
   experienceMin: z.number().optional(),
   experienceMax: z.number().optional(),

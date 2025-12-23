@@ -109,16 +109,21 @@ const getMyApplications = async (
 
 //---------------------------------Recruiter----------------------------------------
 
+
+//get all applications 
 const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterApplicationDTO[]> =>{
   
   const applications=await applicationRepository.findMany({
-    filter:{recruiterId} ,populate: [
+    filter: {
+  recruiterId,
+  status: { $in: ["Interview", "Selected"] }
+} ,populate: [
         { path: "jobId" },
         { path: "candidateId" }
       ]
     }) as unknown as IApplicationPopulated[]
     
-    return applications.map((app) => ({
+    return applications.map((app) => ({  
 
       id: app._id.toString(),
       candidate: {

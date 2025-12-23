@@ -1,17 +1,27 @@
-import { JobModel } from "../models/job.model";
+import { UserRepository } from "../../../modules/user/repository/user.repository";
+import { jobRepository } from "../repository/job.repository";
 
-interface JobQuery {
-  page: number;
-  limit: number;
-  location?: string;
-  search?:string;
-  jobType?: "full-time" | "part-time" | "internship" | "all";
-  status?: "open" | "closed"  | "all";
-}
+export const CandidategetJobsService = async (
+  candidateId: string,
+  query: JobQuery
+) => {
+  const { page, limit, location, jobType, status, search } = query;
+console.log(search)
+  const candidate = await UserRepository
+    .findById(candidateId)
+    .select("field skills");
 
-export const CandidategetJobsService = async (candidateId:string,query: JobQuery) => {
-  const { page, limit, location, jobType,status,search } = query;
-  const filter: any = {};
+  if (!candidate) {
+    throw new Error("Candidate not found");
+  }
+
+  const filter: any = {
+    field: candidate.field, 
+  };
+
+  if (candidate.candidateData?.skills?.length) {
+    filter.skillsRequired = { $in: candidate.candidateData.skills };
+  }
 
   if (search) {
     filter.title = { $regex: search, $options: "i" };
@@ -29,18 +39,20 @@ export const CandidategetJobsService = async (candidateId:string,query: JobQuery
     filter.status = status;
   }
 
-  const jobs = await JobModel.find(filter)
+  const jobs = await jobRepository.findByQuery(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit);
 
-  const total = await JobModel.countDocuments(filter);
+  const total = await jobRepository.countByQuery(filter);
 
   return {
-    pagination:{ page,
-    limit,
-    total,
-    totalPages: Math.ceil(total / limit)},
+    pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
     jobs,
   };
 };

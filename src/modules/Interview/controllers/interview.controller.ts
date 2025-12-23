@@ -17,6 +17,10 @@ export const recruiterGetInterviewsController=async(req:Request,res:Response)=>{
 }
 
 
+
+
+
+
 export const recruiterGetInterviewByIdController=async(req:Request,res:Response)=>{
     const {interviewId}=req.params
    
@@ -40,6 +44,20 @@ export const recruiterScheduleInterviewController=async(req:Request,res:Response
   data: response,
 });
 }
+
+//------------------Fetch all the interview by each application--------------------------------------
+export const recruiterGetInterviewsByApplicationController=async(req:Request,res:Response)=>{
+    const recruiterId=req.user?.id as string
+    const {applicationId}=req.params 
+  const response=await interviewServices.recruiterGetInterviewsByApplicationId({applicationId,recruiterId})
+  res.status(200).json({
+  success: true,
+  message: "Interview fetched successfully",
+  data: response,
+});
+}
+
+
 
 export const recruiterUpdateInterviewStatusController=async(req:Request,res:Response)=>{
   const {interviewId}=req.params
@@ -69,7 +87,9 @@ export const recruiterFinalizeCandidateController=async(req:Request,res:Response
 
 export const candidateGetInterviewsCOntroller=async (req:Request,res:Response)=>{
   const candidateId=req.user?.id as string
-  const response=await interviewServices.candidateGetInterviews({candidateId})
+    const { page = 1, limit = 10,sortBy,status,roundType } = req.query as InterviewQuery
+  
+  const response=await interviewServices.candidateGetInterviews(candidateId,{sortBy,status,roundType,limit,page})
   res.status(200).json({
   success: true,
   message: `Interviews fetched successfully`,

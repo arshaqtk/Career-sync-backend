@@ -10,7 +10,7 @@ export const updateJobSchema = z.object({
 
   experienceMin: z.number().optional(),
   experienceMax: z.number().optional(),
-
+ field:z.string().optional(),
   salary: z.string().optional(),
 
   location: z.string().optional(),

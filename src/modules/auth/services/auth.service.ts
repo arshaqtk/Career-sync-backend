@@ -12,7 +12,7 @@ import { CustomError } from "../../../shared/utils/customError"
 export const Authservice = {
     register: async (data: RegisterDTO) => {
         const { confirmPassword, email, name, password, role,field } = data
-
+        
         const exists = await UserRepository.findByEmail(email);
 
         if (exists) {

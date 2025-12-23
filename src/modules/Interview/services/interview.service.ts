@@ -1,6 +1,6 @@
 import path from "path"
 import { CustomError } from "../../../shared/utils/customError"
-import { RecruiterInterviewsDTO } from "../dto/recruiter.allInterviews.dto"
+import { RecruiterInterviewsDTO, RecruiterInterviewTimeLineDto } from "../dto/recruiter.allInterviews.dto"
 import { InterviewDetails } from "../dto/recruiter.interviewDetail.dto"
 import { InterviewRepository } from "../repository/interview.repository"
 import { InterviewQuery } from "../types/interview.query.type"
@@ -11,7 +11,9 @@ import { formatInterviewDateTime } from "../../../shared/utils/dateFormatter"
 import { InterviewPopulated } from "../types/interview.populated.type"
 import { ApplicationRepository } from "../../../modules/applications/repository/application.repositories"
 import { APPLICATION_STATUS } from "../../../modules/applications/types/applicationStatus.types"
-import mongoose from "mongoose"
+import mongoose, { Types } from "mongoose"
+import { CandidateInterviewsDTO } from "../dto/candidateInterviews.dto"
+import { InterviewModel } from "../models/interview.model"
 
 const interviewRepository = InterviewRepository();
 const applicationRepository = ApplicationRepository();
@@ -63,6 +65,46 @@ export const InterviewServices = () => {
         }))
 
     }
+
+
+const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}:{applicationId: string, recruiterId?: string}): Promise<RecruiterInterviewTimeLineDto[]> => {
+  if (!applicationId) {
+    throw new CustomError("ApplicationId is required", 400);
+  }
+
+  const filter: Record<string, any> = {
+    applicationId:new Types.ObjectId(applicationId),
+  };
+
+
+  if (recruiterId) {
+    filter.recruiterId =new Types.ObjectId(recruiterId)
+  }
+
+
+  const interviews = await interviewRepository.findMany({
+    filter,
+    sort: { roundNumber: 1 }, 
+  });
+
+
+  
+
+  return interviews.map((interview) => ({
+    _id: interview._id.toString(),
+    roundType: interview.roundType,
+    roundNumber: interview.roundNumber,
+    status: interview.status,
+    endTime:interview.endTime,
+    startTime:interview.startTime,
+    durationMinutes:interview.durationMinutes,
+    mode:interview.mode,
+    notes:interview.notes,
+    statusHistory:interview.statusHistory,
+    createdAt: interview.createdAt,
+  }));
+};
+
 
     const recruiterGetInterviewById = async (interviewId: string): Promise<InterviewDetails> => {
         console.log(interviewId)
@@ -351,17 +393,55 @@ export const InterviewServices = () => {
 };
 
 
-    const candidateGetInterviews = async ({ candidateId }: { candidateId: string }) => {
-        if (!candidateId) {
-            throw new CustomError("Candidate ID is missing", 400);
-        }
+const candidateGetInterviews = async (candidateId: string, query: InterviewQuery): Promise<CandidateInterviewsDTO[]> => {
+        if (!candidateId) throw new CustomError("Required identifier not found", 400);
 
-        const interviews = interviewRepository.findMany({ filter: { candidateId }, populate: { path: "jobId", select: "company title" } })
-        return interviews
+        const { status, sortBy = "newest", page = "1", limit = "10", roundType } = query;
+
+        const filter: Record<string, any> = {
+            candidateId,
+        };
+
+        if (status && status !== "All") {
+            filter.status = status;
+        }
+        if (roundType && roundType != "All") {
+            filter.roundType = roundType
+        }
+        const sortOrder = sortBy === "newest" ? -1 : 1;
+
+        const skip = (Number(page) - 1) * Number(limit);
+       
+        const interviews = await interviewRepository.findLatestByActor({
+            actorField: "candidateId",
+            actorId: candidateId,
+            filter,
+            populate: [
+                { path: "jobId", select: "title" },
+            ],
+            sort: { createdAt: sortOrder },
+            skip,
+            limit: Number(limit),
+        });
+
+
+        return interviews.map((interview) => ({
+            id: interview._id.toString(),
+            jobTitle: (interview.jobId as any).title,
+            startTime: interview.startTime?.toString(),
+            endTime: interview.endTime?.toString(),
+            meetingLink: interview.meetingLink,
+            roundType: interview.roundType,
+            roundNumber: interview.roundNumber,
+            status: interview.status,
+            createdAt: interview.createdAt,
+        }))
+
     }
 
     return {
         recruiterGetInterviews,
+        recruiterGetInterviewsByApplicationId,
         recruiterGetInterviewById,
         recruiterScheduleInterview,
         recruiterUpdateInterviewStatus,

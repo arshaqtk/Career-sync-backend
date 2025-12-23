@@ -7,7 +7,8 @@ export interface IJob extends Document {
   skills?: string[];
   experienceMin?: number;
   experienceMax?: number;
-  salary?: string
+  salary?: string;
+  field: string; 
   location?: string;
   remote?: boolean;
   jobType: "full-time" | "part-time" | "internship";

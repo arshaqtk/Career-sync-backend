@@ -5,6 +5,7 @@ import { CustomError } from "../../../shared/utils/customError";
 
 export const AuthController = {
     register: asyncHandler(async (req: Request, res: Response) => {
+        console.log(req.body)
         const result = await Authservice.register(req.body);
         res.status(201).json(result);
         return;
