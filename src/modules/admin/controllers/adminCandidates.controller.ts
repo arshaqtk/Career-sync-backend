@@ -1,6 +1,7 @@
 import { Request,Response } from "express"
+import { getAdminCandidateDetailService, adminCandidateListService, blockCandidateByAdminService, unblockCandidateByAdminService } from "../services/adminCandidates.service"
 
-import { getAdminCandidateDetailService, adminCandidateListService } from "../services/adminCandidates.service"
+
 
 export const adminGetCandidates=async(req:Request,res:Response)=>{
     const {search,limit=10,page=1,status}=req.params
@@ -27,5 +28,40 @@ export const getAdminCandidateDetailController = async (
   return res.status(200).json({
     success: true,
     data: candidate,
+  })
+}
+
+export const blockCandidateByAdminController = async (
+  req: Request,
+  res: Response
+) => {
+  const { candidateId } = req.params
+  const { reason } = req.body
+
+  await blockCandidateByAdminService({
+    candidateId,
+    reason,
+  })
+
+  return res.status(200).json({
+    success: true,
+    message: "Candidate blocked successfully",
+  })
+}
+
+export const unblockCandidateByAdminController = async (
+  req: Request,
+  res: Response
+) => {
+  const { candidateId } = req.params
+ 
+
+  await unblockCandidateByAdminService({
+    candidateId
+  })
+
+  return res.status(200).json({
+    success: true,
+    message: "Candidate unblocked successfully",
   })
 }

@@ -8,9 +8,6 @@ export const UserRepository = {
     
     return UserModel.create(data);
   },
-
- 
-
   findByEmail: (email: string) => {
 
     return UserModel.findOne({ email });

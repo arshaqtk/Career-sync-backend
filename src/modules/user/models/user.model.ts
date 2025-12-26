@@ -14,6 +14,8 @@ field: string;              // "Healthcare", "IT", "Design"
   role: "candidate" | "recruiter" | "admin";
   isVerified: boolean;
   isActive: boolean;
+  blockedAt:Date;
+  blockReason?:string;
 
   candidateData?: ICandidateData;
   recruiterData?: IRecruiterData;
@@ -73,6 +75,13 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: true,
     },
+    blockedAt: {
+  type: Date,
+},
+
+blockReason: {
+  type: String,
+},
     field: { type: String,
       required:true
      },              

@@ -52,7 +52,7 @@ export const Authservice = {
         }
         
             
-        console.log(user.isVerified)
+        
         if (!user.isVerified) {
            
             const otp = generateOtp();
