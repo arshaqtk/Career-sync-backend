@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { QueryFilter, Types } from "mongoose";
 import UserModel, { IUser } from "../models/user.model";
 import { AllowedNestedArrayPaths, NestedArrayValueType } from "../types/candidateNestedArrayPaths.type";
 
@@ -8,6 +8,8 @@ export const UserRepository = {
     
     return UserModel.create(data);
   },
+
+ 
 
   findByEmail: (email: string) => {
 
@@ -50,5 +52,11 @@ export const UserRepository = {
       new: true
     });
   },
+findByQuery: (query: QueryFilter<IUser>) => {
+     return UserModel.find(query)
+   },
+   countByQuery: (query: QueryFilter<IUser>) => {
+      return UserModel.countDocuments(query); 
+    },
 
 };

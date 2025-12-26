@@ -11,6 +11,7 @@ import candidateRoutes from "./modules/candidate/routes/candidate.routes"
 import applicationRoutes from "./modules/applications/routes/application.routes"
 import recruiterRoutes from "./modules/recruiter/routes/recruiter.routes"
 import interviewRoutes from "./modules/Interview/routes/interview.routes"
+import adminRoutes from "./modules/admin/routes/admin.routes";
 import { errorHandler } from "./middlewares/errorHandler";
 
  
@@ -38,6 +39,8 @@ app.use("/api/candidate",candidateRoutes)
 app.use("/api/recruiter",recruiterRoutes)
 app.use("/api/application",applicationRoutes)
 app.use("/api/interview",interviewRoutes)
+app.use("/api/admin",adminRoutes)
+
 
  
 
