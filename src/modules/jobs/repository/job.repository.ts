@@ -1,13 +1,14 @@
 import { JobModel } from "../models/job.model";
 import { IJob } from "../types/JobModel.type";
 import { QueryFilter } from "mongoose";
+import { PipelineStage } from "mongoose";
 
 export const jobRepository = {
   createJob: (data: IJob) => {
     return JobModel.create(data);
   },
   findById: (id: string) => {
-    return JobModel.findById(id)
+    return JobModel.findById(id).lean();
   },
   findByQuery: (query: QueryFilter<IJob>) => {
     return JobModel.find(query)
@@ -23,5 +24,8 @@ export const jobRepository = {
   },
   deleteById: (id: string) => {
     return JobModel.findByIdAndDelete(id)
-  }
+  },
+findJobStats: (pipeline: PipelineStage[]): Promise<any[]> => {
+  return JobModel.aggregate(pipeline);
+}
 }

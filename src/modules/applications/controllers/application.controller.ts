@@ -25,7 +25,8 @@ export const getMyApplicationsController = expressAsyncHandler(async (req:Reques
  
 //candidate application detail view
 export const getApplicationController = expressAsyncHandler(async (req:Request,res:Response) => {
-  const response = await applicationService.getApplication(req.params.id);
+  const { applicationId } = req.params
+  const response = await applicationService.getCandidateApplicationDetailService(applicationId);
   res.status(200).json(response); 
 }); 
 

@@ -1,8 +1,10 @@
-import { UpdateQuery, } from "mongoose";
+import { QueryFilter, Types, UpdateQuery, } from "mongoose";
 import { ApplicationModel } from "../models/application.model";
 import { IApplication } from "../types/applicatioModel.types";
 import { IApplicationRepository } from "./application.repository.interface";
 import { FindByIdOptions, FindManyOptions } from "./application.repository.types";
+import { CandidateApplicationDetailResponse } from "../types/ApplicationDetailsResponse.types";
+import { CustomError } from "../../../shared/utils/customError";
 
 
 export const ApplicationRepository = (): IApplicationRepository => {
@@ -11,7 +13,7 @@ export const ApplicationRepository = (): IApplicationRepository => {
     return await ApplicationModel.create(data);
   };
 
- const findById = async (options: FindByIdOptions): Promise<any> => {
+ const findById = async (options: FindByIdOptions): Promise<IApplication|null> => {
     const { id, populate, select } = options;
 
     let query: any = ApplicationModel.findById(id);
@@ -58,8 +60,103 @@ export const ApplicationRepository = (): IApplicationRepository => {
 
     query = query.populate(normalizedPopulate);
   }
-    return query.exec();
+    return query.lean().exec()
   };
+
+  const getCandidateApplicationDetail=async(
+    applicationId: string
+  ): Promise<CandidateApplicationDetailResponse> => {
+    if (!applicationId) {
+      throw new CustomError("Application ID not found", 400)
+    }
+
+    const pipeline = [
+      // 1️⃣ Match application
+      {
+        $match: {
+          _id: new Types.ObjectId(applicationId),
+        },
+      },
+
+      // 2️⃣ Lookup Job
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "jobId",
+          foreignField: "_id",
+          as: "job",
+        },
+      },
+      { $unwind: "$job" },
+
+      // 3️⃣ Lookup Recruiter
+      {
+        $lookup: {
+          from: "users",
+          localField: "recruiterId",
+          foreignField: "_id",
+          as: "recruiter",
+        },
+      },
+      { $unwind: "$recruiter" },
+
+      // 4️⃣ Shape DTO
+      {
+        $project: {
+          _id: 0,
+
+          application: {
+            id: { $toString: "$_id" },
+            status: "$status",
+            experience: "$experience",
+            currentRole: "$currentRole",
+            resumeUrl: "$resumeUrl",
+            coverLetter: "$coverLetter",
+            expectedSalary: "$expectedSalary",
+            noticePeriod: "$noticePeriod",
+            decisionNote: "$decisionNote",
+            appliedAt: "$createdAt",
+            updatedAt: "$updatedAt",
+          },
+
+          job: {
+            id: { $toString: "$job._id" },
+            title: "$job.title",
+            company: "$job.company",
+            description: "$job.description",
+            skills: "$job.skills",
+            experienceMin: "$job.experienceMin",
+            experienceMax: "$job.experienceMax",
+            salary: "$job.salary",
+            field: "$job.field",
+            location: "$job.location",
+            remote: "$job.remote",
+            jobType: "$job.jobType",
+          },
+
+          recruiter: {
+            name: "$recruiter.name",
+            email: "$recruiter.email",
+            company: {
+              companyName: "$recruiter.companyName",
+              companyWebsite: "$recruiter.companyWebsite",
+              companyLogo: "$recruiter.companyLogo",
+              companyLocation: "$recruiter.companyLocation",
+              companyDescription: "$recruiter.companyDescription",
+            },
+          },
+        },
+      },
+    ]
+
+    const result = await ApplicationModel.aggregate(pipeline)
+
+    if (!result.length) {
+      throw new CustomError("Application not found", 404)
+    }
+
+    return result[0]
+}
 
   const update = async (id: string, data: UpdateQuery<IApplication>): Promise<IApplication | null> => {
     return await ApplicationModel.findByIdAndUpdate(id, data, { new: true });
@@ -69,12 +166,19 @@ export const ApplicationRepository = (): IApplicationRepository => {
     await ApplicationModel.findByIdAndDelete(id);
   };
 
+
+  const countByQuery=async (query: QueryFilter<IApplication>) => {
+      return ApplicationModel.countDocuments(query); 
+    }
+
   return {
     create,
     findById,
     findOne,
     findMany,
+    getCandidateApplicationDetail,
     update,
-    remove
+    remove,
+    countByQuery
   };
-};
+}

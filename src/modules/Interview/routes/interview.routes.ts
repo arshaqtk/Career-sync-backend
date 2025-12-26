@@ -2,7 +2,7 @@ import { catchAsync } from "../../../middlewares/asyncHandler";
 import { authMiddleware } from "../../../middlewares/auth.middleware";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { Router } from "express";
-import { candidateGetInterviewsCOntroller, recruiterFinalizeCandidateController, recruiterGetInterviewByIdController, recruiterGetInterviewsByApplicationController, recruiterGetInterviewsController, recruiterScheduleInterviewController, recruiterUpdateInterviewStatusController } from "../controllers/interview.controller";
+import { candidateGetInterviewDetailController, candidateGetInterviewsController, recruiterFinalizeCandidateController, recruiterGetInterviewByIdController, recruiterGetInterviewsByApplicationController, recruiterGetInterviewsController, recruiterScheduleInterviewController, recruiterUpdateInterviewStatusController } from "../controllers/interview.controller";
 
 const router=Router();
 
@@ -16,5 +16,7 @@ router.patch("/recruiter/interviews/:interviewId/status",authMiddleware,authoriz
 router.post("/recruiter/interviews/:applicationId/finalize",authMiddleware,authorizeRoles("recruiter"),catchAsync(recruiterFinalizeCandidateController))
 
 
-router.get("/candidate/interviews",authMiddleware,authorizeRoles("candidate"),catchAsync(candidateGetInterviewsCOntroller))
+router.get("/candidate/interviews",authMiddleware,authorizeRoles("candidate"),catchAsync(candidateGetInterviewsController))
+router.get("/candidate/interviews/:interviewId",authMiddleware,authorizeRoles("candidate"),catchAsync(candidateGetInterviewDetailController))
+
 export default router

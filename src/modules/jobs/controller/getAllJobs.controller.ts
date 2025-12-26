@@ -22,7 +22,7 @@ export const CandidategetJobs=expressAsyncHandler(async (req:Request, res:Respon
     });
     res.status(200).json({
       success: true,
-      jobs: result.jobs,
+      jobs: result.jobsWithAppliedFlag,
       pagination: result.pagination,
     });
   }

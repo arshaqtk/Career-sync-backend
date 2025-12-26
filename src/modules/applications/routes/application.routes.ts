@@ -8,7 +8,7 @@ const router=Router();
 
 router.post("/apply",authMiddleware,catchAsync(applyToJob))
 router.get("/my",authMiddleware,catchAsync(getMyApplicationsController))
-router.get("/my/:id",authMiddleware,catchAsync(getApplicationController))
+router.get("/my/:applicationId",authMiddleware,catchAsync(getApplicationController))
 
 
 //recruiter

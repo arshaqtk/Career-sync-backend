@@ -1,6 +1,7 @@
 import { IApplication, IApplicationPopulated } from "../types/applicatioModel.types";
-import type { UpdateQuery } from "mongoose";
+import type { QueryFilter, UpdateQuery } from "mongoose";
 import { FindByIdOptions, FindManyOptions } from "./application.repository.types";
+import { CandidateApplicationDetailResponse } from "../types/ApplicationDetailsResponse.types";
 
 export interface IApplicationRepository {
   create(data: Partial<IApplication>): Promise<IApplication>;
@@ -9,4 +10,8 @@ export interface IApplicationRepository {
   findMany(options?: FindManyOptions): Promise<IApplication[]>;
   update(id: string, data: UpdateQuery<IApplication>): Promise<IApplication | null>;
   remove(id: string): Promise<void>;
+   getCandidateApplicationDetail(
+    applicationId: string
+  ): Promise<CandidateApplicationDetailResponse>;
+ countByQuery(filter: QueryFilter<IApplication>): Promise<number>
 }

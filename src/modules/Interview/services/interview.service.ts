@@ -393,51 +393,192 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
 };
 
 
-const candidateGetInterviews = async (candidateId: string, query: InterviewQuery): Promise<CandidateInterviewsDTO[]> => {
-        if (!candidateId) throw new CustomError("Required identifier not found", 400);
-
-        const { status, sortBy = "newest", page = "1", limit = "10", roundType } = query;
-
-        const filter: Record<string, any> = {
-            candidateId,
-        };
-
-        if (status && status !== "All") {
-            filter.status = status;
-        }
-        if (roundType && roundType != "All") {
-            filter.roundType = roundType
-        }
-        const sortOrder = sortBy === "newest" ? -1 : 1;
-
-        const skip = (Number(page) - 1) * Number(limit);
-       
-        const interviews = await interviewRepository.findLatestByActor({
-            actorField: "candidateId",
-            actorId: candidateId,
-            filter,
-            populate: [
-                { path: "jobId", select: "title" },
-            ],
-            sort: { createdAt: sortOrder },
-            skip,
-            limit: Number(limit),
-        });
 
 
-        return interviews.map((interview) => ({
-            id: interview._id.toString(),
-            jobTitle: (interview.jobId as any).title,
-            startTime: interview.startTime?.toString(),
-            endTime: interview.endTime?.toString(),
-            meetingLink: interview.meetingLink,
-            roundType: interview.roundType,
-            roundNumber: interview.roundNumber,
-            status: interview.status,
-            createdAt: interview.createdAt,
-        }))
+//-----------------------------------CANDIDATE-------------------------------------------------------------------
 
+const candidateGetInterviews = async (
+  candidateId: string,
+  query: InterviewQuery
+): Promise<{
+  today: CandidateInterviewsDTO[]
+  upcoming: CandidateInterviewsDTO[]
+  past: CandidateInterviewsDTO[]
+}> => {
+  if (!candidateId) {
+    throw new CustomError("Required identifier not found", 400);
+  }
+
+  const {
+    status,
+    sortBy = "newest",
+    page = "1",
+    limit = "10",
+    roundType,
+  } = query;
+
+  const filter: Record<string, any> = {
+    candidateId,
+  };
+
+  if (status && status !== "All") {
+    filter.status = status;
+  }
+
+  if (roundType && roundType !== "All") {
+    filter.roundType = roundType;
+  }
+
+  const sortOrder = sortBy === "newest" ? -1 : 1;
+  const skip = (Number(page) - 1) * Number(limit);
+
+  const interviews = await interviewRepository.findLatestByActor({
+    actorField: "candidateId",
+    actorId: candidateId,
+    filter,
+    populate: [{ path: "jobId", select: "title company" }],
+    sort: { createdAt: sortOrder },
+    skip,
+    limit: Number(limit),
+  });
+
+  const now = new Date();
+
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const today: CandidateInterviewsDTO[] = [];
+  const upcoming: CandidateInterviewsDTO[] = [];
+  const past: CandidateInterviewsDTO[] = [];
+
+  interviews.forEach((interview) => {
+    const startTime = interview.startTime
+      ? new Date(interview.startTime)
+      : null;
+
+    const endTime = interview.endTime
+      ? new Date(interview.endTime)
+      : null;
+
+    const dto: CandidateInterviewsDTO = {
+      _id: interview._id.toString(),
+      jobTitle: (interview.jobId as any)?.title,
+      companyName:(interview.jobId as any)?.company,
+      mode:interview.mode||"Online",
+      startTime: interview.startTime?.toISOString(),
+      endTime: interview.endTime?.toISOString(),
+      meetingLink: interview.meetingLink,
+      roundType: interview.roundType,
+      roundNumber: interview.roundNumber,
+      status: interview.status,
+      createdAt: interview.createdAt,
+    };
+
+    // ---- classification logic ----
+    if (
+      startTime &&
+      startTime >= todayStart &&
+      startTime <= todayEnd
+    ) {
+      today.push(dto);
+    } else if (startTime && startTime > now) {
+      upcoming.push(dto);
+    } else {
+      past.push(dto);
     }
+  });
+
+  return {
+    today,
+    upcoming,
+    past,
+  };
+};
+
+const candidateGetInterviewById = async (
+  candidateId: string,
+  interviewId: string
+): Promise<{
+  interview: CandidateInterviewsDTO;
+  timeline: any[];
+}> => {
+  // ---------- validation ----------
+  if (!interviewId) {
+    throw new CustomError("Required identifier not found", 400);
+  }
+
+  if (!mongoose.Types.ObjectId.isValid(interviewId)) {
+    throw new CustomError("Invalid interview id", 400);
+  }
+
+  // ---------- fetch current interview ----------
+  const interview = await interviewRepository.findById({
+    id: interviewId,
+    populate: [{ path: "jobId", select: "_id title company" }],
+  });
+
+  if (!interview) {
+    throw new CustomError("Interview not found", 404);
+  }
+
+  if (!interview.applicationId) {
+    throw new CustomError("ApplicationId is required", 400);
+  }
+
+  // ---------- fetch timeline (all rounds for same application) ----------
+  const filter: Record<string, any> = {
+    applicationId: new Types.ObjectId(interview.applicationId),
+  };
+
+  if (candidateId) {
+    filter.candidateId = new Types.ObjectId(candidateId);
+  }
+
+  const interviewsByApplicationId = await interviewRepository.findMany({
+    filter,
+    sort: { roundNumber: 1 }, // chronological order
+  });
+
+  // ---------- build timeline ----------
+  const timeline = interviewsByApplicationId.map((item) => ({
+    id: item._id.toString(),
+    roundType: item.roundType,
+    roundNumber: item.roundNumber,
+    status: item.status,
+    mode: item.mode,
+    startTime: item.startTime?.toISOString(),
+    endTime: item.endTime?.toISOString(),
+    durationMinutes: item.durationMinutes,
+    notes: item.notes,
+    statusHistory: item.statusHistory,
+    createdAt: item.createdAt,
+  }));
+
+  // ---------- build current interview dto ----------
+  const interviewDTO: CandidateInterviewsDTO = {
+    _id: interview._id.toString(),
+    jobTitle: (interview.jobId as any)?.title,
+    companyName: (interview.jobId as any)?.company,
+    mode: interview.mode || "Online",
+    startTime: interview.startTime?.toISOString(),
+    endTime: interview.endTime?.toISOString(),
+    meetingLink: interview.meetingLink,
+    roundType: interview.roundType,
+    roundNumber: interview.roundNumber,
+    status: interview.status,
+    createdAt: interview.createdAt,
+  };
+
+  // ---------- final response ----------
+  return {
+    interview: interviewDTO,
+    timeline,
+  };
+};
+
 
     return {
         recruiterGetInterviews,
@@ -446,6 +587,7 @@ const candidateGetInterviews = async (candidateId: string, query: InterviewQuery
         recruiterScheduleInterview,
         recruiterUpdateInterviewStatus,
         candidateGetInterviews,
+        candidateGetInterviewById,
         finalizeCandidateService
     }
 }

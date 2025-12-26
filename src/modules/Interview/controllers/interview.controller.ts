@@ -85,11 +85,23 @@ export const recruiterFinalizeCandidateController=async(req:Request,res:Response
 
 
 
-export const candidateGetInterviewsCOntroller=async (req:Request,res:Response)=>{
+export const candidateGetInterviewsController=async (req:Request,res:Response)=>{
   const candidateId=req.user?.id as string
     const { page = 1, limit = 10,sortBy,status,roundType } = req.query as InterviewQuery
   
   const response=await interviewServices.candidateGetInterviews(candidateId,{sortBy,status,roundType,limit,page})
+  res.status(200).json({
+  success: true,
+  message: `Interviews fetched successfully`,
+  data: response,
+});
+}
+
+export const candidateGetInterviewDetailController=async (req:Request,res:Response)=>{
+  const candidateId=req.user?.id as string
+    const {interviewId}=req.params
+  
+  const response=await interviewServices.candidateGetInterviewById(candidateId,interviewId)
   res.status(200).json({
   success: true,
   message: `Interviews fetched successfully`,

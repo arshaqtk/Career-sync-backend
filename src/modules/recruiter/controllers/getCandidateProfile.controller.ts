@@ -12,3 +12,8 @@ export const getCandidateProfileController = async (req: Request, res: Response)
     res.status(200).json(result);
 }
 
+export const getRecruiterProfileStats=async(req:Request,res:Response)=>{
+    const recruiterId=req.user?.id as string
+    const result =await recruiterService.getProfileStats(recruiterId);
+     res.status(200).json(result); 
+}

@@ -1,5 +1,7 @@
+import { InterviewMode } from "../types/interview.type";
+
 export interface CandidateInterviewsDTO {
-  id: string;
+  _id: string;
   jobTitle:string;
   roundType: "Final" | "Technical" | "Hr" | "Managerial";
     status:  "Pending"|"Scheduled"
@@ -13,4 +15,7 @@ export interface CandidateInterviewsDTO {
   endTime?: string;
   meetingLink?: string;
   createdAt: Date;
+  roundNumber:number;
+  companyName: string
+  mode: InterviewMode
 }

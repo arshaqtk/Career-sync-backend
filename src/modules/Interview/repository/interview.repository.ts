@@ -1,5 +1,4 @@
-import { Types } from "mongoose";
-import { CustomError } from "../../../shared/utils/customError";
+import { QueryFilter, Types } from "mongoose";
 import { InterviewModel } from "../models/interview.model";
 import { FindByIdOptions, FindLatestByActorOptions, FindManyOptions, UpdateByIdOptions } from "../types/interview.repository.types";
 import { IInterview } from "../types/interviewModel.types";
@@ -127,8 +126,6 @@ const actorObjectId =
 };
 
 
-
-
 const updateByIdAndPopulate = async (id: string,options: UpdateByIdOptions<IInterview>): Promise<IInterview | null> => {
 
   const { updateData, populate,select } = options;
@@ -161,6 +158,10 @@ const updateByIdAndPopulate = async (id: string,options: UpdateByIdOptions<IInte
   return query.exec();
 };
     
+
+const countByQuery=async (query: QueryFilter<IInterview>) => {
+      return InterviewModel.countDocuments(query); 
+    }
     return {
         create,
         findOne,
@@ -169,6 +170,7 @@ const updateByIdAndPopulate = async (id: string,options: UpdateByIdOptions<IInte
         updateById,
         updateByIdAndPopulate,
         findLatestRound,
-        findLatestByActor
+        findLatestByActor,
+        countByQuery
     }
 }

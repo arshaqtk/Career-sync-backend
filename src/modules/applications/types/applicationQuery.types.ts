@@ -4,3 +4,4 @@ export interface ApplicationQuery {
    status?: "all" | "applied" | "shortlisted" | "interview" | "rejected";
   sortBy?: "newest" | "oldest";
 }
+

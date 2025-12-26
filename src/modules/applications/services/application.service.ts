@@ -101,10 +101,15 @@ const getMyApplications = async (
 };
 
 
-  const getApplication = async (applicationId: string) => {
-    if (!applicationId) throw new CustomError("Id Not Found")
-    return await applicationRepository.findById({ id: applicationId });
-  };
+const getCandidateApplicationDetailService = async (applicationId: string)=> {
+  if (!applicationId) {
+    throw new CustomError("Application ID not found", 400)
+  }
+
+  return applicationRepository.getCandidateApplicationDetail(applicationId)
+
+
+}
 
 
 //---------------------------------Recruiter----------------------------------------
@@ -267,7 +272,7 @@ const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterAppli
 
   return {
     applyForJob,
-    getApplication,
+    getCandidateApplicationDetailService,
     getMyApplications,
 
     getRecruiterApplications,

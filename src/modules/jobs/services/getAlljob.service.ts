@@ -1,3 +1,4 @@
+import { ApplicationModel } from "../../../modules/applications/models/application.model";
 import { UserRepository } from "../../../modules/user/repository/user.repository";
 import { jobRepository } from "../repository/job.repository";
 
@@ -6,7 +7,7 @@ export const CandidategetJobsService = async (
   query: JobQuery
 ) => {
   const { page, limit, location, jobType, status, search } = query;
-console.log(search)
+
   const candidate = await UserRepository
     .findById(candidateId)
     .select("field skills");
@@ -14,6 +15,10 @@ console.log(search)
   if (!candidate) {
     throw new Error("Candidate not found");
   }
+
+  const appliedJobIds = await ApplicationModel.find({
+  candidateId
+}).distinct("jobId");
 
   const filter: any = {
     field: candidate.field, 
@@ -42,10 +47,15 @@ console.log(search)
   const jobs = await jobRepository.findByQuery(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
-    .limit(limit);
+    .limit(limit).lean();
 
   const total = await jobRepository.countByQuery(filter);
+const appliedJobIdStrings = appliedJobIds.map(id => id.toString());
 
+const jobsWithAppliedFlag = jobs.map(job => ({
+  ...job,
+  hasApplied: appliedJobIdStrings.includes(job._id.toString()),
+}));
   return {
     pagination: {
       page,
@@ -53,6 +63,6 @@ console.log(search)
       total,
       totalPages: Math.ceil(total / limit),
     },
-    jobs,
+    jobsWithAppliedFlag,
   };
 };

@@ -36,6 +36,7 @@ export interface IPopulatedCandidate {
 }
 
 export interface IApplicationPopulated extends Omit<IApplication, "jobId" | "candidateId"> {
+  application:IApplication
   jobId: IPopulatedJob;
   candidateId: IPopulatedCandidate;
 }
