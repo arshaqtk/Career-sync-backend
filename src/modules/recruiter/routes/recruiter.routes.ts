@@ -3,11 +3,13 @@ import { getCandidateProfileController, getRecruiterProfileStats } from "../cont
 import { authMiddleware } from "../../../middlewares/auth.middleware";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { catchAsync } from "../../../middlewares/asyncHandler";
+import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
 
 
 
  const router=Router()
-
-router.get("/candidates/:candidateId",authMiddleware,authorizeRoles("recruiter"),catchAsync(getCandidateProfileController))
-router.get("/profile/stats",authMiddleware,authorizeRoles("recruiter"),catchAsync(getRecruiterProfileStats))
+router.use(authMiddleware)
+router.use(ensureUserIsActive)
+router.get("/candidates/:candidateId",authorizeRoles("recruiter"),catchAsync(getCandidateProfileController))
+router.get("/profile/stats",authorizeRoles("recruiter"),catchAsync(getRecruiterProfileStats))
 export default router

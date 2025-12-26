@@ -38,51 +38,64 @@ export const Authservice = {
 
         return { email, message: "Registerd Succesffully" }
     },
-    login: async (data: LoginDTO) => {
-        const user = await UserRepository.findByEmail(data.email).select("+password");
-        if (!user) { 
-       
-            throw new CustomError("Invalid email or password", 400);  }
+  login: async (data: LoginDTO) => {
+  const user = await UserRepository.findByEmail(data.email).select("+password")
 
-        const match = await bcrypt.compare(data.password, user.password)
-        const roleAuthenticated=user.role===data.role
+  if (!user) {
+    throw new CustomError("Invalid email or password", 400)
+  }
 
-        if (!match||!roleAuthenticated){
-            throw new CustomError("Invalid email or password", 400); 
-        }
-        
-            
-        
-        if (!user.isVerified) {
-           
-            const otp = generateOtp();
-            await saveRegisterOtp(user.email, otp);
-            await sendRegisterOtpEmail(user.email, otp);
+  const match = await bcrypt.compare(data.password, user.password)
+  const roleAuthenticated = user.role === data.role
 
-            return {
-                success: false, 
-                status: "NOT_VERIFIED",
-                isVerified:false,
-                message: "Your account is not verified. A new OTP has been sent.",
-                email: user.email
-            };
-        }
+  if (!match || !roleAuthenticated) {
+    throw new CustomError("Invalid email or password", 400)
+  }
 
-        const token = generateTokens({
-            id: user._id,
-            email:user.email,
-            role: user.role
-        });
+ 
+if (!user.isActive) {
+  throw new CustomError(
+    user.blockReason
+      ? `Your account has been blocked. Reason: ${user.blockReason}.Please contact support.`
+      : "Your account has been blocked. Please contact support.",
+    403
+  )
+}
 
-        return { success: true,  
-                status: "VERIFIED",
-                message: "Logged successfully",
-                isVerified:true,
-                 email: user.email,
-                 role: user.role,
-                refreshToken: token.refreshToken, 
-                accessToken: token.accessToken };
-    },
+
+  if (!user.isVerified) {
+    const otp = generateOtp()
+    await saveRegisterOtp(user.email, otp)
+    await sendRegisterOtpEmail(user.email, otp)
+
+    return {
+      success: false,
+      status: "NOT_VERIFIED",
+      isVerified: false,
+      message: "Your account is not verified. A new OTP has been sent.",
+      email: user.email,
+    }
+  }
+
+
+  const token = generateTokens({
+    id: user._id,
+    email: user.email,
+    role: user.role,
+  })
+
+  return {
+    success: true,
+    status: "VERIFIED",
+    message: "Logged in successfully",
+    isVerified: true,
+    email: user.email,
+    role: user.role,
+    refreshToken: token.refreshToken,
+    accessToken: token.accessToken,
+  }
+},
+
 
     verifyRegisterOtp: async (email: string, otp: string) => {
         return await verifyRegisterOtp(email, otp);

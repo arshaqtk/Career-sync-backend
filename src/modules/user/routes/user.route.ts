@@ -2,13 +2,16 @@ import { authMiddleware } from "../../../middlewares/auth.middleware";
 import { Router } from "express";
 import { UserController } from "../controllers/user.controller";
 import { upload } from "../../../middlewares/upload";
+import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
 
 const router=Router();
-router.get("/profile",authMiddleware,UserController.getProfile)
-router.put("/update-profile-basic",authMiddleware,UserController.updateUserProfileBasic)
-router.put("/update-profile-about",authMiddleware,UserController.updateUserProfileAbout)
-// router.put("/update-profile-experience",authMiddleware,UserController.updateUserProfileExperience)
-router.put("/update-profile-avatar",authMiddleware,upload.single("profilePicture"),UserController.updateuserAvatar)
+router.use(authMiddleware)
+router.use(ensureUserIsActive)
+router.get("/profile",UserController.getProfile)
+router.put("/update-profile-basic",UserController.updateUserProfileBasic)
+router.put("/update-profile-about",UserController.updateUserProfileAbout)
+// router.put("/update-profile-experience",UserController.updateUserProfileExperience)
+router.put("/update-profile-avatar",upload.single("profilePicture"),UserController.updateuserAvatar)
 
 
 export default router 

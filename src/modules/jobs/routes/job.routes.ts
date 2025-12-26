@@ -12,20 +12,23 @@ import { deleteJobCOntroller } from "../controller/deleteJob.controller";
 import { updateJobStatusSchema } from "../validators/updateJobStatus.schema";
 import { updateJobStatusController } from "../controller/changeJobStatus.controller";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
+import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
 
 const router = Router();
+router.use(authMiddleware)
+router.use(ensureUserIsActive)
 
 // Public / user routes
-router.get("/jobs",authMiddleware, CandidategetJobs);
-router.get("/jobs/:id", authMiddleware, getJobByIdController);
+router.get("/jobs", CandidategetJobs);
+router.get("/jobs/:id", getJobByIdController);
 
 
 // Employer job CRUD
-router.post("/employer/jobs",authMiddleware,authorizeRoles("recruiter"), validate(createJobSchema), addJobController);
-router.put( "/employer/jobs/:id",authMiddleware,authorizeRoles("recruiter"),validate(updateJobSchema),updateJobController);
-router.patch( "/employer/jobs/:id/status",authMiddleware,authorizeRoles("recruiter"),validate(updateJobStatusSchema),updateJobStatusController);
-router.get("/employer/jobs",authMiddleware,authorizeRoles("recruiter"),getEmployerJobController);
-router.delete("/employer/jobs/:id",authMiddleware,authorizeRoles("recruiter"),deleteJobCOntroller);
+router.post("/employer/jobs",authorizeRoles("recruiter"), validate(createJobSchema), addJobController);
+router.put( "/employer/jobs/:id",authorizeRoles("recruiter"),validate(updateJobSchema),updateJobController);
+router.patch( "/employer/jobs/:id/status",authorizeRoles("recruiter"),validate(updateJobStatusSchema),updateJobStatusController);
+router.get("/employer/jobs",authorizeRoles("recruiter"),getEmployerJobController);
+router.delete("/employer/jobs/:id",authorizeRoles("recruiter"),deleteJobCOntroller);
 
 
 export default router;
