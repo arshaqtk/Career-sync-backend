@@ -13,15 +13,15 @@ router.get("/stats",authMiddleware,authorizeRoles("admin"),catchAsync(adminDashb
 
 router.get("/recruiters",authMiddleware,authorizeRoles("admin"),catchAsync(adminGetRecruiters));
 router.get("/recruiters/:recruiterId",authMiddleware,authorizeRoles("admin"),catchAsync(getAdminRecruiterDetailController));
-router.get("/recruiters/:recruiterId/block",authMiddleware,authorizeRoles("admin"),catchAsync(blockRecruiterByAdminController));
-router.get("/recruiters/:recruiterId/unblock",authMiddleware,authorizeRoles("admin"),catchAsync(unblockRecruiterByAdminController));
+router.patch("/recruiters/:recruiterId/block",authMiddleware,authorizeRoles("admin"),catchAsync(blockRecruiterByAdminController));
+router.patch("/recruiters/:recruiterId/unblock",authMiddleware,authorizeRoles("admin"),catchAsync(unblockRecruiterByAdminController));
 
 
 
 router.get("/candidates",authMiddleware,authorizeRoles("admin"),catchAsync(adminGetCandidates));
 router.get("/candidates/:candidateId",authMiddleware,authorizeRoles("admin"),catchAsync(getAdminCandidateDetailController));
-router.get("/candidates/:candidateId/block",authMiddleware,authorizeRoles("admin"),catchAsync(blockCandidateByAdminController));
-router.get("/candidates/:candidateId/unblock",authMiddleware,authorizeRoles("admin"),catchAsync(unblockCandidateByAdminController));
+router.patch("/candidates/:candidateId/block",authMiddleware,authorizeRoles("admin"),catchAsync(blockCandidateByAdminController));
+router.patch("/candidates/:candidateId/unblock",authMiddleware,authorizeRoles("admin"),catchAsync(unblockCandidateByAdminController));
 
 
 

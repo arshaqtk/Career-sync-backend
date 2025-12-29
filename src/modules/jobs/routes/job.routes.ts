@@ -4,7 +4,7 @@ import { createJobSchema } from "../validators/createJob.schema";
 import { addJobController } from "../controller/addJob.controller";
 import { authMiddleware } from "../../../middlewares/auth.middleware";
 import { CandidategetJobs } from "../controller/getAllJobs.controller";
-import { getEmployerJobController } from "../controller/getEmployerJobs.controller";
+import { getRecruiterJobController } from "../controller/getRecruiterJobs.controller";
 import { getJobByIdController } from "../controller/getJobById.controller";
 import { updateJobController } from "../controller/updateJob.controller";
 import { updateJobSchema } from "../validators/updateJob.schema";
@@ -27,7 +27,7 @@ router.get("/jobs/:id", getJobByIdController);
 router.post("/employer/jobs",authorizeRoles("recruiter"), validate(createJobSchema), addJobController);
 router.put( "/employer/jobs/:id",authorizeRoles("recruiter"),validate(updateJobSchema),updateJobController);
 router.patch( "/employer/jobs/:id/status",authorizeRoles("recruiter"),validate(updateJobStatusSchema),updateJobStatusController);
-router.get("/employer/jobs",authorizeRoles("recruiter"),getEmployerJobController);
+router.get("/employer/jobs",authorizeRoles("recruiter"),getRecruiterJobController);
 router.delete("/employer/jobs/:id",authorizeRoles("recruiter"),deleteJobCOntroller);
 
 

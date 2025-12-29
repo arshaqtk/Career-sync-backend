@@ -1,5 +1,7 @@
 import { CustomError } from "../../../shared/utils/customError";
 import { UserRepository } from "../../../modules/user/repository/user.repository"
+import { RecruiterList, RecruiterListResponse } from "../types/Recruiters.types";
+import UserModel from "../../../modules/user/models/user.model";
 
 interface BlockRecruiterByAdminInput{
     recruiterId:string;
@@ -8,31 +10,94 @@ interface BlockRecruiterByAdminInput{
 interface UnblockRecruiterByAdminInput{
     recruiterId:string;
 }
-export const adminRecruiterListService=async(query:UserQuery)=>{
-     const { page, limit,status,search } = query;
-     const filter:any={role:"recruiter"}
-     
-     if(search){
-          filter.$or = [
+
+export const adminRecruiterListService = async (
+  query: UserQuery
+): Promise<RecruiterListResponse> => {
+  const { page, limit, status, search } = query
+
+  const match: any = { role: "recruiter" }
+
+  if (search) {
+    match.$or = [
       { name: { $regex: search, $options: "i" } },
       { email: { $regex: search, $options: "i" } },
     ]
-     }
-     if(status&&status!=="all"){
-        filter.status=status
-     }
-   const recruiters= await UserRepository.findByQuery(filter)
-   .sort({createdAt:-1}).skip((page-1)*limit).limit(limit).lean()
-   const total=await UserRepository.countByQuery(filter)
+  }
 
-   return {recruiters,
-     pagination: {
+  // ✅ Map status → isActive
+  if (status && status !== "all") {
+    match.isActive = status === "active"
+  }
+
+  const skip = (page - 1) * limit
+
+  const [recruiters, totalResult] = await Promise.all([
+    UserModel.aggregate([
+      { $match: match }, 
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+
+      // Jobs lookup
+      {
+        $lookup: {
+          from: "jobs",
+          localField: "_id",
+          foreignField: "postedBy",
+          as: "jobs",
+        },
+      },
+
+      // Compute jobs count + status
+      {
+        $addFields: {
+          jobsPosted: { $size: "$jobs" },
+          status: {
+            $cond: {
+              if: "$isActive",
+              then: "active",
+              else: "blocked",
+            },
+          },
+        },
+      },
+
+      // Final shape
+      {
+        $project: {
+          name: 1,
+          email: 1,
+          company: 1,
+          jobsPosted: 1,
+          status: 1,
+        },
+      },
+    ]),
+    UserModel.countDocuments(match),
+  ])
+
+  const recruitersData: RecruiterList[] = recruiters.map((r: any) => ({
+    id: r._id.toString(),
+    name: r.name,
+    email: r.email,
+    company: r.company || "—",
+    jobsPosted: r.jobsPosted,
+    status: r.status,
+  }))
+
+  return {
+    recruiters: recruitersData,
+    pagination: {
       page,
       limit,
-      total,
-      totalPages: Math.ceil(total / limit),
-    }}
+      total: totalResult,
+      totalPages: Math.ceil(totalResult / limit),
+    },
+  }
 }
+
+
 
 
 export const getAdminRecruiterDetailService=async(recruiterId:string)=>{

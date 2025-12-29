@@ -1,5 +1,6 @@
 import { CustomError } from "../../../shared/utils/customError";
 import { UserRepository } from "../../../modules/user/repository/user.repository"
+import UserModel from "../../../modules/user/models/user.model";
 interface BlockCandidateByAdminInput{
     candidateId:string;
     reason:string;
@@ -8,31 +9,81 @@ interface UnblockCandidateByAdminInput{
     candidateId:string;
 }
 
-export const adminCandidateListService=async(query:UserQuery)=>{
-     const { page, limit,status,search } = query;
-     const filter:any={role:"candidate"}
-     
-     if(search){
-          filter.$or = [
+export const adminCandidateListService = async (query: UserQuery) => {
+  const { page, limit, status, search } = query
+
+  const match: any = { role: "candidate" }
+
+  if (search) {
+    match.$or = [
       { name: { $regex: search, $options: "i" } },
       { email: { $regex: search, $options: "i" } },
     ]
-     }
-     if(status&&status!=="all"){
-        filter.status=status
-     }
-   const candidates= await UserRepository.findByQuery(filter)
-   .sort({createdAt:-1}).skip((page-1)*limit).limit(limit).lean()
-   const total=await UserRepository.countByQuery(filter)
+  }
 
-   return {candidates,
-     pagination: {
+  if (status && status !== "all") {
+    match.status = status // "active" | "blocked"
+  }
+
+  const skip = (page - 1) * limit
+
+  const [candidates, total] = await Promise.all([
+    UserModel.aggregate([
+      { $match: match },
+
+      { $sort: { createdAt: -1 } },
+      { $skip: skip },
+      { $limit: limit },
+
+      // 🔹 Lookup applications
+      {
+        $lookup: {
+          from: "applications",
+          localField: "_id",
+          foreignField: "candidateId",
+          as: "applications",
+        },
+      },
+
+      // 🔹 Add derived fields
+      {
+        $addFields: {
+          applicationCount: { $size: "$applications" },
+
+          
+          status: {
+            $cond: {
+              if: "$isActive",
+              then: "active",
+              else: "blocked",
+            },
+          },
+        },
+      },
+
+      // 🔹 Remove heavy fields
+      {
+        $project: {
+          password: 0,
+          applications: 0,
+        },
+      },
+    ]),
+
+    UserRepository.countByQuery(match),
+  ])
+
+  return {
+    candidates,
+    pagination: {
       page,
       limit,
       total,
       totalPages: Math.ceil(total / limit),
-    }}
+    },
+  }
 }
+
 
 export const getAdminCandidateDetailService=async(candidateId:string)=>{
     if(!candidateId){

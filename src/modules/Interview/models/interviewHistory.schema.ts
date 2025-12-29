@@ -22,7 +22,7 @@ export const InterviewStatusHistorySchema = new Schema(
       ref: "User", 
       required: true,
     },
-    note: {
+    notes: {
       type: String,
       trim: true,
     },

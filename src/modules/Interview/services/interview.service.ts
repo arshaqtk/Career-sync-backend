@@ -271,12 +271,12 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
             | typeof INTERVIEW_STATUS.COMPLETED
             | typeof INTERVIEW_STATUS.CANCELLED
             | typeof INTERVIEW_STATUS.IN_PROGRESS;
-            note?: string;
+            notes?: string;
             roundNumber: number;
         };
 
     }) => {
-        let { status, note, roundNumber } = payload;
+        let { status, notes, roundNumber } = payload;
         if (!recruiterId || !interviewId) {
             throw new CustomError("Recruiter ID or Interview ID is missing", 400);
         }
@@ -303,7 +303,7 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
         }
 
 
-
+console.log(payload)
 
 
         const updatedInterview = await interviewRepository.updateByIdAndPopulate(
@@ -317,7 +317,7 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
                             status,
                             changedBy: recruiterId,
                             changedAt: new Date(),
-                            note,
+                            notes
                         },
                     },
                 },
@@ -344,7 +344,7 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
                 candidateName: populatedInterview.candidateId.name,
                 jobTitle: populatedInterview.jobId.title,
                 companyName: populatedInterview.jobId.company,
-                reason: note,
+                reason: notes,
             });
         } catch (err) {
             console.error("Interview email failed:", err);
