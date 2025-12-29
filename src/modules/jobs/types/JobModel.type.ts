@@ -15,6 +15,9 @@ export interface IJob extends Document {
   postedBy: Schema.Types.ObjectId|string;
   status: "open" | "closed" | "paused";
   applicationCount?: number;
+   blockedAt:Date;
+  blockReason?:string;
+  wasClosedByRecruiter:boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }

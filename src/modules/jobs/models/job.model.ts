@@ -79,6 +79,18 @@ const JobSchema = new Schema<IJob>(
       type: Number,
       default: 0,
     },
+    
+     blockedAt: {
+  type: Date,
+},
+
+blockReason: {
+  type: String,
+},
+wasClosedByRecruiter: {
+  type: Boolean,
+  default: false,
+}
   },
   {
     timestamps: true, // automatically creates createdAt & updatedAt

@@ -5,6 +5,7 @@ import { Router } from "express";
 import { adminDashboardStats } from "../controllers/adminDasboard.controller";
 import { adminGetRecruiters, blockRecruiterByAdminController, getAdminRecruiterDetailController, unblockRecruiterByAdminController } from "../controllers/adminRecruters.controller";
 import { adminGetCandidates, blockCandidateByAdminController, getAdminCandidateDetailController, unblockCandidateByAdminController } from "../controllers/adminCandidates.controller";
+import { adminBlockJob, adminGetJobDetail, adminGetJobs, adminUnblockJob } from "../controllers/adminJobs.controller";
 
 const router=Router()
 
@@ -24,8 +25,13 @@ router.patch("/candidates/:candidateId/block",authMiddleware,authorizeRoles("adm
 router.patch("/candidates/:candidateId/unblock",authMiddleware,authorizeRoles("admin"),catchAsync(unblockCandidateByAdminController));
 
 
+router.get("/jobs",authMiddleware,authorizeRoles("admin"),catchAsync(adminGetJobs));
+router.get("/jobs/:id",authMiddleware,authorizeRoles("admin"),catchAsync(adminGetJobDetail));
+router.patch("/jobs/:id/block",authMiddleware,authorizeRoles("admin"),catchAsync(adminBlockJob));
+router.patch("/jobs/:id/unblock",authMiddleware,authorizeRoles("admin"),catchAsync(adminUnblockJob));
 
 
 
 
+ 
 export default router;

@@ -2,7 +2,8 @@ import { Request,Response } from "express"
 import { adminRecruiterListService, blockRecruiterByAdminService, getAdminRecruiterDetailService, unblockRecruiterByAdminService } from "../services/adminRecruiters.service"
 
 export const adminGetRecruiters=async(req:Request,res:Response)=>{
-    const {search,limit=10,page=1,status}=req.params
+    const {search,limit=10,page=1,status}=req.query
+    console.log(req.query)
     const recruiters=await adminRecruiterListService({
         page: Number(page),
          limit: Number(limit),

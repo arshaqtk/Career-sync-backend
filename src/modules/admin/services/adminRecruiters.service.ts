@@ -25,7 +25,7 @@ export const adminRecruiterListService = async (
     ]
   }
 
-  // ✅ Map status → isActive
+ 
   if (status && status !== "all") {
     match.isActive = status === "active"
   }
@@ -35,7 +35,7 @@ export const adminRecruiterListService = async (
   const [recruiters, totalResult] = await Promise.all([
     UserModel.aggregate([
       { $match: match }, 
-      { $sort: { createdAt: -1 } },
+      { $sort: { createdAt: -1 } }, 
       { $skip: skip },
       { $limit: limit },
 

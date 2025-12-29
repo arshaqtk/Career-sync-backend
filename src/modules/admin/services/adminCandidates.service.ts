@@ -13,7 +13,7 @@ export const adminCandidateListService = async (query: UserQuery) => {
   const { page, limit, status, search } = query
 
   const match: any = { role: "candidate" }
-
+ 
   if (search) {
     match.$or = [
       { name: { $regex: search, $options: "i" } },
@@ -22,7 +22,7 @@ export const adminCandidateListService = async (query: UserQuery) => {
   }
 
   if (status && status !== "all") {
-    match.status = status // "active" | "blocked"
+    match.isActive = status==="active"
   }
 
   const skip = (page - 1) * limit

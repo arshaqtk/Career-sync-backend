@@ -4,7 +4,7 @@ import { getAdminCandidateDetailService, adminCandidateListService, blockCandida
 
 
 export const adminGetCandidates=async(req:Request,res:Response)=>{
-    const {search,limit=10,page=1,status}=req.params
+    const {search,limit=10,page=1,status}=req.query
     const candidates=await adminCandidateListService({
         page: Number(page),
          limit: Number(limit),
@@ -15,7 +15,7 @@ export const adminGetCandidates=async(req:Request,res:Response)=>{
       data:{candidates: candidates.candidates,
       pagination: candidates.pagination}
     });
-}
+} 
 
 export const getAdminCandidateDetailController = async (
   req: Request,
