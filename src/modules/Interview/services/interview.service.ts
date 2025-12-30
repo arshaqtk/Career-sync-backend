@@ -1,4 +1,3 @@
-import path from "path"
 import { CustomError } from "../../../shared/utils/customError"
 import { RecruiterInterviewsDTO, RecruiterInterviewTimeLineDto } from "../dto/recruiter.allInterviews.dto"
 import { InterviewDetails } from "../dto/recruiter.interviewDetail.dto"
@@ -7,13 +6,14 @@ import { InterviewQuery } from "../types/interview.query.type"
 import { INTERVIEW_STATUS, InterviewStatus } from "../types/interview.type"
 import { ScheduleInterview } from "../types/interviewSchedule.type"
 import { sendInterviewEmail } from "./interviewEmail.service"
-import { formatInterviewDateTime } from "../../../shared/utils/dateFormatter"
 import { InterviewPopulated } from "../types/interview.populated.type"
 import { ApplicationRepository } from "../../../modules/applications/repository/application.repositories"
 import { APPLICATION_STATUS } from "../../../modules/applications/types/applicationStatus.types"
 import mongoose, { Types } from "mongoose"
 import { CandidateInterviewsDTO } from "../dto/candidateInterviews.dto"
-import { InterviewModel } from "../models/interview.model"
+import { interviewFinalRejectedEmail } from "../emails/interviewFinalRejectedEmail"
+import { sendEmail } from "../../../shared/email/email.service"
+import { interviewFinalSelectedEmail } from "../emails/interviewFinalSelectedEmail"
 
 const interviewRepository = InterviewRepository();
 const applicationRepository = ApplicationRepository();
@@ -249,10 +249,10 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
         });
 
         const interview = await interviewRepository.create({
-            candidateId: application.candidateId,
+            candidateId: application.candidateId._id,
             applicationId,
-            jobId: application.jobId,
-            recruiterId: application.recruiterId,
+            jobId: application.jobId._id,
+            recruiterId: application.recruiterId._id,
 
             startTime: start,
             endTime: end,
@@ -344,7 +344,7 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
   interview.location =
     payload.mode === "Offline" ? payload.location : undefined
 
-  interview.statusHistory.push({
+  interview.statusHistory?.push({
     status: INTERVIEW_STATUS.RESCHEDULED,
     changedBy: recruiterId,
     changedAt: new Date(),
@@ -403,7 +403,7 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
         }
 
 
-console.log(payload)
+
 
 
         const updatedInterview = await interviewRepository.updateByIdAndPopulate(
@@ -469,26 +469,54 @@ console.log(payload)
   note?: string;
 }) => {
 
-  const application = await applicationRepository.findById({id:applicationId});
+  const application = await applicationRepository.findById({id:applicationId, populate: [
+        { path: "candidateId", select: "name email" },
+        { path: "recruiterId", select: "recruiterData.companyName" },
+        { path: "jobId", select: "title" },
+      ],});
 
   if (!application) {
     throw new CustomError("Application not found", 404);
   }
 
-  if (application.recruiterId.toString() !== recruiterId) {
+  if (application.recruiterId._id.toString() !== recruiterId) {
     throw new CustomError("Unauthorized action", 403);
   }
-  
+  console.log()
 
-  if (![ "Interview" ].includes(application.status)) {
-    throw new CustomError("Invalid application state", 400);
-  }
+  // if (![ "Interview" ].includes(application.status)) {
+  //   throw new CustomError("Invalid application state", 400);
+  // }
 
   await applicationRepository.update(applicationId, {
     status: decision,
     decisionNote: note,
   });
+console.log(application.candidateId)
+  if (decision === "Selected") {
+  await sendEmail({
+    to: application.candidateId.email,
+    subject: "Interview Result – You’ve Been Selected",
+    html: interviewFinalSelectedEmail({
+      name: application.candidateId.name,
+      jobTitle: application.jobId.title,
+      companyName: application.recruiterId.recruiterData?.companyName,
+      nextSteps: "Our HR team will reach out for offer letter and documentation.",
+    }),
+  })
+}
 
+if (decision === "Rejected") {
+  await sendEmail({
+    to: application.candidateId.email,
+    subject: "Interview Outcome – Career Sync",
+    html: interviewFinalRejectedEmail({
+      name: application.candidateId.name,
+      jobTitle: application.jobId.title,
+      companyName: application.recruiterId.recruiterData?.companyName,
+    }),
+  })
+}
   return { success: true };
 };
 

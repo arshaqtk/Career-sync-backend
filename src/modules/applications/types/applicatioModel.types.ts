@@ -34,9 +34,18 @@ export interface IPopulatedCandidate {
     resumeUrl: {url:string};
   };
 }
+export interface IPopulatedRecruiter{
+   _id: string;
+  name: string;
+  email: string;
+  recruiterData: {
+    companyName: string;
+  };
+}
 
-export interface IApplicationPopulated extends Omit<IApplication, "jobId" | "candidateId"> {
+export interface IApplicationPopulated extends Omit<IApplication, "jobId" | "candidateId"|"recruiterId"> {
   application:IApplication
   jobId: IPopulatedJob;
   candidateId: IPopulatedCandidate;
+  recruiterId:IPopulatedRecruiter;
 }

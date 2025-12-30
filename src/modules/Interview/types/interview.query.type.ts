@@ -10,4 +10,5 @@ export interface InterviewQuery {
   | "Rejected"
   | "Cancelled";
     sortBy?: "newest" | "oldest";
+    search:string;
 }

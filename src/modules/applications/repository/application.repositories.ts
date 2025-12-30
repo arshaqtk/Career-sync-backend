@@ -1,6 +1,6 @@
 import { QueryFilter, Types, UpdateQuery, } from "mongoose";
 import { ApplicationModel } from "../models/application.model";
-import { IApplication } from "../types/applicatioModel.types";
+import { IApplication, IApplicationPopulated } from "../types/applicatioModel.types";
 import { IApplicationRepository } from "./application.repository.interface";
 import { FindByIdOptions, FindManyOptions } from "./application.repository.types";
 import { CandidateApplicationDetailResponse } from "../types/ApplicationDetailsResponse.types";
@@ -12,8 +12,8 @@ export const ApplicationRepository = (): IApplicationRepository => {
   const create = async (data: Partial<IApplication>): Promise<IApplication> => {
     return await ApplicationModel.create(data);
   };
-
- const findById = async (options: FindByIdOptions): Promise<IApplication|null> => {
+//updated this to i application populted
+ const findById = async (options: FindByIdOptions): Promise<IApplicationPopulated|null> => {
     const { id, populate, select } = options;
 
     let query: any = ApplicationModel.findById(id);
@@ -37,6 +37,8 @@ export const ApplicationRepository = (): IApplicationRepository => {
 
     return query.lean().exec(); // Lean returns plain JS object
   };
+
+  
 
   const findOne = async (filter: Record<string, any>): Promise<IApplication | null> => {
     return await ApplicationModel.findOne(filter);

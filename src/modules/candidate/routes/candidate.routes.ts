@@ -7,6 +7,8 @@ import { addCandidateEducationController, updateCandidateEducationController } f
 import { upload } from "../../../middlewares/upload";
 import { updateResumeController } from "../controllers/candidateResume.controller";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
+import { catchAsync } from "../../../middlewares/asyncHandler";
+import { getCandidateProfileStats } from "../controllers/candidateStats.controller";
 
 const router=Router();
 // router.put("/update-profile-about",authMiddleware,UserController.updateUserProfileAbout)
@@ -18,6 +20,8 @@ router.put("/profile/skill",authorizeRoles("candidate"),updateCandidateProfileSk
 router.post("/profile/education",authorizeRoles("candidate"),addCandidateEducationController)
 router.put("/profile/education/:id",authorizeRoles("candidate"),updateCandidateEducationController)
 router.put("/profile/resume",upload.single("resume"),updateResumeController)
+router.get("/profile/stats",catchAsync(getCandidateProfileStats))
+
 
 
 

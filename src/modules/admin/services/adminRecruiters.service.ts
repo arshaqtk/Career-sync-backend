@@ -2,6 +2,9 @@ import { CustomError } from "../../../shared/utils/customError";
 import { UserRepository } from "../../../modules/user/repository/user.repository"
 import { RecruiterList, RecruiterListResponse } from "../types/Recruiters.types";
 import UserModel from "../../../modules/user/models/user.model";
+import { sendEmail } from "../../../shared/email/email.service";
+import { recruiterUnblockedEmail } from "../templates/recruiterUnblockedEmail";
+import { recruiterBlockedEmail } from "../templates/recruiterBlockedEmail";
 
 interface BlockRecruiterByAdminInput{
     recruiterId:string;
@@ -51,28 +54,29 @@ export const adminRecruiterListService = async (
 
       // Compute jobs count + status
       {
-        $addFields: {
-          jobsPosted: { $size: "$jobs" },
-          status: {
-            $cond: {
-              if: "$isActive",
-              then: "active",
-              else: "blocked",
-            },
-          },
-        },
+  $addFields: {
+    jobsPosted: { $size: "$jobs" },
+    status: {
+      $cond: {
+        if: "$isActive",
+        then: "active",
+        else: "blocked",
       },
+    },
+    company: "$recruiterData.companyName",
+  },
+},
 
       // Final shape
       {
-        $project: {
-          name: 1,
-          email: 1,
-          company: 1,
-          jobsPosted: 1,
-          status: 1,
-        },
-      },
+  $project: {
+    name: 1,
+    email: 1,
+    company: 1,
+    jobsPosted: 1,
+    status: 1,
+  },
+},
     ]),
     UserModel.countDocuments(match),
   ])
@@ -139,6 +143,21 @@ export const blockRecruiterByAdminService = async ({
     blockReason: reason ?? "Blocked by admin",
   })
 
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: "Your Account Has Been Unblocked",
+      html: recruiterBlockedEmail({
+        name: user.name,
+       companyName:user.recruiterData?.companyName,
+       reason:reason ?? "Blocked by admin"
+      }),
+    })
+  } catch (error) {
+    console.error("Email sending failed:", error)
+    throw new CustomError("Email sending failed")
+  }
+
   return { success: true }
 }
 
@@ -164,6 +183,19 @@ export const unblockRecruiterByAdminService = async ({
     blockedAt: null,
     blockReason: null,
   })
+ try {
+    await sendEmail({
+      to: user.email,
+      subject: "Your Account Has Been Unblocked",
+      html: recruiterUnblockedEmail({
+        name: user.name,
+       companyName:user.recruiterData?.companyName
+      }),
+    })
+  } catch (error) {
+    console.error("Email sending failed:", error)
+    throw new CustomError("Email sending failed")
+  }
 
   return { success: true }
 }

@@ -54,8 +54,17 @@ export const ApplicationService = () => {
   };
 
 const getMyApplications = async (
-  candidateId: string,query: ApplicationQuery): Promise<CandidateApplicationDTO[]> => {
-
+  candidateId: string,
+  query: ApplicationQuery
+): Promise<{
+  applications: CandidateApplicationDTO[];
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}> => {
   if (!candidateId) {
     throw new CustomError("User Not Found", 404);
   }
@@ -67,6 +76,9 @@ const getMyApplications = async (
     limit = "10",
   } = query;
 
+  const pageNumber = Number(page);
+  const limitNumber = Number(limit);
+
   const filter: Record<string, any> = {
     candidateId,
   };
@@ -76,28 +88,42 @@ const getMyApplications = async (
   }
 
   const sortOrder = sortBy === "newest" ? -1 : 1;
+  const skip = (pageNumber - 1) * limitNumber;
 
-  const skip = (Number(page) - 1) * Number(limit);
 
-  const applications = await applicationRepository.findMany({
-    filter,
-    populate: "jobId",
-    sort: { createdAt: sortOrder },
-    skip,
-    limit: Number(limit),
-  });
+  const [applications, total] = await Promise.all([
+    applicationRepository.findMany({
+      filter,
+      populate: "jobId",
+      sort: { createdAt: sortOrder },
+      skip,
+      limit: limitNumber,
+    }),
+    applicationRepository.countByQuery(filter),
+  ]);
 
-  return applications.map((app) => ({
-    id: app._id.toString(),
-    job: {
-    id: (app.jobId as any)._id.toString(),
-    title: (app.jobId as any).title,
-    company: (app.jobId as any).company,
-    location: (app.jobId as any).location,
-  },
-    status: app.status,
-    createdAt: app.createdAt,
-  }));
+  const mappedApplications: CandidateApplicationDTO[] =
+    applications.map((app) => ({
+      id: app._id.toString(),
+      job: {
+        id: (app.jobId as any)._id.toString(),
+        title: (app.jobId as any).title,
+        company: (app.jobId as any).company,
+        location: (app.jobId as any).location,
+      },
+      status: app.status,
+      createdAt: app.createdAt,
+    }));
+
+  return {
+    applications: mappedApplications,
+    pagination: {
+      page: pageNumber,
+      limit: limitNumber,
+      total,
+      totalPages: Math.ceil(total / limitNumber),
+    },
+  };
 };
 
 
@@ -213,7 +239,7 @@ const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterAppli
 
 
   const updateApplicationStatusService = async (applicationId: string, status: ApplicationStatus) => {
-   console.log(status)
+ 
     if (!Object.values(APPLICATION_STATUS).includes(status)) {
       throw new CustomError("Invalid application status", 400);
     }
@@ -229,31 +255,7 @@ const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterAppli
 
     const updated = await applicationRepository.update(applicationId, { status })
 
-//----------------------------interview setuping------------------------------------
-// if (status === APPLICATION_STATUS.INTERVIEW){
-  
-//   const existingInterview = await interviewRepository.findOne({
-//     applicationId,
-//   });
-//    if (!existingInterview) {
-//        await interviewRepository.create(
-//         {candidateId:application.candidateId._id,
-//           applicationId,
-//           jobId:application.jobId._id,
-//           recruiterId:application.recruiterId,
-//           roundType:InterviewRoundType.NOT_DEFINED,
-//       status: INTERVIEW_STATUS.PENDING,
-//       statusHistory: [
-//         {
-//           status: INTERVIEW_STATUS.PENDING,
-//           changedBy:application.recruiterId,
-//           note: "Candidate moved to interview stage",
-//           changedAt:new Date()
-//         },
-//       ],
-//         })
-//       }
-//     }
+
 
     await sendApplicationStatusUpdateEmail({
       email: application.candidateId?.email,

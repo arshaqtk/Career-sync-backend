@@ -1,6 +1,9 @@
 import { CustomError } from "../../../shared/utils/customError";
 import { UserRepository } from "../../../modules/user/repository/user.repository"
 import UserModel from "../../../modules/user/models/user.model";
+import { candidateBlockedEmail } from "../templates/candidateBlockedEmail";
+import { sendEmail } from "../../../shared/email/email.service";
+import { candidateUnblockedEmail } from "../templates/candidateUnblockedEmail";
 interface BlockCandidateByAdminInput{
     candidateId:string;
     reason:string;
@@ -124,8 +127,25 @@ export const blockCandidateByAdminService = async ({
     blockReason: reason ?? "Blocked by admin",
   })
 
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: "Your Account Has Been Blocked",
+      html: candidateBlockedEmail({
+        name: user.name,
+        reason: reason ?? "Blocked by admin",
+      }),
+    })
+  } catch (error) {
+    console.error("Email sending failed:", error)
+  }
+
   return { success: true }
 }
+
+
+
+
 
 export const unblockCandidateByAdminService = async ({
   candidateId,
@@ -149,6 +169,18 @@ export const unblockCandidateByAdminService = async ({
     blockedAt: null,
     blockReason: null,
   })
+  try {
+    await sendEmail({
+      to: user.email,
+      subject: "Your Account Has Been Unblocked",
+      html: candidateUnblockedEmail({
+        name: user.name,
+       
+      }),
+    })
+  } catch (error) {
+    console.error("Email sending failed:", error)
+  }
 
   return { success: true }
 }
