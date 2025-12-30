@@ -72,5 +72,28 @@ export const UserController = {
   }),
   
 
+ updateRecruiterCompany :async (req: Request, res: Response) => {
+  const userId = req.user?.id
+if (!userId) {
+      throw new CustomError("Unauthorized", 401);
+    }
+  const {
+    companyName,
+    companyWebsite,
+    companyLocation,
+    companyDescription,
+  } = req.body
+  const user=await UserService.updateRecruiterCompany({recruiterId:userId,payload:{
+    companyName,
+    companyWebsite,
+    companyLocation,
+    companyDescription,
+  }})
+  res.json({
+    message: "Company details updated",
+    recruiterData: user.recruiterData,
+  })
+}
+
 };
 

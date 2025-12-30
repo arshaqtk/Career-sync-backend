@@ -48,6 +48,27 @@ return {
 
   const updatedUser = await UserRepository.updateById(userId, updateData);
   return updatedUser;
+},
+
+ updateRecruiterCompany : async({recruiterId,payload}) => {
+  const {
+    companyName,
+    companyWebsite,
+    companyLocation,
+    companyDescription,
+  } = payload
+console.log(payload)
+  const user = await UserRepository.updateById(
+    recruiterId,
+     {
+        "recruiterData.companyName": companyName,
+        "recruiterData.companyWebsite": companyWebsite,
+        "recruiterData.companyLocation": companyLocation,
+        "recruiterData.companyDescription": companyDescription,
+      }
+  )
+  console.log(user)
+  return user
 }
  
 };

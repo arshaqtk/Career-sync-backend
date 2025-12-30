@@ -7,16 +7,17 @@ export const getEmployerJobService = async (recruiterId: string, query: JobQuery
   if (search) {
     filter.title = { $regex: search, $options: "i" };
   }
+  console.log(filter)
 
   if (location) {
     filter.location = { $regex: location, $options: "i" };
   }
 
-  if (jobType && jobType !== "all") {
+  if (jobType && jobType !== "all") { 
     filter.jobType = jobType;
   }
 
-  if (status && status !== "all") {
+  if (status && status !== "all") { 
     filter.status = status;
   }
 

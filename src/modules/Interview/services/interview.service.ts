@@ -20,51 +20,76 @@ const applicationRepository = ApplicationRepository();
 
 export const InterviewServices = () => {
 
-    const recruiterGetInterviews = async (recruiterId: string, query: InterviewQuery): Promise<RecruiterInterviewsDTO[]> => {
-        if (!recruiterId) throw new CustomError("Required identifier not found", 400);
+  const recruiterGetInterviews = async (
+  recruiterId: string,
+  query: InterviewQuery
+): Promise<RecruiterInterviewsDTO[]> => {
+  if (!recruiterId) {
+    throw new CustomError("Required identifier not found", 400);
+  }
 
-        const { status, sortBy = "newest", page = "1", limit = "10", roundType } = query;
+  const {
+    status,
+    sortBy = "newest",
+    page = "1",
+    limit = "10",
+    roundType,
+    search,
+  } = query;
 
-        const filter: Record<string, any> = {
-            recruiterId,
-        };
+  const filter: Record<string, any> = {
+    recruiterId,
+  };
 
-        if (status && status !== "All") {
-            filter.status = status;
-        }
-        if (roundType && roundType != "All") {
-            filter.roundType = roundType
-        }
-        const sortOrder = sortBy === "newest" ? -1 : 1;
+  // ✅ status filter
+  if (status && status !== "All") {
+    filter.status = status;
+  }
 
-        const skip = (Number(page) - 1) * Number(limit);
-        console.log(recruiterId)
-        const interviews = await interviewRepository.findLatestByActor({
-            actorField: "recruiterId",
-            actorId: recruiterId,
-            filter,
-            populate: [
-                { path: "candidateId", select: "name" },
-                { path: "jobId", select: "title" },
-            ],
-            sort: { createdAt: sortOrder },
-            skip,
-            limit: Number(limit),
-        });
+  // ✅ round type filter
+  if (roundType && roundType !== "All") {
+    filter.roundType = roundType;
+  }
 
-        console.log(interviews)
+  const sortOrder = sortBy === "newest" ? -1 : 1;
+  const skip = (Number(page) - 1) * Number(limit);
 
-        return interviews.map((interview) => ({
-            id: interview._id.toString(),
-            candidateName: (interview.candidateId as any).name,
-            jobTitle: (interview.jobId as any).title,
-            roundType: interview.roundType,
-            roundNumber: interview.roundNumber,
-            status: interview.status,
-            createdAt: interview.createdAt,
-        }))
+  const interviews = await interviewRepository.findLatestByActor({
+    actorField: "recruiterId",
+    actorId: recruiterId,
+    filter,
+    populate: [
+      { path: "candidateId", select: "name email" },
+      { path: "jobId", select: "title" },
+    ],
+    sort: { createdAt: sortOrder },
+    skip,
+    limit: Number(limit),
+  });
 
-    }
+  // ⚠️ Optional in-memory search (TEMP solution)
+  const filteredInterviews = search
+    ? interviews.filter((interview: any) =>
+        interview.candidateId?.name
+          ?.toLowerCase()
+          .includes(search.toLowerCase()) ||
+        interview.jobId.title
+          ?.toLowerCase()
+          .includes(search.toLowerCase())
+      )
+    : interviews;
+
+  return filteredInterviews.map((interview: any) => ({
+    id: interview._id.toString(),
+    candidateName: interview.candidateId?.name ?? "-",
+    jobTitle: interview.jobId?.title ?? "-",
+    roundType: interview.roundType,
+    roundNumber: interview.roundNumber,
+    status: interview.status,
+    createdAt: interview.createdAt,
+  }));
+};
+
 
 
 const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}:{applicationId: string, recruiterId?: string}): Promise<RecruiterInterviewTimeLineDto[]> => {
@@ -256,6 +281,81 @@ const recruiterGetInterviewsByApplicationId = async ({applicationId,recruiterId}
 
         return interview;
     };
+ const recruiterRescheduleInterview = async ({
+  recruiterId,
+  interviewId,
+  payload,
+}: {
+  recruiterId: string
+  interviewId: string
+  payload: {
+    startTime: string
+    endTime: string
+    mode: "Online" | "Offline"
+    meetingLink?: string
+    location?: string
+    reason?: string
+  }
+}) => {
+  if (!recruiterId || !interviewId) {
+    throw new CustomError("Recruiter ID or Interview ID missing", 400)
+  }
+
+  const interview = await interviewRepository.findOne({_id:interviewId})
+
+  if (!interview) {
+    throw new CustomError("Interview not found", 404)
+  }
+
+  if (interview.recruiterId.toString() !== recruiterId) {
+    throw new CustomError("Access denied", 403)
+  }
+
+  // ❌ Cannot reschedule completed / cancelled
+  if (interview.status !== INTERVIEW_STATUS.SCHEDULED) {
+    throw new CustomError(
+      "Only scheduled interviews can be rescheduled",
+      400
+    )
+  }
+
+  // Mode validation
+  if (payload.mode === "Offline" && !payload.location) {
+    throw new CustomError("Location required for offline interview", 400)
+  }
+
+  if (payload.mode === "Online" && !payload.meetingLink) {
+    throw new CustomError("Meeting link required for online interview", 400)
+  }
+
+  const start = new Date(payload.startTime)
+  const end = new Date(payload.endTime)
+
+  if (end <= start) {
+    throw new CustomError("End time must be after start time", 400)
+  }
+
+  // Update interview
+  interview.startTime = start
+  interview.endTime = end
+  interview.mode = payload.mode
+  interview.meetingLink =
+    payload.mode === "Online" ? payload.meetingLink : undefined
+  interview.location =
+    payload.mode === "Offline" ? payload.location : undefined
+
+  interview.statusHistory.push({
+    status: INTERVIEW_STATUS.RESCHEDULED,
+    changedBy: recruiterId,
+    changedAt: new Date(),
+    note: payload.reason || "Interview rescheduled",
+    roundNumber: interview.roundNumber,
+  })
+
+  await interview.save()
+
+  return interview
+}
 
 
     //------------------------Update interview  Status----------------------------------------------
@@ -588,6 +688,7 @@ const candidateGetInterviewById = async (
         recruiterUpdateInterviewStatus,
         candidateGetInterviews,
         candidateGetInterviewById,
-        finalizeCandidateService
+        finalizeCandidateService,
+        recruiterRescheduleInterview
     }
 }
