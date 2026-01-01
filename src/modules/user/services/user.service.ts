@@ -1,5 +1,5 @@
 import { CustomError } from "../../../shared/utils/customError";
-import { UpdateUserProfileDTO } from "../dtos/user.dto";
+import { updateRecruiterCompanyDTO, UpdateUserProfileDTO } from "../dtos/user.dto";
 import { UserRepository } from "../repository/user.repository"
 
 
@@ -50,7 +50,7 @@ return {
   return updatedUser;
 },
 
- updateRecruiterCompany : async({recruiterId,payload}) => {
+ updateRecruiterCompany : async({recruiterId,payload}:{recruiterId:string,payload:updateRecruiterCompanyDTO}) => {
   const {
     companyName,
     companyWebsite,

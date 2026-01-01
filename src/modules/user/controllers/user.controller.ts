@@ -91,7 +91,7 @@ if (!userId) {
   }})
   res.json({
     message: "Company details updated",
-    recruiterData: user.recruiterData,
+    recruiterData: user,
   })
 }
 

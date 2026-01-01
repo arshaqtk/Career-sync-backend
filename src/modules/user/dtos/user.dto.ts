@@ -20,3 +20,11 @@ export type UpdateUserProfileDTO = {
   name?: string;
   phone?: string;
 };
+
+export type updateRecruiterCompanyDTO={
+ companyName?: string;
+  companyWebsite?: string;
+  companyLogo?: string;
+  companyLocation?: string;
+  companyDescription?: string;
+}

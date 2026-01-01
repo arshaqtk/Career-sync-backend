@@ -1,6 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import { ICandidateData, IRecruiterData } from "../types/user.schema";
-import {EducationSchema,ExperienceSchema} from "../schemas/index"
+import { EducationSchema, ExperienceSchema } from "../schemas/index"
 
 
 export interface IUser extends Document {
@@ -10,16 +10,16 @@ export interface IUser extends Document {
   phone?: string;
   password: string;
   profilePictureUrl?: string;
-field: string;              // "Healthcare", "IT", "Design"
+  field: string;              // "Healthcare", "IT", "Design"
   role: "candidate" | "recruiter" | "admin";
   isVerified: boolean;
   isActive: boolean;
-  blockedAt:Date;
-  blockReason?:string;
+  blockedAt: Date;
+  blockReason?: string;
 
   candidateData?: ICandidateData;
   recruiterData?: IRecruiterData;
-
+  lastLoginAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -76,25 +76,26 @@ const userSchema = new Schema<IUser>(
       default: true,
     },
     blockedAt: {
-  type: Date,
-},
+      type: Date,
+    },
 
-blockReason: {
-  type: String,
-},
-    field: { type: String,
-      required:true
-     },              
+    blockReason: {
+      type: String,
+    },
+    field: {
+      type: String,
+      required: true
+    },
 
     // CANDIDATE FIELDS ------------------------------------------------------
     candidateData: {
       role: { type: String },
       about: { type: String },
       resume: {
-  url: { type: String },
-  originalName: { type: String },
-  uploadedAt: { type: Date, default: Date.now }
-},
+        url: { type: String },
+        originalName: { type: String },
+        uploadedAt: { type: Date, default: Date.now }
+      },
       experience: { type: [ExperienceSchema], default: [] },
       skills: { type: [String], default: [] },
       education: { type: [EducationSchema], default: [] },
@@ -109,6 +110,11 @@ blockReason: {
       companyLogo: { type: String },
       companyLocation: { type: String },
       companyDescription: { type: String },
+    },
+    lastLoginAt: {
+      type: Date,
+      default: null,
+      index: true,
     },
   },
   {

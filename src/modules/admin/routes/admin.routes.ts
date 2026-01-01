@@ -2,7 +2,7 @@ import { catchAsync } from "../../../middlewares/asyncHandler";
 import { authMiddleware } from "../../../middlewares/auth.middleware";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { Router } from "express";
-import { adminDashboardStats } from "../controllers/adminDasboard.controller";
+import { adminDashboardStats, getAdminDashboardData } from "../controllers/adminDasboard.controller";
 import { adminGetRecruiters, blockRecruiterByAdminController, getAdminRecruiterDetailController, unblockRecruiterByAdminController } from "../controllers/adminRecruters.controller";
 import { adminGetCandidates, blockCandidateByAdminController, getAdminCandidateDetailController, unblockCandidateByAdminController } from "../controllers/adminCandidates.controller";
 import { adminBlockJob, adminGetJobDetail, adminGetJobs, adminUnblockJob } from "../controllers/adminJobs.controller";
@@ -10,6 +10,8 @@ import { adminBlockJob, adminGetJobDetail, adminGetJobs, adminUnblockJob } from 
 const router=Router()
 
 router.get("/stats",authMiddleware,authorizeRoles("admin"),catchAsync(adminDashboardStats));
+router.get("/dashboard",authMiddleware,authorizeRoles("admin"),catchAsync(getAdminDashboardData));
+
 
 
 router.get("/recruiters",authMiddleware,authorizeRoles("admin"),catchAsync(adminGetRecruiters));

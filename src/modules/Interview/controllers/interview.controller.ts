@@ -7,7 +7,7 @@ const interviewServices=InterviewServices()
 
 export const recruiterGetInterviewsController=async(req:Request,res:Response)=>{
     const recruiterId=req.user?.id as string
-    const { page = 1, limit = 10,sortBy,status,roundType,search } = req.query as InterviewQuery
+    const { page = 1, limit = 10,sortBy,status,roundType,search } = req.query 
   const response=await interviewServices.recruiterGetInterviews(recruiterId,{sortBy,status,roundType,limit,page,search})
   res.status(200).json({
   success: true,

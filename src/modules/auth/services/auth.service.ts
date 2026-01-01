@@ -38,6 +38,8 @@ export const Authservice = {
 
         return { email, message: "Registerd Succesffully" }
     },
+
+
   login: async (data: LoginDTO) => {
   const user = await UserRepository.findByEmail(data.email).select("+password")
 
@@ -76,6 +78,10 @@ if (!user.isActive) {
       email: user.email,
     }
   }
+//update last login
+  await UserRepository.updateById(user._id, {
+  lastLoginAt: new Date(),
+})
 
 
   const token = generateTokens({
