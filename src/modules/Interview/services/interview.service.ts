@@ -14,6 +14,7 @@ import { CandidateInterviewsDTO } from "../dto/candidateInterviews.dto"
 import { interviewFinalRejectedEmail } from "../emails/interviewFinalRejectedEmail"
 import { sendEmail } from "../../../shared/email/email.service"
 import { interviewFinalSelectedEmail } from "../emails/interviewFinalSelectedEmail"
+import { createNotificationService } from "../../../modules/notification/services/notification.service"
 
 const interviewRepository = InterviewRepository();
 const applicationRepository = ApplicationRepository();
@@ -172,11 +173,13 @@ export const InterviewServices = () => {
     }
   }
 
+
+
+  //======================Schedule Interview ========================================
+
+
   const recruiterScheduleInterview = async ({
-    recruiterId,
-    applicationId,
-    payload,
-    scheduleMode, // "initial" | "next_round"
+    recruiterId,applicationId,payload,scheduleMode, 
   }: {
     recruiterId: string;
     applicationId: string;
@@ -203,22 +206,22 @@ export const InterviewServices = () => {
     }
 
 
-    if (payload.mode === "Offline" && !payload.location) {
-      throw new CustomError("Location required for offline interview", 400);
-    }
+    // if (payload.mode === "Offline" && !payload.location) {
+    //   throw new CustomError("Location required for offline interview", 400);
+    // }
 
-    if (payload.mode === "Online" && !payload.meetingLink) {
-      throw new CustomError("Meeting link required for online interview", 400);
-    }
+    // if (payload.mode === "Online" && !payload.meetingLink) {
+    //   throw new CustomError("Meeting link required for online interview", 400);
+    // }
 
     const start = new Date(payload.startTime);
     const end = new Date(payload.endTime);
 
-    if (end <= start) {
-      throw new CustomError("End time must be after start time", 400);
-    }
+    // if (end <= start) {
+    //   throw new CustomError("End time must be after start time", 400);
+    // }
 
-    // 🔹 Next round specific rules
+    //  Next round specific rules
     if (scheduleMode === "next_round") {
       const lastInterview =
         await interviewRepository.findLatestRound(applicationId);
@@ -279,12 +282,29 @@ export const InterviewServices = () => {
       ],
     });
 
+  await   createNotificationService({
+      recipientId:application.candidateId._id,
+      senderId:application.recruiterId._id,
+      entityId: interview._id,
+      title:
+  scheduleMode === "next_round"
+    ? "Next Interview Round Scheduled"
+    : "Interview Scheduled",
+
+message:
+  scheduleMode === "next_round"
+    ? `Your next interview round for ${application.jobId.title} has been scheduled.`
+    : `Your interview for ${application.jobId.title} has been scheduled.`,
+type:"INTERVIEW_SCHEDULED",
+    })
+
     return interview;
   };
+
+//===============================RESECHDULE INTERVIEW=================================================================
+
   const recruiterRescheduleInterview = async ({
-    recruiterId,
-    interviewId,
-    payload,
+    recruiterId,   interviewId, payload,
   }: {
     recruiterId: string
     interviewId: string
@@ -718,10 +738,10 @@ export const InterviewServices = () => {
     recruiterGetInterviewsByApplicationId,
     recruiterGetInterviewById,
     recruiterScheduleInterview,
+    recruiterRescheduleInterview,
     recruiterUpdateInterviewStatus,
     candidateGetInterviews,
     candidateGetInterviewById,
     finalizeCandidateService,
-    recruiterRescheduleInterview
   }
 }
