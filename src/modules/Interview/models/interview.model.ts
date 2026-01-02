@@ -55,10 +55,7 @@ roundNumber:{
       type: Date,
     },
 
-    durationMinutes: {
-      type: Number,
-      min: 1,
-    },
+ 
 
     status: {
       type: Schema.Types.String,

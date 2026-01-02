@@ -14,6 +14,7 @@ export interface CandidateInterviewsDTO {
    startTime?: string;
   endTime?: string;
   meetingLink?: string;
+  location?:string;
   createdAt: Date;
   roundNumber:number;
   companyName: string

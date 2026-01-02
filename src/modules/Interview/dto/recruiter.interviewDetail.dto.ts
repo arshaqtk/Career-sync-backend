@@ -19,6 +19,7 @@ export type InterviewDetails = {
   startTime?: string;
   endTime?: string;
   meetingLink?: string;
+  location?:string;
   status: InterviewStatus;
   
   statusHistory?: {
