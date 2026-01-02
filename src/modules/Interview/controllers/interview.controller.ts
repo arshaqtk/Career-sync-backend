@@ -106,7 +106,7 @@ export const candidateGetInterviewsController=async (req:Request,res:Response)=>
   const candidateId=req.user?.id as string
     const { page = 1, limit = 10,sortBy,status,roundType,search }:InterviewQuery = req.query
   
-  const response=await interviewServices.candidateGetInterviews(candidateId,{sortBy,status,roundType,limit,page})
+  const response=await interviewServices.candidateGetInterviews(candidateId,{sortBy,status,roundType,limit,page,search})
   res.status(200).json({
   success: true,
   message: `Interviews fetched successfully`,

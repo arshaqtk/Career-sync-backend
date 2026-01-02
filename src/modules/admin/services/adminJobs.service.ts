@@ -1,6 +1,11 @@
 import { CustomError } from "../../../shared/utils/customError"
 import { JobModel } from "../../../modules/jobs/models/job.model"
 import { Types } from "mongoose"
+import { UserRepository } from "../../../modules/user/repository/user.repository"
+import { sendEmail } from "../../../shared/email/email.service"
+import { jobBlockedEmail } from "../templates/jobBlockedEmail"
+import { jobUnblockedEmail } from "../templates/jobUnblockedEmail"
+import { IUser } from "@/modules/user/models/user.model"
 
 
 
@@ -222,6 +227,27 @@ export const blockJobByAdminService = async ({
     }
   )
 
+  const user=await UserRepository.findById(job.postedBy.toString()).select("email name recruiterData.companyName")
+
+  if(user){
+ try {
+      await sendEmail({
+        to: user.email,
+        subject: `Your Job ${job.title} Has Been Unblocked`,
+        html: jobBlockedEmail({
+          recruiterName: user.name,
+          jobTitle:job.title,
+          companyName:user?.recruiterData?.companyName,
+          reason:reason
+        }),
+      })
+    } catch (error) {
+      console.error("Email sending failed:", error)
+    }
+  }
+  
+  
+
   return { success: true }
 }
 
@@ -231,7 +257,7 @@ export const unblockJobByAdminService = async ({
   jobId: string
 }) => {
   if (!jobId) {
-    throw new CustomError("Required identifiers not found", 400)
+    throw new CustomError("Job ID is required", 400)
   }
 
   const job = await JobModel.findById(jobId)
@@ -240,23 +266,38 @@ export const unblockJobByAdminService = async ({
     throw new CustomError("Job not found", 404)
   }
 
-
   if (job.status !== "paused") {
     throw new CustomError("Job is not blocked", 400)
   }
 
- 
-  // If recruiter already closed it earlier, do NOT reopen
-  const newStatus = job.wasClosedByRecruiter ? "closed" : "open"
+  // 🔑 Preserve recruiter intent
+  job.status = job.wasClosedByRecruiter ? "closed" : "open"
+  job.blockedAt = null
+  job.blockReason = null
 
-  await JobModel.updateOne(
-    { _id: jobId },
-    {
-      status: newStatus,
-      blockedAt: null,
-      blockedReason: null,
+  await job.save()
+
+  // 🔹 Fetch recruiter
+  const user = await UserRepository.findById(job.postedBy.toString())
+    .select("email name recruiterData.companyName")
+    .lean()
+
+  if (user?.email) {
+    try {
+      await sendEmail({
+        to: user.email,
+        subject: `Your Job "${job.title}" Has Been Unblocked`,
+        html: jobUnblockedEmail({
+          recruiterName: user.name,
+          jobTitle: job.title,
+          companyName: user.recruiterData?.companyName,
+        }),
+      })
+    } catch (error) {
+      // ❗ Do NOT fail the operation because of email
+      console.error("Job unblocked, but email sending failed:", error)
     }
-  )
+  }
 
   return { success: true }
 }

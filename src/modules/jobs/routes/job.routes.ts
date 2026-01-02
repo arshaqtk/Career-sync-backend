@@ -13,6 +13,7 @@ import { updateJobStatusSchema } from "../validators/updateJobStatus.schema";
 import { updateJobStatusController } from "../controller/changeJobStatus.controller";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
+import { getJobSuggestionController } from "../controller/searchJobSuggestion.controller";
 
 const router = Router();
 router.use(authMiddleware)
@@ -20,6 +21,7 @@ router.use(ensureUserIsActive)
 
 // Public / user routes
 router.get("/jobs", CandidategetJobs);
+router.get("/jobs/suggestions", getJobSuggestionController);
 router.get("/jobs/:id", getJobByIdController);
 
 

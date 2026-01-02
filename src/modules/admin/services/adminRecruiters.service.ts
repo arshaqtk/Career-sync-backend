@@ -146,7 +146,7 @@ export const blockRecruiterByAdminService = async ({
   try {
     await sendEmail({
       to: user.email,
-      subject: "Your Account Has Been Unblocked",
+      subject: "Your Account Has Been Blocked",
       html: recruiterBlockedEmail({
         name: user.name,
        companyName:user.recruiterData?.companyName,
