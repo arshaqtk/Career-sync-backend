@@ -14,7 +14,7 @@ import { CandidateInterviewsDTO } from "../dto/candidateInterviews.dto"
 import { interviewFinalRejectedEmail } from "../emails/interviewFinalRejectedEmail"
 import { sendEmail } from "../../../shared/email/email.service"
 import { interviewFinalSelectedEmail } from "../emails/interviewFinalSelectedEmail"
-import { createNotificationService } from "../../../modules/notification/services/notification.service"
+import { createNotificationService } from "../../notification/services/createNotification.service"
 
 const interviewRepository = InterviewRepository();
 const applicationRepository = ApplicationRepository();
@@ -374,6 +374,21 @@ type:"INTERVIEW_SCHEDULED",
 
     await interview.save()
 
+ await createNotificationService({
+  recipientId: interview.candidateId,
+  senderId: interview.recruiterId,
+
+  type: "INTERVIEW_RESCHEDULED",
+
+  title: "Interview Rescheduled",
+
+  message: payload.reason
+    ? `Your interview has been rescheduled. Reason: ${payload.reason}`
+    : "Your interview schedule has been updated.",
+
+  entityType: "interview",
+  entityId: interview._id,
+})
     return interview
   }
 
@@ -458,6 +473,36 @@ type:"INTERVIEW_SCHEDULED",
     const populatedInterview =
       updatedInterview as unknown as InterviewPopulated;
 
+      if (
+  status === INTERVIEW_STATUS.COMPLETED ||
+  status === INTERVIEW_STATUS.CANCELLED
+) {
+  await createNotificationService({
+    recipientId: populatedInterview.candidateId._id,
+    senderId: populatedInterview.recruiterId,
+
+    type:
+      status === INTERVIEW_STATUS.COMPLETED
+        ? "INTERVIEW_COMPLETED"
+        : "INTERVIEW_CANCELLED",
+
+    title:
+      status === INTERVIEW_STATUS.COMPLETED
+        ? "Interview Completed"
+        : "Interview Cancelled",
+
+    message:
+      status === INTERVIEW_STATUS.COMPLETED
+        ? `Your interview for ${populatedInterview.jobId.title} has been completed.`
+        : notes
+        ? `Your interview for ${populatedInterview.jobId.title} was cancelled. Reason: ${notes}`
+        : `Your interview for ${populatedInterview.jobId.title} was cancelled.`,
+
+    entityType: "interview",
+    entityId: populatedInterview._id,
+  })
+}
+
     try {
       await sendInterviewEmail(status, {
         to: populatedInterview.candidateId.email,
@@ -539,6 +584,30 @@ type:"INTERVIEW_SCHEDULED",
         }),
       })
     }
+
+    await createNotificationService({
+  recipientId: application.candidateId._id,
+  senderId: application.recruiterId._id,
+
+  type:
+    decision === "Selected"
+      ? "CANDIDATE_SELECTED"
+      : "CANDIDATE_REJECTED",
+
+  title:
+    decision === "Selected"
+      ? "Congratulations! You’re Selected"
+      : "Interview Result",
+
+  message:
+    decision === "Selected"
+      ? `You have been selected for the ${application.jobId.title} role at ${application.recruiterId.recruiterData?.companyName}.`
+      : `Thank you for attending the interview for ${application.jobId.title}. Unfortunately, you were not selected.`,
+
+  entityType: "job",
+  entityId: application.jobId._id,
+})
+
     return { success: true };
   };
 
