@@ -1,6 +1,6 @@
 import { ENV } from "../config/env"
 import { CustomError } from "../shared/utils/customError"
-import cookie from "cookie"
+import * as cookie from "cookie"
 import jwt from "jsonwebtoken"
 import type { Socket,Server } from "socket.io"
 interface AuthJwtPayload extends jwt.JwtPayload {
@@ -12,14 +12,15 @@ interface AuthJwtPayload extends jwt.JwtPayload {
 export const socketAuth=(io:Server)=>{
     io.use((socket:Socket,next:(err?: Error) => void)=>{
         try{
-            const cookieHeader=socket.handshake.headers.cookie
+          const cookieHeader=socket.handshake.headers.cookie
+          // console.log("COOKIE HEADER",cookieHeader)
             if(!cookieHeader){
-                throw new CustomError("Issue with cookie");
+                return next(new Error("No cookie"))
             }
-
-            const cookies=cookie.parse(cookieHeader)
-            const token =cookies.accessToken;
-
+ const cookies = cookie.parse(cookieHeader)
+      // console.log("PARSED COOKIES:", cookies)
+             const token = cookies.accessToken
+      console.log("ACCESS TOKEN:", token)
             if(!token){
                 throw new CustomError("Unauthorized");
             }
@@ -32,8 +33,9 @@ export const socketAuth=(io:Server)=>{
 }
         
          next()   
-    } catch {
-      next(new Error("Invalid token"))
+    } catch(err) {
+       console.error("SOCKET AUTH ERROR:", err)
+      next(new CustomError("Invalid token"))
     }
     }) 
 }

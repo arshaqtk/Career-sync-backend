@@ -4,6 +4,7 @@ import app from "./app"
 import { ENV } from "./config/env"
 import { initSocket } from "./websocket"
 import { socketAuth } from "./websocket/auth.middleware"
+import { chatSocket } from "./modules/chat/socket/chat.socket"
 
 
 
@@ -15,6 +16,7 @@ const startServer=async()=>{
     
 const io=initSocket(httpServer)
 socketAuth(io)
+chatSocket(io)
 
     httpServer.listen(PORT,()=>{
         console.log(`CareerSync API running on port ${PORT}`)

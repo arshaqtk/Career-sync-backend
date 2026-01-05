@@ -2,8 +2,13 @@ import { Types } from "mongoose"
 import { ConversationModel } from "../models/conversatin.model"
 import { MessageModel } from "../models/message.model"
 import { MessagePayload } from "../types/message.type"
+import { CustomError } from "../../../shared/utils/customError"
 
 export const createConversation=async({user1,user2}:{user1:string,user2:string})=>{
+  if(!user1||!user2){
+    throw new CustomError("ID NOT FOUND")
+  }
+
      const user1Id = new Types.ObjectId(user1)
   const user2Id = new Types.ObjectId(user2)
     const conversation=await ConversationModel.findOne({
@@ -22,9 +27,13 @@ export const sendMessage=async({content,conversationId,receiverId,senderId}:Mess
      if (!conversation) {
     throw new Error("Conversation not found")
   }
+  if(!receiverId){
+    throw new Error("RecieverId not found")
+  }
+  console.log(receiverId)
    const senderObjectId = new Types.ObjectId(senderId)
   const receiverObjectId = new Types.ObjectId(receiverId)
-
+console.log(receiverObjectId)
    const isParticipant = conversation.participants.some(
     (id) => id.equals(senderObjectId)
   )
@@ -38,6 +47,65 @@ export const sendMessage=async({content,conversationId,receiverId,senderId}:Mess
     lastMessage: content,
     lastMessageAt: new Date(),
   })
-  
+
     return message
+}
+
+export const getConvesationListService=async({userId,query}:{userId:string,query: {
+  page: number
+  limit: number
+  search?: string 
+}})=>{
+
+const { page, limit,search } = query
+const skip = (page - 1) * limit
+
+  const userObjectId = new Types.ObjectId(userId)
+
+  const conversations=await ConversationModel.aggregate([
+
+   { $match:{participants:userObjectId}},
+
+   {$sort:{lastMessageAt:-1}},
+
+   { $skip: skip },
+      { $limit: limit },
+
+{
+  $lookup:{
+    from:"users",
+    localField:"participants",
+    foreignField:"_id",
+    as:"participantsData"
+  },
+},
+
+{$addFields:{
+  receiver:{
+    $arrayElemAt:[{
+      $filter:{
+        input:"$participantsData",
+        as:"user",
+        cond:{$ne:["$$user._id",userObjectId]},
+      }
+    },0,]
+  }
+}},
+
+{
+  $project:{
+    lastMessage:1,
+    lastMessageAt:1,
+    receiver:{
+      _id:1,
+      name:1,
+      email:1,
+      profilePictureUrl:1
+    }
+  }
+}
+
+])
+
+return conversations
 }

@@ -99,6 +99,7 @@ if (!user.isActive) {
     role: user.role,
     refreshToken: token.refreshToken,
     accessToken: token.accessToken,
+    id:user._id,
   }
 },
 
