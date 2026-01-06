@@ -134,7 +134,6 @@ const getCandidateApplicationDetailService = async (applicationId: string)=> {
 
   return applicationRepository.getCandidateApplicationDetail(applicationId)
 
-
 }
 
 

@@ -3,6 +3,7 @@ import { ConversationModel } from "../models/conversatin.model"
 import { MessageModel } from "../models/message.model"
 import { MessagePayload } from "../types/message.type"
 import { CustomError } from "../../../shared/utils/customError"
+import { string } from "zod"
 
 export const createConversation=async({user1,user2}:{user1:string,user2:string})=>{
   if(!user1||!user2){
@@ -30,10 +31,10 @@ export const sendMessage=async({content,conversationId,receiverId,senderId}:Mess
   if(!receiverId){
     throw new Error("RecieverId not found")
   }
-  console.log(receiverId)
+
    const senderObjectId = new Types.ObjectId(senderId)
   const receiverObjectId = new Types.ObjectId(receiverId)
-console.log(receiverObjectId)
+
    const isParticipant = conversation.participants.some(
     (id) => id.equals(senderObjectId)
   )
@@ -108,4 +109,30 @@ const skip = (page - 1) * limit
 ])
 
 return conversations
+}
+
+export const getMessagesService=async({conversationId,userId,}:
+  {conversationId:string,userId:string})=>{
+
+    console.log("from get message service:---->",conversationId,"userId:-->",userId)
+  if(!conversationId||!userId){
+    throw new CustomError("Failed to fetch history", 400)
+  }
+
+   const conversation = await ConversationModel.findOne({
+    _id: conversationId,
+    participants: userId,
+  })
+
+  if (!conversation) {
+    throw new CustomError("Unauthorized", 403)
+  }
+  const limit=20
+  const page=1
+  const skip=limit*page
+
+  const messages=await MessageModel.find({conversationId:conversationId}).sort({createdAt:1}).lean()
+
+console.log(messages)
+  return messages 
 }

@@ -139,6 +139,7 @@ export const ApplicationRepository = (): IApplicationRepository => {
           recruiter: {
             name: "$recruiter.name",
             email: "$recruiter.email",
+            id:"$recruiter._id",
             company: {
               companyName: "$recruiter.companyName",
               companyWebsite: "$recruiter.companyWebsite",
