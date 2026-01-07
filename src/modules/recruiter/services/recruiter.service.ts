@@ -109,9 +109,18 @@ const recentApplications=await ApplicationModel.aggregate([
    },{
       $unwind:"$job"
    },{
+      $lookup:{
+         from:"users",
+         localField:"candidateId",
+         foreignField:"_id",
+         as:"users"
+      }
+   },{
+      $unwind:"$users"
+   },{
       $project:{
          id:"$_id",
-         candidateName:1,
+         candidateName:"$users.name",
          jobTitle:"$job.title",
          experience:1,
          status:1

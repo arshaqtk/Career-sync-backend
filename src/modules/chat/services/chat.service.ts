@@ -114,7 +114,6 @@ return conversations
 export const getMessagesService=async({conversationId,userId,}:
   {conversationId:string,userId:string})=>{
 
-    console.log("from get message service:---->",conversationId,"userId:-->",userId)
   if(!conversationId||!userId){
     throw new CustomError("Failed to fetch history", 400)
   }
@@ -133,6 +132,5 @@ export const getMessagesService=async({conversationId,userId,}:
 
   const messages=await MessageModel.find({conversationId:conversationId}).sort({createdAt:1}).lean()
 
-console.log(messages)
   return messages 
 }

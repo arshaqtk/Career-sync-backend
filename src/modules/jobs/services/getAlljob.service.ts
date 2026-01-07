@@ -6,7 +6,8 @@ export const CandidategetJobsService = async (
   candidateId: string,
   query: JobQuery
 ) => {
-  const { page, limit, location, jobType, status, search } = query;
+  const { page, limit, location, jobType, status, search,
+    remote,experienceMin,experienceMax,field } = query;
 
   const candidate = await UserRepository
     .findById(candidateId)
@@ -36,14 +37,18 @@ export const CandidategetJobsService = async (
     filter.location = { $regex: location, $options: "i" };
   }
 
-  if (jobType && jobType !== "all") {
-    filter.jobType = jobType;
-  }
 
-  if (status && status !== "all") {
-    filter.status = status;
+  if (remote !== undefined) filter.remote =remote
+  if (field) filter.field = { $regex: field, $options: "i" }
+  if (jobType && jobType !== "all") filter.jobType = jobType;
+  if (status && status !== "all") filter.status = status;
+  if (experienceMin || experienceMax) {
+  filter.experienceMin = {
+    ...(experienceMin && { $gte: experienceMin }),
+    ...(experienceMax && { $lte: experienceMax }),
   }
-
+}
+console.log(filter)
   const jobs = await jobRepository.findByQuery(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)

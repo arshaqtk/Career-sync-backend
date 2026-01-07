@@ -9,11 +9,11 @@ export const AuthController = {
         const result = await Authservice.register(req.body);
         res.status(201).json(result);
         return;
-    }),
+    }),   
 
     login: asyncHandler(async (req: Request, res: Response) => {
         const result = await Authservice.login(req.body);
-
+ 
         if (!result.success) {
             res.status(200).json({
                 success: false,

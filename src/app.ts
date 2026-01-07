@@ -17,6 +17,7 @@ import chatRoutes from "./modules/chat/routes/chat.route";
 
 
 import { errorHandler } from "./middlewares/errorHandler";
+import { CustomError } from "./shared/utils/customError";
 
  
 
@@ -30,7 +31,11 @@ app.use(
   })
 );
 app.use(morgan('combined'))
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100 }));
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100,
+  handler:(req,res,next)=>{
+    next(new CustomError("Too many requests, please try again later.",429))
+  }
+}));
 app.use(cookieParser());
 app.use(express.json({limit:'10mb'}))
 app.use(express.urlencoded({extended:true}))

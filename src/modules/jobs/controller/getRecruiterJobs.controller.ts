@@ -4,7 +4,7 @@ import { getEmployerJobService } from "../services/getEmployerJob.service";
 import { CustomError } from "../../../shared/utils/customError";
 
 export const getRecruiterJobController=expressAsyncHandler(async(req:Request,res:Response)=>{
-     const { page = 1, limit = 10, location, jobType,status,search } = req.query
+     const { page = 1, limit = 10, location, jobType,status,search,sortByApplication } = req.query
      const recruiterId=req.user?.id as string
 
     if(!recruiterId){
@@ -18,6 +18,7 @@ export const getRecruiterJobController=expressAsyncHandler(async(req:Request,res
       search:search as string,
       jobType: jobType as "full-time" | "part-time" | "internship" | "all",
       status:status as "open" | "closed" | "all" ,
+      sortByApplication:sortByApplication as "most_applied" | "least_applied"
     })
       res.status(200).json({
       success: true,
