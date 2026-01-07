@@ -8,7 +8,7 @@ export const adminGetCandidates=async(req:Request,res:Response)=>{
     const candidates=await adminCandidateListService({
         page: Number(page),
          limit: Number(limit),
-         search,status:status as "active" | "blocked" | "all" })
+         search:search as string,status:status as "active" | "blocked" | "all" })
 
          res.status(200).json({
       success: true,

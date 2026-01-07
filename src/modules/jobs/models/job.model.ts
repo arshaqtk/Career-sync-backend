@@ -38,7 +38,7 @@ const JobSchema = new Schema<IJob>(
     },
 
     salary: {
-      type: String,
+      type: Number,
       required: false,
     },
     field: { type: String,

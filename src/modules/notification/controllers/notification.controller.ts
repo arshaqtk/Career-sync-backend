@@ -5,10 +5,17 @@ import { markAllAsRead } from "../services/notificationMarkAllAsRead.service"
 
 export  const getMyNotificationsController=async(req:Request,res:Response)=>{
     const userId=req.user?.id
-    if(!userId){
+     const { page = "1", limit = "10" } = req.query;
+    if(!userId){ 
             throw new CustomError("Failed To Fetch Notifications")
         }
-    const notifications=await getMyNotifications(userId)
+    const notifications = await getMyNotifications({
+    userId,
+     query: {
+    page: Number(page),
+    limit: Number(limit),
+  },
+  });
     res.status(201).json({ success: true, data:notifications,message:"Notification Fetched Successfully" });
 }
 

@@ -1,8 +1,8 @@
 import { Request,Response } from "express";
 import expressAsyncHandler from "express-async-handler";
 import { CustomError } from "../../../shared/utils/customError";
-import { updateJobService } from "../services/updateJob.service";
 import { UpdateJobStatusDTO } from "../types/jobStatus.types";
+import { updateJobStatusService } from "../services/updateJobStatus.service";
 
 
 export const updateJobStatusController =expressAsyncHandler(async (req:Request, res:Response) => {
@@ -16,7 +16,7 @@ export const updateJobStatusController =expressAsyncHandler(async (req:Request, 
 }
     const data:UpdateJobStatusDTO = req.body; 
   
-    const job = await updateJobService({data,employerId,jobId});
+    const job = await updateJobStatusService({data,employerId,jobId});
     res.status(200).json({
       message: "Job updated successfully",
       job, 

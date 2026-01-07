@@ -20,7 +20,7 @@ console.log("remote",remote)
       search:search as string,
       jobType: jobType as "full-time" | "part-time" | "internship" | "all",
       status:status as "open" | "closed" | "all" ,
-      remote,
+      remote:remote==="true"?true:false,
        experienceMin:Number(experienceMin),
        experienceMax:Number(experienceMax),
        field:field as string

@@ -5,7 +5,8 @@ import { UserRepository } from "../../../modules/user/repository/user.repository
 import { sendEmail } from "../../../shared/email/email.service"
 import { jobBlockedEmail } from "../templates/jobBlockedEmail"
 import { jobUnblockedEmail } from "../templates/jobUnblockedEmail"
-import { IUser } from "@/modules/user/models/user.model"
+import { IUser } from "../../../modules/user/models/user.model"
+import { createNotificationService } from "../../../modules/notification/services/createNotification.service"
 
 
 
@@ -164,6 +165,9 @@ export const getAdminJobDetailService = async (jobId: string) => {
         createdAt: 1,
         applicationCount: 1,
         status: 1,
+        blockedAt:1,
+        blockReason:1,
+
 
        recruiter: {
   _id: "$recruiter._id",
@@ -195,9 +199,11 @@ export const getAdminJobDetailService = async (jobId: string) => {
 export const blockJobByAdminService = async ({
   jobId,
   reason,
+  adminId
 }: {
   jobId: string
   reason: string
+  adminId:string
 }) => {
   if (!jobId) {
     throw new CustomError("Required identifiers not found", 400)
@@ -223,11 +229,11 @@ export const blockJobByAdminService = async ({
     {
       status: "paused",
       blockedAt: new Date(),
-      blockedReason: reason,
+      blockReason: reason,
     }
   )
 
-  const user=await UserRepository.findById(job.postedBy.toString()).select("email name recruiterData.companyName")
+  const user=await UserRepository.findById(job.postedBy.toString()).select("_id email name recruiterData.companyName")
 
   if(user){
  try {
@@ -244,6 +250,16 @@ export const blockJobByAdminService = async ({
     } catch (error) {
       console.error("Email sending failed:", error)
     }
+    await   createNotificationService({
+         recipientId:user._id,
+         senderId:adminId,
+         entityId: jobId,
+         title:`Your Job ${job.title} has been blocked by admin`,
+   
+   message: `Your job posting "${job.title}" has been temporarily blocked by the admin due to a policy review. Please review the job details or contact support for further clarification.`
+,
+   type:"JOB_BLOCKED",
+       })
   }
   
   
@@ -253,8 +269,10 @@ export const blockJobByAdminService = async ({
 
 export const unblockJobByAdminService = async ({
   jobId,
+  adminId
 }: {
   jobId: string
+  adminId:string
 }) => {
   if (!jobId) {
     throw new CustomError("Job ID is required", 400)
@@ -297,6 +315,16 @@ export const unblockJobByAdminService = async ({
       // ❗ Do NOT fail the operation because of email
       console.error("Job unblocked, but email sending failed:", error)
     }
+    await   createNotificationService({
+         recipientId:user._id,
+         senderId:adminId,
+         entityId: jobId,
+        title: `Your job "${job.title}" has been unblocked`,
+message: `Good news! Your job posting "${job.title}" has been reviewed and is now active again. You can continue receiving applications.`
+
+,
+   type:"JOB_UNBLOCKED",
+       })
   }
 
   return { success: true }

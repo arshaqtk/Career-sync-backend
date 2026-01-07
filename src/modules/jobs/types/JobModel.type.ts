@@ -7,13 +7,13 @@ export interface IJob extends Document {
   skills?: string[];
   experienceMin?: number;
   experienceMax?: number;
-  salary?: string;
+  salary?: number;
   field: string; 
   location?: string;
   remote?: boolean;
   jobType: "full-time" | "part-time" | "internship";
   postedBy: Schema.Types.ObjectId|string;
-  status: "open" | "closed" | "paused";
+  status: "open" | "closed" | "paused"; 
   applicationCount?: number;
    blockedAt:Date|null;
   blockReason?:string|null;

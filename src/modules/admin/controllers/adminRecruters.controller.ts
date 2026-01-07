@@ -3,11 +3,10 @@ import { adminRecruiterListService, blockRecruiterByAdminService, getAdminRecrui
 
 export const adminGetRecruiters=async(req:Request,res:Response)=>{
     const {search,limit=10,page=1,status}=req.query
-    console.log(req.query)
     const recruiters=await adminRecruiterListService({
         page: Number(page),
          limit: Number(limit),
-         search,status:status as "active" | "blocked" | "all" })
+         search:search as string,status:status as "active" | "blocked" | "all" })
 
          res.status(200).json({
       success: true,

@@ -1,4 +1,4 @@
-import { CustomError } from "@/shared/utils/customError"
+import { CustomError } from "../../../shared/utils/customError"
 import { jobRepository } from "../repository/job.repository"
 import { UpdateJobStatusDTO } from "../types/jobStatus.types";
 
@@ -24,7 +24,7 @@ export const updateJobStatusService = async ({
     )
   }
 
-  // 🔒 IMPORTANT: Admin-blocked job protection
+  
   if (job.status === "paused") {
     throw new CustomError(
       "This job is blocked by admin and cannot be modified",

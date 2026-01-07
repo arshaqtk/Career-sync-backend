@@ -149,9 +149,9 @@ const updateByIdAndPopulate = async (id: string,options: UpdateByIdOptions<IInte
     query = query.populate(normalizedPopulate);
   }
 
-  if(select){
-            query=query.select(select);
-        }
+  // if(select){
+  //           query=query.select(select);
+  //       }
 
 
 

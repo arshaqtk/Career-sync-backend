@@ -10,6 +10,7 @@ import { sendApplicationStatusUpdateEmail } from "./sendEmail.service";
 import { ApplicationQuery } from "../types/applicationQuery.types";
 import { InterviewRepository } from "../../../modules/Interview/repository/interview.repository";
 import { INTERVIEW_STATUS, InterviewRoundType, InterviewStatus } from "../../../modules/Interview/types/interview.type";
+import { createNotificationService } from "../../../modules/notification/services/createNotification.service";
 
 
 const applicationRepository = ApplicationRepository()
@@ -50,6 +51,16 @@ export const ApplicationService = () => {
       await jobRepository.updateById(data.jobId, { $inc: { applicationCount: 1 } });
 
     }
+
+     await createNotificationService({
+  recipientId: job.postedBy as string, 
+  senderId: candidateId,               
+  entityId: data.jobId,
+  title: `New application received`,
+  message: `A candidate has applied for your job "${job.title}". Review the application to proceed.`,
+  type: "APPLICATION_SUBMITTED",
+})
+           
     return application
   };
 

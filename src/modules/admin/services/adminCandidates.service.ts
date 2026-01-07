@@ -76,6 +76,8 @@ export const adminCandidateListService = async (query: UserQuery) => {
     UserRepository.countByQuery(match),
   ])
 
+
+
   return {
     candidates,
     pagination: {
@@ -139,6 +141,8 @@ export const blockCandidateByAdminService = async ({
   } catch (error) {
     console.error("Email sending failed:", error)
   }
+
+  
 
   return { success: true }
 }

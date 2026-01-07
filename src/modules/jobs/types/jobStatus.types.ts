@@ -1,3 +1,7 @@
 import { IJob } from "./JobModel.type";
 
-export type UpdateJobStatusDTO = Pick<IJob, "status">;
+export type UpdateJobStatusDTO = {
+    wasClosedByRecruiter:boolean;
+    status:"open"| "closed"| "paused"
+}
+    

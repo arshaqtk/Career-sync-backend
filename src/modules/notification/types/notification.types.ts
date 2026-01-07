@@ -12,6 +12,9 @@ export type NotificationType =
   | "ACCOUNT_BLOCKED"
   | "ACCOUNT_UNBLOCKED"
   | "REPORT_UPDATED"
+  | "JOB_BLOCKED"
+  |"JOB_UNBLOCKED"
+  |"APPLICATION_SUBMITTED"
 
 export interface INotification{
     _id?: Types.ObjectId | string

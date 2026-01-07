@@ -1,5 +1,6 @@
 import { Request, Response } from "express"
 import { adminJobListService, blockJobByAdminService, getAdminJobDetailService, unblockJobByAdminService } from "../services/adminJobs.service"
+import { CustomError } from "../../../shared/utils/customError"
 
 export const adminGetJobs = async (req: Request, res: Response) => {
   const {
@@ -38,12 +39,17 @@ export const adminGetJobDetail = async (req: Request, res: Response) => {
 
 
 export const adminBlockJob = async (req: Request, res: Response) => {
+  const adminId=req.user?.id
   const { id: jobId } = req.params
   const { reason } = req.body
+  if(!adminId){
+    throw new CustomError("SomeThing went wrong....")
+  }
 
   await blockJobByAdminService({
     jobId,
     reason,
+    adminId
   })
 
   return res.status(200).json({
@@ -54,8 +60,12 @@ export const adminBlockJob = async (req: Request, res: Response) => {
 
 export const adminUnblockJob = async (req: Request, res: Response) => {
   const { id: jobId } = req.params
+const adminId=req.user?.id
 
-  await unblockJobByAdminService({ jobId})
+if(!adminId){
+    throw new CustomError("SomeThing went wrong....")
+  }
+  await unblockJobByAdminService({ jobId,adminId})
 
   return res.status(200).json({
     success: true,

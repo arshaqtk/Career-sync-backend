@@ -13,20 +13,21 @@ export const buildLookupStages = (populate?: PopulateOptions[]) => {
         `[Aggregation Populate Error] No collection mapping for: ${path}`
       );
     }
-
-    const projectStage =
-      p.select
-        ? [{
-            $project: p.select.split(" ").reduce(
-              (acc, key) => {
-                acc[key] = 1;
-                return acc;
-              },
-              { _id: 1 } as Record<string, 1>
-            ),
-          }]
-        : [];
-
+const select = typeof p.select === "string" ? p.select : "";
+   const projectStage =
+  select
+    ? [
+        {
+          $project: select.split(" ").reduce<Record<string, 1>>(
+            (acc, key) => {
+              acc[key] = 1;
+              return acc;
+            },
+            { _id: 1 }
+          ),
+        },
+      ]
+    : [];
     return [
       {
         $lookup: {

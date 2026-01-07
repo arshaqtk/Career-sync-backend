@@ -24,6 +24,9 @@ const notificationSchema=new mongoose.Schema<INotification>({
     "ACCOUNT_BLOCKED",
     "ACCOUNT_UNBLOCKED",
     "REPORT_UPDATED",
+    "JOB_BLOCKED",
+  "JOB_UNBLOCKED",
+  "APPLICATION_SUBMITTED"
   ],
   required: true,
 },
