@@ -152,44 +152,70 @@ const getCandidateApplicationDetailService = async (applicationId: string)=> {
 
 
 //get all applications 
-const getRecruiterApplications=async(recruiterId:string):Promise <RecruiterApplicationDTO[]> =>{
+const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):Promise <{
+  applications:RecruiterApplicationDTO[],
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };}> =>{
   
+  const { page, limit, status, search,sortBy } = query;
+   const filter: any = {recruiterId }
+
+   filter.status = { $nin: ["Pending", "Shortlisted"] };
+
+   if (status && status !== "all" && status !== "Pending" &&status !== "Shortlisted" ) { 
+     filter.status = status;
+    }
+    
+ const sort: 1 | -1 = sortBy === "newest" ? -1 : 1;
+  const skip = (page - 1) * limit;
+
   const applications=await applicationRepository.findMany({
-    filter: {
-  recruiterId,
-  status: { $in: ["Interview", "Selected"] }
-} ,populate: [
+    filter
+    ,populate: [
         { path: "jobId" },
         { path: "candidateId" }
-      ]
+      ],sort:{createdAt:sort},limit,skip
     }) as unknown as IApplicationPopulated[]
+
+    const mappedApplications=applications.map((app) => ({
+    id: app._id.toString(),
+    candidate: {
+      id: app.candidateId._id,
+      name: app.candidateId.name,
+      email: app.candidateId.email,
+      skills: app.candidateId.candidateData.skills,
+      resumeUrl: app.candidateId.candidateData.resumeUrl?.url
+    },
+    job: {
+      id: app.jobId._id,
+      title: app.jobId.title,
+      company: app.jobId.company
+    },
+    currentRole: app.currentRole,
+    experience: app.experience,
+    status: app.status,
+    coverLetter: app.coverLetter,
+    expectedSalary: app.expectedSalary,
+    noticePeriod: app.noticePeriod,
+    createdAt: app.createdAt
+  }));
+
+  const total=await applicationRepository.countByQuery(filter)
     
-    return applications.map((app) => ({  
-
-      id: app._id.toString(),
-      candidate: {
-        id: app.candidateId._id,
-        name: app.candidateId.name,
-        email: app.candidateId.email,
-        skills: app.candidateId.candidateData.skills,
-        resumeUrl: app.candidateId.candidateData.resumeUrl?.url
-      },
-      job: {
-        id: app.jobId._id,
-        title: app.jobId.title,
-        company: app.jobId.company
-      },
-      currentRole: app.currentRole,
-      experience: app.experience,
-      status: app.status,
-      coverLetter: app.coverLetter,
-      expectedSalary: app.expectedSalary,
-      noticePeriod: app.noticePeriod,
-      createdAt: app.createdAt
-
-    })
-    )
-  };
+  return{
+    applications:mappedApplications,
+     pagination: {
+      page,
+      limit,
+      total,
+      totalPages: Math.ceil(total / limit),
+    },
+  } 
+};
 
 
 

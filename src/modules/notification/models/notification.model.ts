@@ -26,7 +26,9 @@ const notificationSchema=new mongoose.Schema<INotification>({
     "REPORT_UPDATED",
     "JOB_BLOCKED",
   "JOB_UNBLOCKED",
-  "APPLICATION_SUBMITTED"
+  "APPLICATION_SUBMITTED",
+  "CANDIDATE_SELECTED",
+  "CANDIDATE_REJECTED"
   ],
   required: true,
 },

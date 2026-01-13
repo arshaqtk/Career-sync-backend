@@ -1,3 +1,4 @@
+import { NotificationModel } from "../../../modules/notification/models/notification.model";
 import { CustomError } from "../../../shared/utils/customError";
 import { updateRecruiterCompanyDTO, UpdateUserProfileDTO } from "../dtos/user.dto";
 import { UserRepository } from "../repository/user.repository"
@@ -6,7 +7,7 @@ import { UserRepository } from "../repository/user.repository"
 export const UserService = {
   getProfile: async (id: string) => {
     const user = await UserRepository.findById(id);
-
+    const notificationCount=await NotificationModel.countDocuments({recipientId:id,isRead:false})
     if (!user) {
       throw new CustomError("User not found", 404);
     }
@@ -14,12 +15,14 @@ export const UserService = {
    if (user.role === "recruiter") {
   return {
     ...user.toObject(),
+    notificationCount,
     candidateData: undefined
   };
 }
 
 return {
   ...user.toObject(),
+  notificationCount,
   recruiterData: undefined
 };
   },

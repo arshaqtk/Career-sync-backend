@@ -151,9 +151,9 @@ export const InterviewServices = () => {
       _id: interview._id.toString(),
       applicationId: interview.applicationId.toString(),
       candidate: {
-        _id: (interview?.candidateId as any)._id,
-        name: (interview?.candidateId as any).name,
-        email: (interview?.candidateId as any).email
+        _id:interview?.candidateId._id.toString(),
+        name:interview?.candidateId.name,
+        email:interview?.candidateId.email
       },
       job: {
         _id: (interview?.jobId as any)._id,
@@ -282,6 +282,25 @@ export const InterviewServices = () => {
       ],
     });
 
+    const date = start.toISOString().split("T")[0];
+
+
+const time = start.toISOString().split("T")[1].slice(0, 5);
+
+     try {
+         await sendInterviewEmail(INTERVIEW_STATUS.SCHEDULED, {
+           to: application.candidateId.email,
+           candidateName: application.candidateId.name,
+           jobTitle: application.jobId.title,
+           companyName: application.jobId.company,
+           date,
+           time
+         });
+       } catch (err) {
+         console.error("Interview schedule email failed:", err);
+    
+       }
+
   await   createNotificationService({
       recipientId:application.candidateId._id,
       senderId:application.recruiterId._id,
@@ -303,6 +322,8 @@ type:"INTERVIEW_SCHEDULED",
 
 //===============================RESECHDULE INTERVIEW=================================================================
 
+
+
   const recruiterRescheduleInterview = async ({
     recruiterId,   interviewId, payload,
   }: {
@@ -317,6 +338,7 @@ type:"INTERVIEW_SCHEDULED",
       reason?: string
     }
   }) => {
+
     if (!recruiterId || !interviewId) {
       throw new CustomError("Recruiter ID or Interview ID missing", 400)
     }
@@ -374,6 +396,31 @@ type:"INTERVIEW_SCHEDULED",
 
     await interview.save()
 
+    const date = start.toISOString().split("T")[0];
+
+
+const time = start.toISOString().split("T")[1].slice(0, 5);
+ const populatedinterview = await interviewRepository.findById({
+      id: interviewId,
+      populate: [
+        { path: "candidateId", select: "name email" },
+        { path: "jobId", select: "company title" },
+      ],
+    });
+     try {
+         await sendInterviewEmail(INTERVIEW_STATUS.RESCHEDULED, {
+           to: populatedinterview.candidateId.email,
+           candidateName: populatedinterview.candidateId.name,
+           jobTitle: populatedinterview.jobId.title,
+           companyName: populatedinterview.jobId.company,
+           date,
+           time
+         });
+       } catch (err) {
+         console.error("Interview schedule email failed:", err);
+    
+       }
+
  await createNotificationService({
   recipientId: interview.candidateId,
   senderId: interview.recruiterId,
@@ -389,6 +436,7 @@ type:"INTERVIEW_SCHEDULED",
   entityType: "interview",
   entityId: interview._id,
 })
+
     return interview
   }
 

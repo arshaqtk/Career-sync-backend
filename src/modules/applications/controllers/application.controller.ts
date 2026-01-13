@@ -18,8 +18,12 @@ export const applyToJob=async(req:Request,res:Response)=>{
 //application by candidate
 export const getMyApplicationsController = expressAsyncHandler(async (req:Request,res:Response) => {  
   const id=req.user?.id as string
-      const { page = 1, limit = 10,sortBy,status } = req.query as ApplicationQuery
-  const response = await applicationService.getMyApplications(id,{status,sortBy});
+      const {page = 1, limit = 10 ,sortBy,status } = req.query
+  const response = await applicationService.getMyApplications(id,{
+   page: Number(page),
+      limit: Number(limit),
+     status:status as  "all" | "Pending" | "Shortlisted" | "Interview" | "Rejected"
+    ,sortBy:sortBy as "newest" | "oldest"});
   res.status(200).json(response);
 });
  
@@ -37,10 +41,17 @@ export const getApplicationController = expressAsyncHandler(async (req:Request,r
 //recruiter get all applications which have status interview 
 export const getRecruiterApplicationsController=async(req:Request,res:Response)=>{
   const recruiterId=req.user?.id
+   const { page = 1, limit = 10,status,sortBy,search } = req.query
   if(!recruiterId){
     throw new CustomError("unAuthorized",401)
   } 
-    const response = await applicationService.getRecruiterApplications(recruiterId);
+    const response = await applicationService.getRecruiterApplications(recruiterId,{
+      page: Number(page),
+      limit: Number(limit),
+      search:search as string,
+       status:status as  "all" | "Pending" | "Shortlisted" | "Interview" | "Rejected" ,
+      sortBy:sortBy as "newest" | "oldest"
+    });
   res.status(200).json(response);
 }
 

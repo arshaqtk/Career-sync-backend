@@ -61,6 +61,7 @@ const jobsWithAppliedFlag = jobs.map(job => ({
   ...job,
   hasApplied: appliedJobIdStrings.includes(job._id.toString()),
 }));
+console.log(jobs)
   return {
     pagination: {
       page,

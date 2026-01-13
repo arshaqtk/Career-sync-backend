@@ -46,10 +46,13 @@ export const ApplicationRepository = (): IApplicationRepository => {
 
 
   const findMany = async (options: FindManyOptions = {}) => {
-    const { filter = {}, sort, limit, populate, select } = options
+    const { filter = {}, sort, limit, populate,skip } = options
+
     let query = ApplicationModel.find(filter);
     if (sort) query = query.sort(sort);
+    if (skip) query = query.skip(skip);
     if (limit) query = query.limit(limit);
+
         if (populate) {
     const normalizedPopulate =
       typeof populate === "string"
@@ -64,6 +67,9 @@ export const ApplicationRepository = (): IApplicationRepository => {
   }
     return query.lean().exec()
   };
+
+
+
 
   const getCandidateApplicationDetail=async(
     applicationId: string

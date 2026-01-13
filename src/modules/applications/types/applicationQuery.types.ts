@@ -1,7 +1,8 @@
 export interface ApplicationQuery {
-  page?: string;
-  limit?: string;
-   status?: "all" | "applied" | "shortlisted" | "interview" | "rejected";
+  page: number;
+  limit: number;
+   status?: "all" | "Pending" | "Shortlisted" | "Interview" | "Rejected"|"Selected";
   sortBy?: "newest" | "oldest";
+  search?:string
 }
 
