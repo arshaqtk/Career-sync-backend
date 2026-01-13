@@ -30,7 +30,7 @@ import { updateResumeService } from "../services/candidateResume.service";
 
 export const updateResumeController = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const id = req.user?.id;
+    const id = req.user?.id as string
 
     if (!id) {
       throw new CustomError("Unauthorized", 401);

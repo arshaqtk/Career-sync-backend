@@ -19,7 +19,8 @@ export const getAdminRecruiterDetailController = async (
   req: Request,
   res: Response
 ) => {
-  const { recruiterId } = req.params
+     const  recruiterId  = req.params.recruiterId as string
+
 
   const recruiter = await getAdminRecruiterDetailService(recruiterId)
 
@@ -33,7 +34,9 @@ export const blockRecruiterByAdminController = async (
   req: Request,
   res: Response
 ) => {
-  const { recruiterId } = req.params
+        const  recruiterId  = req.params.recruiterId as string
+
+
   const { reason } = req.body
 
   await blockRecruiterByAdminService({
@@ -52,7 +55,8 @@ export const unblockRecruiterByAdminController = async (
   req: Request,
   res: Response
 ) => {
-  const { recruiterId } = req.params
+    const  recruiterId  = req.params.recruiterId as string
+
  
 
   await unblockRecruiterByAdminService({

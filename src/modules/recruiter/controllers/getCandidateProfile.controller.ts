@@ -6,7 +6,7 @@ const recruiterService = RecruiterService()
 
 
 export const getCandidateProfileController = async (req: Request, res: Response) => {
-    const candidateId = req.params.candidateId
+    const candidateId = req.params.candidateId as string
     const result = await recruiterService.getCandidateProfile(candidateId)
 
     res.status(200).json(result);

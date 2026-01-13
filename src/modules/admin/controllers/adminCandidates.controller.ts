@@ -35,7 +35,7 @@ export const blockCandidateByAdminController = async (
   req: Request,
   res: Response
 ) => {
-  const { candidateId } = req.params
+  const  candidateId  = req.params.candidateId as string
   const { reason } = req.body
 
   await blockCandidateByAdminService({
@@ -53,7 +53,8 @@ export const unblockCandidateByAdminController = async (
   req: Request,
   res: Response
 ) => {
-  const { candidateId } = req.params
+    const  candidateId  = req.params.candidateId as string
+
  
 
   await unblockCandidateByAdminService({

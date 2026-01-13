@@ -62,7 +62,8 @@ export const rescheduleInterviewController = async (req:Request,res:Response) =>
 //------------------Fetch all the interview by each application--------------------------------------
 export const recruiterGetInterviewsByApplicationController=async(req:Request,res:Response)=>{
     const recruiterId=req.user?.id as string
-    const {applicationId}=req.params 
+     const  applicationId  = req.params.applicationId as string;
+
   const response=await interviewServices.recruiterGetInterviewsByApplicationId({applicationId,recruiterId})
   res.status(200).json({
   success: true,
@@ -87,7 +88,7 @@ export const recruiterUpdateInterviewStatusController=async(req:Request,res:Resp
 
 export const recruiterFinalizeCandidateController=async(req:Request,res:Response)=>{
   const recruiterId=req.user?.id as string
-  const { applicationId } = req.params;
+  const  applicationId  = req.params.applicationId as string;
   const {decision,note}=req.body
    const response=await interviewServices.finalizeCandidateService({recruiterId,applicationId,decision,note})
   res.status(200).json({

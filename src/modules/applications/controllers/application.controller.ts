@@ -29,7 +29,7 @@ export const getMyApplicationsController = expressAsyncHandler(async (req:Reques
  
 //candidate application detail view
 export const getApplicationController = expressAsyncHandler(async (req:Request,res:Response) => {
-  const { applicationId } = req.params
+  const  applicationId  = req.params.applicationId as string
   const response = await applicationService.getCandidateApplicationDetailService(applicationId);
   res.status(200).json(response); 
 }); 
@@ -70,7 +70,8 @@ export const getApplicantDetailsController=async(req:Request,res:Response)=>{
 
 export const updateApplicationStatusController=async(req:Request,res:Response)=>{
 
-  const applicationId=req.params.applicationId
+   const  applicationId  = req.params.applicationId as string
+
   const {status}=req.body
 
   const updated=await applicationService.updateApplicationStatusService(applicationId,status)

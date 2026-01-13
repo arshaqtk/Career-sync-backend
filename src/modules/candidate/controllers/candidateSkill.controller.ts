@@ -4,7 +4,7 @@ import { Request, Response } from "express";
 import { candidateSkillService } from "../services/candidateSkill.service";
 
 export const updateCandidateProfileSkill=expressAsyncHandler(async (req: Request, res: Response) => {
-console.log(req.body)
+
     const userId = req.user?.id as string;
     if (!userId) {
       throw new CustomError("Unauthorized", 401);

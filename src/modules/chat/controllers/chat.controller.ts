@@ -17,8 +17,8 @@ export const getConversationListController=async(req:Request,res:Response)=>{
 
 
 export const getMessagesController=async(req:Request,res:Response)=>{
-   const userId=req.user?.id
-   const {conversationId}=req.params
+   const userId=req.user?.id as string
+   const conversationId=req.params.conversationId as string
 //  const {limit=10,page=1}=req.query
  if(!userId){
     throw new CustomError("UnAuthorized")
