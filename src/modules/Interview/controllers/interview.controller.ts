@@ -19,9 +19,9 @@ export const recruiterGetInterviewsController=async(req:Request,res:Response)=>{
 
 
 export const recruiterGetInterviewByIdController=async(req:Request,res:Response)=>{
-    const {interviewId}=req.params
+   const interviewId = req.params.interviewId as string;
    
-  const response=await interviewServices.recruiterGetInterviewById(interviewId)
+  const response=await interviewServices.recruiterGetInterviewById(interviewId )
   res.status(200).json({
   success: true,
   message: "Interview fetched successfully",
@@ -44,7 +44,7 @@ export const recruiterScheduleInterviewController=async(req:Request,res:Response
 
 export const rescheduleInterviewController = async (req:Request,res:Response) => {
   const recruiterId = req.user?.id as string
-  const { interviewId } = req.params
+  const interviewId = req.params.interviewId as string;
 
   const interview = await interviewServices.recruiterRescheduleInterview({
     recruiterId,
@@ -74,7 +74,7 @@ export const recruiterGetInterviewsByApplicationController=async(req:Request,res
 
 
 export const recruiterUpdateInterviewStatusController=async(req:Request,res:Response)=>{
-  const {interviewId}=req.params
+ const interviewId = req.params.interviewId as string;
   const recruiterId=req.user?.id as string
   const payload=req.body
    const response=await interviewServices.recruiterUpdateInterviewStatus({recruiterId,interviewId,payload})
@@ -113,7 +113,7 @@ export const candidateGetInterviewsController=async (req:Request,res:Response)=>
 
 export const candidateGetInterviewDetailController=async (req:Request,res:Response)=>{
   const candidateId=req.user?.id as string
-    const {interviewId}=req.params
+    const interviewId = req.params.interviewId as string;
   
   const response=await interviewServices.candidateGetInterviewById(candidateId,interviewId)
   res.status(200).json({
