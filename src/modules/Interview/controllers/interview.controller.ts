@@ -21,7 +21,7 @@ export const recruiterGetInterviewsController=async(req:Request,res:Response)=>{
 export const recruiterGetInterviewByIdController=async(req:Request,res:Response)=>{
    const interviewId = String(req.params.interviewId)
    
-  const response=await interviewServices.recruiterGetInterviewById(interviewId )
+  const response=await interviewServices.recruiterGetInterviewById(String(interviewId))
   res.status(200).json({
   success: true,
   message: "Interview fetched successfully",
@@ -34,7 +34,8 @@ export const recruiterScheduleInterviewController=async(req:Request,res:Response
   const recruiterId=String(req.user?.id)
   const payload = scheduledInterviewSchema.parse(req.body)
   const scheduleMode:"initial" | "next_round"=payload.scheduleMode
-  const response=await interviewServices.recruiterScheduleInterview({recruiterId,applicationId,payload,scheduleMode})
+  const response=await interviewServices.recruiterScheduleInterview({recruiterId:String(recruiterId),applicationId:String(applicationId),
+    payload,scheduleMode})
   res.status(200).json({
   success: true,
   message: "Interview scheduled successfully",
@@ -47,8 +48,8 @@ export const rescheduleInterviewController = async (req:Request,res:Response) =>
   const interviewId = req.params.interviewId as string;
 
   const interview = await interviewServices.recruiterRescheduleInterview({
-    recruiterId,
-    interviewId,
+    recruiterId:String(recruiterId),
+    interviewId:String(interviewId),
     payload: req.body,
   })
 
@@ -64,7 +65,7 @@ export const recruiterGetInterviewsByApplicationController=async(req:Request,res
     const recruiterId=String(req.user?.id)
      const  applicationId  = String(req.params.applicationId)
 
-  const response=await interviewServices.recruiterGetInterviewsByApplicationId({applicationId,recruiterId})
+  const response=await interviewServices.recruiterGetInterviewsByApplicationId({applicationId:String(applicationId),recruiterId:String(recruiterId)})
   res.status(200).json({
   success: true,
   message: "Interview fetched successfully",
@@ -78,7 +79,8 @@ export const recruiterUpdateInterviewStatusController=async(req:Request,res:Resp
  const interviewId = req.params.interviewId as string;
   const recruiterId=req.user?.id as string
   const payload=req.body
-   const response=await interviewServices.recruiterUpdateInterviewStatus({recruiterId,interviewId,payload})
+   const response=await interviewServices.recruiterUpdateInterviewStatus({recruiterId:String(recruiterId),
+    interviewId:String(interviewId),payload})
   res.status(200).json({
   success: true,
   message: `Interview ${payload.status} successfully`,
@@ -90,7 +92,7 @@ export const recruiterFinalizeCandidateController=async(req:Request,res:Response
   const recruiterId=req.user?.id as string
   const  applicationId  = req.params.applicationId as string;
   const {decision,note}=req.body
-   const response=await interviewServices.finalizeCandidateService({recruiterId,applicationId,decision,note})
+   const response=await interviewServices.finalizeCandidateService({recruiterId:String(recruiterId),applicationId:String(applicationId),decision,note})
   res.status(200).json({
   success: true,
   message: `Candidate ${decision} successfully`,
@@ -116,7 +118,7 @@ export const candidateGetInterviewDetailController=async (req:Request,res:Respon
   const candidateId=req.user?.id as string
     const interviewId = req.params.interviewId as string;
   
-  const response=await interviewServices.candidateGetInterviewById(candidateId,interviewId)
+  const response=await interviewServices.candidateGetInterviewById(String(candidateId),String(interviewId))
   res.status(200).json({
   success: true,
   message: `Interviews fetched successfully`,
