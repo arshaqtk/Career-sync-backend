@@ -15,7 +15,7 @@ export const updateJobController =expressAsyncHandler(async (req:Request, res:Re
 }
 
     const data:Partial<IJob> = req.body;
-    const job = await updateJobService({data,employerId,jobId});
+    const job = await updateJobService({data,employerId,jobId:String(jobId)});
     res.status(200).json({
       message: "Job updated successfully",
       job,

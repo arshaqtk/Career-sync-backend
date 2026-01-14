@@ -14,7 +14,7 @@ export const deleteJobCOntroller=expressAsyncHandler(async(req:Request,res:Respo
        throw new CustomError("Job ID is required", 400);
     }
     
-    const deletedJob = await deleteJobService({ employerId, jobId });
+    const deletedJob = await deleteJobService({ employerId, jobId:String(jobId) });
     res.status(200).json({
     message: "Job deleted successfully",
     deletedJob,

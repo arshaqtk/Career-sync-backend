@@ -58,13 +58,13 @@ export const getRecruiterApplicationsController=async(req:Request,res:Response)=
 
 //application by recruiter based on job
 export const getApplicationsByJobController = async (req:Request,res:Response) => {
-  const response = await applicationService.getApplicationsByJob(req.params.jobId);
+  const response = await applicationService.getApplicationsByJob(String(req.params.jobId));
   res.status(200).json(response);
 }
 
 //Recruiter  applicant detail view 
 export const getApplicantDetailsController=async(req:Request,res:Response)=>{
-  const response=await applicationService.getApplicantDetails(req.params.applicationId)
+  const response=await applicationService.getApplicantDetails(String(req.params.applicationId))
   res.status(200).json(response);
 }
 

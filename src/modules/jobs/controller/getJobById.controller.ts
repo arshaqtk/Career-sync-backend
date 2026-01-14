@@ -10,6 +10,6 @@ export const getJobByIdController=expressAsyncHandler(async(req:Request,res:Resp
    if(!candidateId){
             throw new CustomError("unAuthorized",401)
        }
-    const jobs=await getJobByIdService({jobId,candidateId})
+    const jobs=await getJobByIdService({jobId:String(jobId),candidateId})
      res.status(200).json(jobs);
 })

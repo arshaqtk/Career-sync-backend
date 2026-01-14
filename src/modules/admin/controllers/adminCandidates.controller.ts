@@ -23,7 +23,7 @@ export const getAdminCandidateDetailController = async (
 ) => {
   const { candidateId } = req.params
 
-  const candidate = await getAdminCandidateDetailService(candidateId)
+  const candidate = await getAdminCandidateDetailService(String(candidateId))
 
   return res.status(200).json({
     success: true,

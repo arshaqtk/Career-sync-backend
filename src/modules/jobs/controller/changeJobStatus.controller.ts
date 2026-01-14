@@ -16,7 +16,7 @@ export const updateJobStatusController =expressAsyncHandler(async (req:Request, 
 }
     const data:UpdateJobStatusDTO = req.body; 
   
-    const job = await updateJobStatusService({data,employerId,jobId});
+    const job = await updateJobStatusService({data,employerId,jobId:String(jobId)});
     res.status(200).json({
       message: "Job updated successfully",
       job, 

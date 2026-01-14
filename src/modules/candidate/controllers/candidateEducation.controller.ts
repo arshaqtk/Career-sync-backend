@@ -27,7 +27,7 @@ export const addCandidateEducationController=expressAsyncHandler(async (req: Req
 
     const educationId=req.params.id
     const {education}=req.body
-    const updatedEducation=await updateCandidateEducationService({userId,educationId,education})
+    const updatedEducation=await updateCandidateEducationService({userId,educationId:String(educationId),education})
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",
