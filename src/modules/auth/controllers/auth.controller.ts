@@ -9,11 +9,11 @@ export const AuthController = {
         const result = await Authservice.register(req.body);
         res.status(201).json(result);
         return;
-    }),   
+    }),
 
     login: asyncHandler(async (req: Request, res: Response) => {
         const result = await Authservice.login(req.body);
- 
+
         if (!result.success) {
             res.status(200).json({
                 success: false,
@@ -30,15 +30,21 @@ export const AuthController = {
 
         res.cookie("accessToken", result.accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-           sameSite: "none",
+            //     secure: process.env.NODE_ENV === "production",
+            //    sameSite: "none",
+            secure: false,
+            sameSite: "lax",
+
             maxAge: 15 * 60 * 1000
         });
 
         res.cookie("refreshToken", result.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
-           sameSite: "none",
+            //     secure: process.env.NODE_ENV === "production",
+            //    sameSite: "none",
+            secure: false,
+            sameSite: "lax",
+
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -47,8 +53,8 @@ export const AuthController = {
             success: true,
             message: result.message,
             user: {
-                id:result.id,
-                role:result.role,
+                id: result.id,
+                role: result.role,
                 status: result.status,
                 email: result.email,
                 isVerified: result.isVerified
@@ -77,10 +83,10 @@ export const AuthController = {
         return;
     }),
 
-    resendOtp:asyncHandler(async(req:Request,res:Response)=>{
-        const {email}=req.body
+    resendOtp: asyncHandler(async (req: Request, res: Response) => {
+        const { email } = req.body
 
-         const result = await Authservice.resendRegisterOtp(email);
+        const result = await Authservice.resendRegisterOtp(email);
 
         if (!result.success) {
             res.status(400).json({
@@ -115,23 +121,23 @@ export const AuthController = {
     }),
     logout: asyncHandler(async (req: Request, res: Response) => {
 
-    res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: false, // change to true in production
-        sameSite: "lax",
-        path: "/",
-    });
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: false, // change to true in production
+            sameSite: "lax",
+            path: "/",
+        });
 
-    
-    res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: false, // change to true in production
-        sameSite: "lax",
-        path: "/",
-    });
 
-    
-     res.status(204).send();
-})
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: false, // change to true in production
+            sameSite: "lax",
+            path: "/",
+        });
+
+
+        res.status(204).send();
+    })
 
 };
