@@ -11,7 +11,11 @@ const redis=createClient({
 })
 
 redis.on("error",err => console.log('Redis Client Error', err));
-
-redis.connect();
+try{
+    redis.connect();
+console.log("Redis connected");
+} catch (err) {
+  console.error("Redis failed, continuing without cache");
+}
 
 export default redis;

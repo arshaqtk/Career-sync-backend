@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 
 export const authMiddleware=(req:Request,res:Response,next:NextFunction)=>{
   console.log("authenticated")
+  console.log("Incoming cookies:", req.cookies);
   const token = req.cookies?.accessToken;
 
     if(!token){
