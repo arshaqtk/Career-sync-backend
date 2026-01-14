@@ -8,7 +8,7 @@ import { chatSocket } from "./modules/chat/socket/chat.socket"
 
 
 
-const PORT=ENV.PORT
+const PORT=ENV.PORT||"5000"
 
 const startServer=async()=>{
     await connectDB()
