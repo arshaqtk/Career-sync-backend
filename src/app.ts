@@ -24,16 +24,12 @@ import { CustomError } from "./shared/utils/customError";
 const app=express()
   
 app.use(helmet())
-
 app.use(cors({
-  origin: 'https://career-sync-omega.vercel.app',   // ← no trailing slash!
+  origin: 'https://career-sync-frontend.vercel.app/',   // ← no trailing slash!
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
 }));
-
-app.options('*', cors());
-
 app.use(morgan('combined'))
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100,
   handler:(req,res,next)=>{
