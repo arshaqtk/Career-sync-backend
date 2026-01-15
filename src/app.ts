@@ -26,7 +26,7 @@ const app=express()
 app.use(helmet())
 app.use( 
   cors({
-    origin: "https://career-sync-omega.vercel.app",
+    origin: "https://career-sync-frontend.vercel.app",
     credentials: true,
   })
 );
