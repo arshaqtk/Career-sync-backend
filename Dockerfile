@@ -1,27 +1,26 @@
-# Use lightweight Node image
-FROM node:18-alpine
+# 1️⃣ Base image
+FROM node:20-alpine
 
-# Set working directory
+# 2️⃣ Set working directory
 WORKDIR /app
 
-# Copy dependency files first (cache optimization)
+# 3️⃣ Copy dependency files first
 COPY package*.json ./
 
-# Install ALL dependencies (needed for build)
+# 4️⃣ Install ALL dependencies (needed for build)
 RUN npm install
 
-# Copy source code
+# 5️⃣ Copy source code
 COPY . .
 
-# Build TypeScript → JavaScript
+# 6️⃣ Build TypeScript → JavaScript
 RUN npm run build
 
-# Install only production dependencies
-RUN npm prune  --production
+# 7️⃣ Remove dev dependencies (optimize image)
+RUN npm prune --production
 
-
-# Expose backend port
+# 8️⃣ Expose port
 EXPOSE 5000
 
-# Start server
+# 9️⃣ Run compiled JS
 CMD ["node", "dist/server.js"]
