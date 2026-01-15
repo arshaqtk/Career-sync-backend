@@ -25,7 +25,7 @@ const app=express()
   
 app.use(helmet())
 app.use(cors({
-  origin: 'https://career-sync-frontend.vercel.app/',   // ← no trailing slash!
+  origin: 'https://career-sync-frontend.vercel.app',   // ← no trailing slash!
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
