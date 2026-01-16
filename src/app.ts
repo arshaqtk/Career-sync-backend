@@ -45,7 +45,6 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
 }));
 
-app.options("*", cors());
 app.use(morgan('combined'))
 
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100,
