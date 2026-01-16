@@ -44,14 +44,14 @@ export const Authservice = {
   const user = await UserRepository.findByEmail(data.email).select("+password")
 
   if (!user) {
-    throw new CustomError("Invalid email or password", 400)
+    throw new CustomError("Invalid credentials", 400)
   }
 
   const match = await bcrypt.compare(data.password, user.password)
   const roleAuthenticated = user.role === data.role
 
   if (!match || !roleAuthenticated) {
-    throw new CustomError("Invalid email or password", 400)
+    throw new CustomError("Invalid credentials", 400)
   }
 
  
