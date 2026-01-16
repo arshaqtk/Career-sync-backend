@@ -22,15 +22,32 @@ import { CustomError } from "./shared/utils/customError";
  
 
 const app=express()
+
+const allowedOrigins = [
+ "https://career-sync-frontend.vercel.app", 
+  "https://careersync.duckdns.org",
+];
   
 app.use(helmet())
 app.use(cors({
-  origin: 'https://career-sync-frontend.vercel.app',   // ← no trailing slash!
+   origin: function (origin, callback) {
+      // allow server-to-server & curl
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS"));
+    },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
 }));
+
+app.options("*", cors());
 app.use(morgan('combined'))
+
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100,
   handler:(req,res,next)=>{
     next(new CustomError("Too many requests, please try again later.",429))
