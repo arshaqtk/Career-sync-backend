@@ -3,7 +3,7 @@ import { ConversationModel } from "../models/conversatin.model"
 import { MessageModel } from "../models/message.model"
 import { MessagePayload } from "../types/message.type"
 import { CustomError } from "../../../shared/utils/customError"
-import { string } from "zod"
+import { createNotificationService } from "../../../modules/notification/services/createNotification.service"
 
 export const createConversation=async({user1,user2}:{user1:string,user2:string})=>{
   if(!user1||!user2){
@@ -48,6 +48,23 @@ export const sendMessage=async({content,conversationId,receiverId,senderId}:Mess
     lastMessage: content,
     lastMessageAt: new Date(),
   })
+
+ await createNotificationService({
+  recipientId: receiverObjectId,
+  senderId: senderObjectId,
+
+  type: "NEW_CHAT_MESSAGE",
+
+  title: "New message received",
+
+  message: content
+    ? content
+    : "You have received a new chat message.",
+
+  entityType: "chat",
+  entityId: conversationId, 
+});
+
 
     return message
 }

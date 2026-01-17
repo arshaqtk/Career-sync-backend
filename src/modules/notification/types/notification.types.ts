@@ -15,6 +15,7 @@ export type NotificationType =
   | "JOB_BLOCKED"
   |"JOB_UNBLOCKED"
   |"APPLICATION_SUBMITTED"
+  |"NEW_CHAT_MESSAGE"
 
 export interface INotification{
     _id?: Types.ObjectId | string
@@ -36,6 +37,6 @@ export interface CreateNotificationPayload {
   type: NotificationType
   title: string
   message: string
-  entityType?: "job" | "interview" | "user" | "report"
+  entityType?: "job" | "interview" | "user" | "report"| "chat"
   entityId?: Types.ObjectId | string
 }
