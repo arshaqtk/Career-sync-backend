@@ -7,6 +7,7 @@ import { jobBlockedEmail } from "../templates/jobBlockedEmail"
 import { jobUnblockedEmail } from "../templates/jobUnblockedEmail"
 import { IUser } from "../../../modules/user/models/user.model"
 import { createNotificationService } from "../../../modules/notification/services/createNotification.service"
+import { io } from "../../../server"
 
 
 
@@ -250,7 +251,7 @@ export const blockJobByAdminService = async ({
     } catch (error) {
       console.error("Email sending failed:", error)
     }
-    await   createNotificationService({
+    await   createNotificationService(io,{
          recipientId:user._id,
          senderId:adminId,
          entityId: jobId,
@@ -312,10 +313,10 @@ export const unblockJobByAdminService = async ({
         }),
       })
     } catch (error) {
-      // ❗ Do NOT fail the operation because of email
+      //  Do NOT fail the operation because of email
       console.error("Job unblocked, but email sending failed:", error)
     }
-    await   createNotificationService({
+    await   createNotificationService(io,{
          recipientId:user._id,
          senderId:adminId,
          entityId: jobId,
