@@ -15,6 +15,7 @@ export type NotificationType =
   | "JOB_BLOCKED"
   |"JOB_UNBLOCKED"
   |"APPLICATION_SUBMITTED"
+  |"APPLICATION_UPDATED"
   |"NEW_CHAT_MESSAGE"
 
 export interface INotification{
@@ -24,7 +25,7 @@ export interface INotification{
   type: NotificationType;
   title: string;
   message: string;
-  entityType?: "job" | "interview" | "user" | "report";
+  entityType?: "job" | "interview" | "user" | "report"|"chat";
   entityId?: Types.ObjectId | string;
   isRead: boolean;
   createdAt: Date;

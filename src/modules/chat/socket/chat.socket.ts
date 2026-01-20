@@ -7,7 +7,7 @@ export const chatSocket = (io: Server) => {
 
         const userId = socket.user.id
         socket.join((`user:${userId}`))
-        console.log(`User connected to chat socket: ${userId}`)
+        console.log(`User connected: ${userId}`)
 
         /**
              Join (or create) a conversation room

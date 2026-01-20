@@ -5,16 +5,15 @@ import { ENV } from "./config/env"
 import { initSocket } from "./websocket"
 import { socketAuth } from "./websocket/auth.middleware"
 import { chatSocket } from "./modules/chat/socket/chat.socket"
-
+import {Server} from "socket.io"
 
 
 const PORT=ENV.PORT||5000
-
+let io: Server;
 const startServer=async()=>{
     await connectDB()
     const httpServer=createServer(app)
-    
-const io=initSocket(httpServer)
+ io=initSocket(httpServer)
 socketAuth(io)
 chatSocket(io)
 
@@ -24,3 +23,4 @@ chatSocket(io)
 }
 
 startServer();
+export { io };

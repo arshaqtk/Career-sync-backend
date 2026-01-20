@@ -27,6 +27,7 @@ const notificationSchema=new mongoose.Schema<INotification>({
     "JOB_BLOCKED",
   "JOB_UNBLOCKED",
   "APPLICATION_SUBMITTED",
+  "APPLICATION_UPDATED",
   "CANDIDATE_SELECTED",
   "CANDIDATE_REJECTED",
   "NEW_CHAT_MESSAGE"
@@ -43,7 +44,7 @@ const notificationSchema=new mongoose.Schema<INotification>({
     },
     entityType: {
   type: String,
-  enum: ["job", "interview", "user", "report"],
+  enum: ["job", "interview", "user", "report","chat"],
 },
     entityId:{
         type:mongoose.Schema.Types.ObjectId,
@@ -56,7 +57,8 @@ const notificationSchema=new mongoose.Schema<INotification>({
 })
 
 notificationSchema.index({ recipientId: 1, isRead: 1 })
-notificationSchema.index({ createdAt: -1 })
+notificationSchema.index({ createdAt: -1 }, { expireAfterSeconds: 1296000 })
+
 
 export const NotificationModel = mongoose.model(
   "Notification",

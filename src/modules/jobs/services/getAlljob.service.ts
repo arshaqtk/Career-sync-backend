@@ -22,7 +22,8 @@ export const CandidategetJobsService = async (
 }).distinct("jobId");
 
   const filter: any = {
-    field: candidate.field, 
+    field: candidate.field,
+    status:"open"
   };
 
   if (candidate.candidateData?.skills?.length) {
@@ -42,26 +43,28 @@ export const CandidategetJobsService = async (
   if (field) filter.field = { $regex: field, $options: "i" }
   if (jobType && jobType !== "all") filter.jobType = jobType;
   if (status && status !== "all") filter.status = status;
+
   if (experienceMin || experienceMax) {
   filter.experienceMin = {
     ...(experienceMin && { $gte: experienceMin }),
     ...(experienceMax && { $lte: experienceMax }),
   }
 }
-console.log(filter)
+
   const jobs = await jobRepository.findByQuery(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit).lean();
 
   const total = await jobRepository.countByQuery(filter);
+
 const appliedJobIdStrings = appliedJobIds.map(id => id.toString());
 
 const jobsWithAppliedFlag = jobs.map(job => ({
   ...job,
   hasApplied: appliedJobIdStrings.includes(job._id.toString()),
 }));
-console.log(jobs)
+
   return {
     pagination: {
       page,

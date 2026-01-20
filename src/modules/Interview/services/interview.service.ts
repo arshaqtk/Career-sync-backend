@@ -15,6 +15,8 @@ import { interviewFinalRejectedEmail } from "../emails/interviewFinalRejectedEma
 import { sendEmail } from "../../../shared/email/email.service"
 import { interviewFinalSelectedEmail } from "../emails/interviewFinalSelectedEmail"
 import { createNotificationService } from "../../notification/services/createNotification.service"
+import { io } from "../../../server";
+
 
 const interviewRepository = InterviewRepository();
 const applicationRepository = ApplicationRepository();
@@ -301,7 +303,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
     
        }
 
-  await   createNotificationService({
+  await   createNotificationService(io,{
       recipientId:application.candidateId._id,
       senderId:application.recruiterId._id,
       entityId: interview._id,
@@ -421,7 +423,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
     
        }
 
- await createNotificationService({
+ await createNotificationService(io,{
   recipientId: interview.candidateId,
   senderId: interview.recruiterId,
 
@@ -525,7 +527,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
   status === INTERVIEW_STATUS.COMPLETED ||
   status === INTERVIEW_STATUS.CANCELLED
 ) {
-  await createNotificationService({
+  await createNotificationService(io,{
     recipientId: populatedInterview.candidateId._id,
     senderId: populatedInterview.recruiterId,
 
@@ -584,7 +586,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
 
     const application = await applicationRepository.findById({
       id: applicationId, populate: [
-        { path: "candidateId", select: "name email" },
+        { path: "candidateId", select: "name email _id" },
         { path: "recruiterId", select: "recruiterData.companyName" },
         { path: "jobId", select: "title" },
       ],
@@ -597,7 +599,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
     if (application.recruiterId._id.toString() !== recruiterId) {
       throw new CustomError("Unauthorized action", 403);
     }
-    console.log()
+
 
     // if (![ "Interview" ].includes(application.status)) {
     //   throw new CustomError("Invalid application state", 400);
@@ -607,7 +609,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
       status: decision,
       decisionNote: note,
     });
-    console.log(application.candidateId)
+    
     if (decision === "Selected") {
       await sendEmail({
         to: application.candidateId.email,
@@ -633,7 +635,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
       })
     }
 
-    await createNotificationService({
+    await createNotificationService(io,{
   recipientId: application.candidateId._id,
   senderId: application.recruiterId._id,
 

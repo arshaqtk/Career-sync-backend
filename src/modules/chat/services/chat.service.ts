@@ -49,24 +49,27 @@ export const sendMessage=async({content,conversationId,receiverId,senderId}:Mess
     lastMessageAt: new Date(),
   })
 
- await createNotificationService({
-  recipientId: receiverObjectId,
-  senderId: senderObjectId,
-
-  type: "NEW_CHAT_MESSAGE",
-
-  title: "New message received",
-
-  message: content
-    ? content
-    : "You have received a new chat message.",
-
-  entityType: "chat",
-  entityId: conversationId, 
-});
-
-
-    return message
+  // try{
+  //   await createNotificationService({
+  //    recipientId: receiverObjectId,
+  //    senderId: senderObjectId,
+    
+  //    type: "NEW_CHAT_MESSAGE",
+    
+  //    title: "New message received",
+    
+  //    message: content
+  //      ? content
+  //      : "You have received a new chat message.",
+    
+  //    entityType:"chat",
+  //    entityId: conversationId, 
+  //   });
+  // }catch(e){
+  //   console.log("notification error",e)
+  //   throw new CustomError("Failed to send notification")
+  // }
+  return message
 }
 
 export const getConvesationListService=async({userId,query}:{userId:string,query: {

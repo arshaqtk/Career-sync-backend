@@ -11,6 +11,7 @@ import { ApplicationQuery } from "../types/applicationQuery.types";
 import { InterviewRepository } from "../../../modules/Interview/repository/interview.repository";
 import { INTERVIEW_STATUS, InterviewRoundType, InterviewStatus } from "../../../modules/Interview/types/interview.type";
 import { createNotificationService } from "../../../modules/notification/services/createNotification.service";
+import { io } from "../../../server";
 
 
 const applicationRepository = ApplicationRepository()
@@ -52,7 +53,7 @@ export const ApplicationService = () => {
 
     }
 
-     await createNotificationService({
+     await createNotificationService(io,{
   recipientId: job.postedBy as string, 
   senderId: candidateId,               
   entityId: data.jobId,
@@ -284,7 +285,7 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
       {
         id: applicationId, populate: [{ path: "candidateId", select: "name email " }, {
           path: "jobId", select: "title company location jobType",
-        },]
+        }, { path: "recruiterId", select: "_id" },]
       }) as unknown as IApplicationPopulated
 
     if (!application) { throw new CustomError("Application not found", 404); }
@@ -302,6 +303,17 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
       jobLocation: application.jobId.location,
       employmentType: application.jobId.jobType
     });
+
+     await createNotificationService(io,{
+  recipientId: application.candidateId._id,
+  senderId: application.recruiterId._id,
+  entityId: applicationId,
+  title: "Application Status Updated",
+  message: `Your application for "${application.jobId.title}" is now marked as ${application.status}.`,
+  type: "APPLICATION_UPDATED",
+});
+
+
 
     return updated
   }

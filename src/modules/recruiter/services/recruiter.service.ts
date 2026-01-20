@@ -184,7 +184,7 @@ const funnel = {
   hired: 0,
 }
 
-console.log(funnelAgg)
+
 
 funnelAgg.forEach((item) => {
   if (item._id === "Pending") funnel.applied = item.count

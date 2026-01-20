@@ -26,6 +26,7 @@ const app=express()
 const allowedOrigins = [
  "https://career-sync-frontend.vercel.app", 
   "https://careersync.duckdns.org",
+  "http://localhost:5173"
 ];
   
 app.use(helmet())
@@ -45,13 +46,16 @@ app.use(cors({
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
 }));
 
+
 app.use(morgan('combined'))
+
 
 app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100,
   handler:(req,res,next)=>{
     next(new CustomError("Too many requests, please try again later.",429))
   }
 }));
+
 app.use(cookieParser());
 app.use(express.json({limit:'10mb'}))
 app.use(express.urlencoded({extended:true}))
