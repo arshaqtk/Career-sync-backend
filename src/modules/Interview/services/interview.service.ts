@@ -473,7 +473,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
     }
 
     if (interview.recruiterId.toString() !== recruiterId) {
-      throw new CustomError("Unauthorized action", 403);
+      throw new CustomError("unAuthorized User Not Found action", 403);
     }
 
 
@@ -597,7 +597,7 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
     }
 
     if (application.recruiterId._id.toString() !== recruiterId) {
-      throw new CustomError("Unauthorized action", 403);
+      throw new CustomError("unAuthorized User Not Found action", 403);
     }
 
 

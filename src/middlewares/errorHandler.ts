@@ -8,6 +8,9 @@ export const errorHandler = (
     next: NextFunction
 ) => {
     console.error("❌ ERROR:", err.message);
+     console.error("🔥 ERROR NAME:", err.name);
+  console.error("🔥 ERROR STACK:", err.stack);
+  console.error("🔥 ERROR STATUS:", err.statusCode || err.status);
 
     // If it is our custom error
     if (err instanceof CustomError) {

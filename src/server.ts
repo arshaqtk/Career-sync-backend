@@ -3,7 +3,7 @@ import { connectDB } from "./config/database"
 import app from "./app"
 import { ENV } from "./config/env"
 import { initSocket } from "./websocket"
-import { socketAuth } from "./websocket/auth.middleware"
+import { socketAuth } from "./websocket/socket.auth.middleware"
 import { chatSocket } from "./modules/chat/socket/chat.socket"
 import {Server} from "socket.io"
 
@@ -21,6 +21,7 @@ chatSocket(io)
         console.log(`CareerSync API running on port ${PORT}`)
     })
 }
+ 
 
 startServer();
 export { io };

@@ -4,9 +4,9 @@ import { Request, Response } from "express";
 import { addCandidateEducationeService,updateCandidateEducationService } from "../services/candidateEducation.service";
 
 export const addCandidateEducationController=expressAsyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user?.id as string;
+    const userId = req.auth?.id as string;
     if (!userId) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
     const {education}=req.body
     const addedEducation = await addCandidateEducationeService(userId,education)
@@ -20,9 +20,9 @@ export const addCandidateEducationController=expressAsyncHandler(async (req: Req
 
   export const updateCandidateEducationController=expressAsyncHandler(async(req:Request,res:Response)=>{
   
-    const userId=req.user?.id as string
+    const userId=req.auth?.id as string
     if(!userId){
-       throw new CustomError("Unauthorized", 401);
+       throw new CustomError("unAuthorized User Not Found", 401);
     }
 
     const educationId=req.params.id

@@ -6,6 +6,7 @@ import { generateOtp } from "../../../shared/utils/generateOtp"
 import { sendRegisterOtpEmail, sendResetOtpEmail } from "./email.service"
 import { saveRegisterOtp, verifyRegisterOtp } from "./otp.service"
 import { CustomError } from "../../../shared/utils/customError"
+import { IUser } from "@/modules/user/models/user.model"
 
 
 
@@ -27,7 +28,9 @@ export const Authservice = {
         await UserRepository.createUser({
             email, name, role,field,
             password: hashedPassword,
-            isVerified: false
+            isVerified: false,
+            authProvider:"local",
+             isProfileComplete:true
         })
 
         const otp = generateOtp()
@@ -41,68 +44,51 @@ export const Authservice = {
 
 
   login: async (data: LoginDTO) => {
-  const user = await UserRepository.findByEmail(data.email).select("+password")
 
-  if (!user) {
-    throw new CustomError("Invalid credentials", 400)
-  }
-
-  const match = await bcrypt.compare(data.password, user.password)
-  const roleAuthenticated = user.role === data.role
-
-  if (!match || !roleAuthenticated) {
-    throw new CustomError("Invalid credentials", 400)
-  }
-
- 
-if (!user.isActive) {
-  throw new CustomError(
-    user.blockReason
-      ? `Your account has been blocked. Reason: ${user.blockReason}.Please contact support.`
-      : "Your account has been blocked. Please contact support.",
-    403
-  )
-}
-
-
-  if (!user.isVerified) {
-    const otp = generateOtp()
-    await saveRegisterOtp(user.email, otp)
-    await sendRegisterOtpEmail(user.email, otp)
-
-    return {
-      success: false,
-      status: "NOT_VERIFIED",
-      isVerified: false,
-      message: "Your account is not verified. A new OTP has been sent.",
-      email: user.email,
+    const user = await UserRepository.findByEmail(data.email).select("+password")
+    
+    if (!user) {
+      throw new CustomError("Invalid credentials", 400)
     }
+    
+    if (user.authProvider !== "local"){
+      throw new CustomError(`Use ${user.authProvider} login`,400)
+    }
+
+  const match = await bcrypt.compare(data.password, user.password!)
+  // const roleAuthenticated = user.role === data.role
+
+  if (!match) {
+    throw new CustomError("Invalid credentials", 400)
   }
-//update last login
-  await UserRepository.updateById(user._id, {
-  lastLoginAt: new Date(),
-})
 
-
-  const token = generateTokens({
-    id: user._id,
-    email: user.email,
-    role: user.role,
-  })
-
-  return {
-    success: true,
-    status: "VERIFIED",
-    message: "Logged in successfully",
-    isVerified: true,
-    email: user.email,
-    role: user.role,
-    refreshToken: token.refreshToken,
-    accessToken: token.accessToken,
-    id:user._id,
-  }
+ return await createLoginSession(user) 
 },
 
+oauthLogin:async(data:{
+email: string
+  name: string
+  provider: "google"
+  providerId: string
+  profilePictureUrl?: string
+})=>{
+
+  let user=await UserRepository.findByEmail(data.email)
+
+  if(!user){
+    user=await UserRepository.createUser({
+      email:data.email,
+      name:data.name,
+      authProvider:data.provider,
+      isVerified:true,
+      googleId:data.providerId,
+       role:"candidate",
+       isProfileComplete:false,
+       field:undefined,
+    })
+  }
+return await createLoginSession(user) 
+},
 
     verifyRegisterOtp: async (email: string, otp: string) => {
         return await verifyRegisterOtp(email, otp);
@@ -127,5 +113,57 @@ if (!user.isActive) {
     refreshTokens:(async(refreshToken:string)=>{
         return await verifyRefreshToken(refreshToken)
     })
+
+}
+
+
+const createLoginSession=async (user:IUser)=>{
+
+  if (!user.isActive) {
+  throw new CustomError(
+    user.blockReason
+      ? `Your account has been blocked. Reason: ${user.blockReason}.Please contact support.`
+      : "Your account has been blocked. Please contact support.",
+    403
+  )
+}
+
+  if (!user.isVerified) {
+    const otp = generateOtp()
+    await saveRegisterOtp(user.email, otp)
+    await sendRegisterOtpEmail(user.email, otp)
+
+    return {
+      success: false,
+      status: "NOT_VERIFIED",
+      isVerified: false,
+      message: "Your account is not verified. A new OTP has been sent.",
+      email: user.email,
+     
+    }
+  }
+
+//update last login
+  await UserRepository.updateById(user._id, {
+  lastLoginAt: new Date(),
+})
+
+ const token = generateTokens({
+    id: user._id,
+    email: user.email,
+    role: user.role,
+  })
+
+  return {
+    success: true,
+    status: "VERIFIED",
+    message: "Logged in successfully",
+    isVerified: true,
+    email: user.email,
+    role: user.role,
+    refreshToken: token.refreshToken,
+    accessToken: token.accessToken,
+    id:user._id,
+  }
 
 }

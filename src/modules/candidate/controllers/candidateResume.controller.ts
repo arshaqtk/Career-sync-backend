@@ -5,10 +5,10 @@ import { updateResumeService } from "../services/candidateResume.service";
 
 
 // export const updateResumeController=expressAsyncHandler(async(req:Request,res:Response)=>{
-//         const id = req.user?.id
+//         const id = req.auth?.id
      
 //         if (!id) {
-//           throw new CustomError("Unauthorized", 401);
+//           throw new CustomError("unAuthorized User Not Found", 401);
 //         }
 //         if (!req.file) {
 //           throw new CustomError("Resume can't find", 401);
@@ -30,10 +30,10 @@ import { updateResumeService } from "../services/candidateResume.service";
 
 export const updateResumeController = expressAsyncHandler(
   async (req: Request, res: Response) => {
-    const id = req.user?.id as string
+    const id = req.auth?.id as string
 
     if (!id) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
 
     if (!req.file) {

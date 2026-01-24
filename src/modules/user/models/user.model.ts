@@ -4,16 +4,27 @@ import { EducationSchema, ExperienceSchema } from "../schemas/index"
 
 
 export interface IUser extends Document {
+
   // COMMON FIELDS
   name: string;
   email: string;
   phone?: string;
-  password: string;
   profilePictureUrl?: string;
-  field: string;              // "Healthcare", "IT", "Design"
+
+   // AUTH
+  password?: string; 
+  authProvider: "local" | "google"
+  googleId?: string;
+
+
+  field: string|undefined;
   role: "candidate" | "recruiter" | "admin";
+
   isVerified: boolean;
   isActive: boolean;
+  isProfileComplete: boolean;
+
+
   blockedAt: Date;
   blockReason?: string;
 
@@ -51,13 +62,21 @@ const userSchema = new Schema<IUser>(
 
     password: {
       type: String,
-      required: true,
       minlength: 6,
       select: false,
     },
 
     profilePictureUrl: {
       type: String,
+    },
+
+    authProvider:{
+      type:String,
+      enum:["local","google"],
+      default: "local",
+    },
+    googleId:{
+      type:String
     },
 
     role: {
@@ -69,6 +88,10 @@ const userSchema = new Schema<IUser>(
     isVerified: {
       type: Boolean,
       default: false,
+    },
+    isProfileComplete:{
+      type:Boolean,
+      default:false
     },
 
     isActive: {
@@ -84,7 +107,6 @@ const userSchema = new Schema<IUser>(
     },
     field: {
       type: String,
-      required: true
     },
 
     // CANDIDATE FIELDS ------------------------------------------------------

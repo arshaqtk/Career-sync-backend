@@ -6,9 +6,9 @@ import { Schema } from "mongoose";
 import { CustomError } from "../../../shared/utils/customError";
 
 export const addJobController =expressAsyncHandler(async (req:Request, res:Response) => {
-    const id=req.user?.id
+    const id=req.auth?.id
     if(!id){
-        throw new CustomError("unAuthorized",401)
+        throw new CustomError("unAuthorized User Not Found",401)
     } 
 //    const userId = new Schema.Types.ObjectId(id);
     const data:IJob = req.body;

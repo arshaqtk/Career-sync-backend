@@ -1,4 +1,4 @@
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { Router } from "express";
 import { applyToJob, getApplicantDetailsController, getApplicationController, getApplicationsByJobController, getMyApplicationsController, getRecruiterApplicationsController, updateApplicationStatusController } from "../controllers/application.controller";
 import { catchAsync } from "../../../middlewares/asyncHandler";
@@ -6,7 +6,7 @@ import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
 
 const router=Router();
-router.use(authMiddleware)
+router.use(requireauthMiddleware)
 router.use(ensureUserIsActive)
 router.post("/apply",catchAsync(applyToJob))
 router.get("/my",catchAsync(getMyApplicationsController))

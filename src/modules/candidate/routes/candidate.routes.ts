@@ -1,4 +1,4 @@
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { Router } from "express";
 import { addCandidateProfileExperienceController, updateCandidateProfileExperienceController } from "../controllers/candidateExperience.controller";
 import { updateCandidateProfileSkill } from "../controllers/candidateSkill.controller";
@@ -11,8 +11,8 @@ import { catchAsync } from "../../../middlewares/asyncHandler";
 import { getCandidateProfileStats } from "../controllers/candidateStats.controller";
 
 const router=Router();
-// router.put("/update-profile-about",authMiddleware,UserController.updateUserProfileAbout)
-router.use(authMiddleware)
+// router.put("/update-profile-about",requireauthMiddleware,UserController.updateUserProfileAbout)
+router.use(requireauthMiddleware)
 router.use(ensureUserIsActive)
 router.post("/profile/experience",authorizeRoles("candidate"),addCandidateProfileExperienceController)
 router.put("/profile/experience/:id",authorizeRoles("candidate"),updateCandidateProfileExperienceController)

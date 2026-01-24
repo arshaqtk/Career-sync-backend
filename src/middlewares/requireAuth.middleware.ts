@@ -3,7 +3,7 @@ import { Request,Response,NextFunction } from "express";
 import jwt from "jsonwebtoken";
 
 
-export const authMiddleware=(req:Request,res:Response,next:NextFunction)=>{
+export const requireauthMiddleware=(req:Request,res:Response,next:NextFunction)=>{
 
   const token = req.cookies?.accessToken;
 
@@ -18,11 +18,13 @@ export const authMiddleware=(req:Request,res:Response,next:NextFunction)=>{
       role: string;
     };  
 
-    (req as any).user = {
+    (req as any).auth = {
       id: decoded.id,
       email: decoded.email,
       role: decoded.role,
     };
+
+    
     next()
     }catch(err){
          return res.status(401).json({message:"Invalid token"})   

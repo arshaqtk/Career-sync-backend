@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { getCandidateProfileController, getRecruiterDashboardData, getRecruiterProfileStats } from "../controllers/getCandidateProfile.controller";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { catchAsync } from "../../../middlewares/asyncHandler";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
@@ -8,7 +8,7 @@ import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.midd
 
 
  const router=Router()
-router.use(authMiddleware)
+router.use(requireauthMiddleware)
 router.use(ensureUserIsActive)
 router.get("/dashboard",authorizeRoles("recruiter"),catchAsync(getRecruiterDashboardData))
 router.get("/candidates/:candidateId",authorizeRoles("recruiter"),catchAsync(getCandidateProfileController))

@@ -6,10 +6,10 @@ import { updateJobStatusService } from "../services/updateJobStatus.service";
 
 
 export const updateJobStatusController =expressAsyncHandler(async (req:Request, res:Response) => {
-    const employerId=req.user?.id
+    const employerId=req.auth?.id
     const jobId=req.params.id
     if(!employerId){ 
-        throw new CustomError("unAuthorized",401)
+        throw new CustomError("unAuthorized User Not Found",401)
     }
     if (!jobId) {
    throw new CustomError("Job ID is required", 400);

@@ -4,9 +4,9 @@ import { Request, Response } from "express";
 import { addCandidateExperienceService, updateCandidateProfileExperienceService } from "../services/candidateExperience.service";
 
 export const addCandidateProfileExperienceController=expressAsyncHandler(async (req: Request, res: Response) => {
-    const userId = req.user?.id as string;
+    const userId = req.auth?.id as string;
     if (!userId) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
     const {experience}=req.body
     const addedExperince = await addCandidateExperienceService(userId,experience)
@@ -20,9 +20,9 @@ export const addCandidateProfileExperienceController=expressAsyncHandler(async (
 
   export const updateCandidateProfileExperienceController=expressAsyncHandler(async(req:Request,res:Response)=>{
   
-    const userId=req.user?.id as string
+    const userId=req.auth?.id as string
     if(!userId){
-       throw new CustomError("Unauthorized", 401);
+       throw new CustomError("unAuthorized User Not Found", 401);
     }
 
     const experienceId=req.params.id as string

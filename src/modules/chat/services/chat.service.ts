@@ -144,7 +144,7 @@ export const getMessagesService=async({conversationId,userId,}:
   })
 
   if (!conversation) {
-    throw new CustomError("Unauthorized", 403)
+    throw new CustomError("unAuthorized User Not Found", 403)
   }
   const limit=20
   const page=1

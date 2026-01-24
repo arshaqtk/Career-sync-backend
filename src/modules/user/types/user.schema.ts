@@ -39,3 +39,5 @@ export interface IRecruiterData {
   companyLocation?: string;
   companyDescription?: string;
 }
+
+

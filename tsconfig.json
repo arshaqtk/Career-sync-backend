@@ -8,7 +8,7 @@
     "strict": true,
      "noImplicitAny": true,
     "strictNullChecks": true,
-    
+     "typeRoots": ["./src/types", "./node_modules/@types"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

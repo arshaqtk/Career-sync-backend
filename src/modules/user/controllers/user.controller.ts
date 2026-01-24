@@ -4,18 +4,12 @@ import { UserService } from "../services/user.service";
 import { CustomError } from "../../../shared/utils/customError";
 import { CloudinaryService } from "../services/cloudinary.service";
 
-declare global {
-  namespace Express {
-    interface Request {
-      user?: { id: string; role?: "candidate"|"recruiter" ;email:string };
-    }
-  }
-}
+
 export const UserController = {
   getProfile: asyncHandler(async (req: Request, res: Response) => {
-    const id = req.user?.id;
+    const id = req.auth?.id;
     if (!id) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
     const result = await UserService.getProfile(id);
 
@@ -24,9 +18,9 @@ export const UserController = {
 
 
   updateUserProfileBasic: asyncHandler(async (req: Request, res: Response) => {
-    const id = req.user?.id as string;
+    const id = req.auth?.id as string;
     if (!id) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
     const dto = req.body;
 
@@ -39,10 +33,10 @@ export const UserController = {
   }),
 
   updateuserAvatar: asyncHandler(async (req: Request, res: Response) => {
-    const id = req.user?.id
+    const id = req.auth?.id
     console.log(req.file)
     if (!id) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
     if (!req.file) {
       throw new CustomError("Image can't find", 401);
@@ -58,9 +52,9 @@ export const UserController = {
   }),
   
   updateUserProfileAbout: asyncHandler(async (req: Request, res: Response) => {
-    const id = req.user?.id as string;
+    const id = req.auth?.id as string;
     if (!id) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
     const {about}=req.body
     const result = await UserService.updateUserNestedField(id,"candidateData.about",about)
@@ -73,9 +67,9 @@ export const UserController = {
   
 
  updateRecruiterCompany :async (req: Request, res: Response) => {
-  const userId = req.user?.id
+  const userId = req.auth?.id
 if (!userId) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
   const {
     companyName,

@@ -1,3 +1,4 @@
+import { parseArgs } from "node:util";
 import { NotificationModel } from "../models/notification.model"
 export const getMyNotifications=async({userId,query}:{userId:string,query: { page: number; limit: number }})=>{
     
@@ -5,5 +6,12 @@ export const getMyNotifications=async({userId,query}:{userId:string,query: { pag
      .skip((query.page - 1) * query.limit)
     .limit(query.limit).lean();
 
-    return notifications
+    const total=await NotificationModel.countDocuments()
+
+    return {notifications, pagination: {
+      parseArgs:query.page,
+      limit:query.limit,
+      total,
+      totalPages: Math.ceil(total / query.limit),
+    },}
 }

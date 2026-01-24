@@ -2,10 +2,10 @@ import { CustomError } from "../../../shared/utils/customError"
 import { getConvesationListService, getMessagesService } from "../services/chat.service"
 import { Request,Response } from "express"
 export const getConversationListController=async(req:Request,res:Response)=>{
-   const userId=req.user?.id
+   const userId=req.auth?.id
 //  const {limit=10,page=1}=req.query
  if(!userId){
-    throw new CustomError("UnAuthorized")
+    throw new CustomError("unAuthorized User Not Found")
  }
     const conversations=await getConvesationListService({userId:userId,query:{page:1,limit:10}})
     return res.status(200).json({
@@ -17,11 +17,11 @@ export const getConversationListController=async(req:Request,res:Response)=>{
 
 
 export const getMessagesController=async(req:Request,res:Response)=>{
-   const userId=req.user?.id as string
+   const userId=req.auth?.id as string
    const conversationId=req.params.conversationId as string
 //  const {limit=10,page=1}=req.query
  if(!userId){
-    throw new CustomError("UnAuthorized")
+    throw new CustomError("unAuthorized User Not Found")
  }
     const messages=await getMessagesService({userId:userId,conversationId:conversationId})
     return res.status(200).json({

@@ -5,9 +5,9 @@ import { candidateSkillService } from "../services/candidateSkill.service";
 
 export const updateCandidateProfileSkill=expressAsyncHandler(async (req: Request, res: Response) => {
 
-    const userId = req.user?.id as string;
+    const userId = req.auth?.id as string;
     if (!userId) {
-      throw new CustomError("Unauthorized", 401);
+      throw new CustomError("unAuthorized User Not Found", 401);
     }
     const skill=req.body
     const result = await candidateSkillService(userId,skill)

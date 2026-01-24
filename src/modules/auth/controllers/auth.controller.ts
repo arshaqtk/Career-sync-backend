@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import asyncHandler from "express-async-handler";
 import { Authservice } from "../services/auth.service";
 import { CustomError } from "../../../shared/utils/customError";
+import { OAuthIdentity } from "../types/auth.types";
 
 export const AuthController = {
     register: asyncHandler(async (req: Request, res: Response) => {
@@ -58,7 +59,50 @@ export const AuthController = {
 
     }),
 
-    verifyRegisterOtp: asyncHandler(async (req: Request, res: Response) => {
+     googleCallback:async(req:Request, res:Response)=>{
+        
+  if (!req.user) {
+    throw new CustomError("OAuth authentication failed", 401)
+  }
+        const identity=req.user as OAuthIdentity
+    const result = await Authservice.oauthLogin(identity)
+
+        res.cookie("accessToken", result.accessToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+           sameSite: "none",
+            maxAge: 15 * 60 * 1000
+        });
+
+        res.cookie("refreshToken", result.refreshToken, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+           sameSite: "none",
+            maxAge: 7 * 24 * 60 * 60 * 1000
+        });
+if(result.success){
+    if(result.role=="candidate"){
+        res.redirect(`${process.env.CLIENT_URL}/home`)
+    }
+    if(result.role=="recruiter"){
+        res.redirect(`${process.env.CLIENT_URL}/recruiter`)
+    }
+}
+
+ res.status(200).json({
+            success: true,
+            message: result.message,
+            user: {
+                id:result.id,
+                role:result.role,
+                status: result.status,
+                email: result.email,
+                isVerified: result.isVerified
+            }
+        });
+  },
+
+    verifyRegisterOtp: asyncHandler(async (req: Request, res: Response) => { 
         const { email, otp } = req.body;
         const result = await Authservice.verifyRegisterOtp(email, otp);
 
@@ -100,7 +144,7 @@ export const AuthController = {
     refreshTokens: asyncHandler(async (req: Request, res: Response) => {
         const refreshToken = req.cookies.refreshToken
         if (!refreshToken) {
-            throw new CustomError("Unauthorized", 404)
+            throw new CustomError("Token Is Not Found", 404)
         }
         const accessToken = await Authservice.refreshTokens(refreshToken)
         res.cookie("accessToken", accessToken, {

@@ -1,8 +1,9 @@
 import { QueryFilter, Types } from "mongoose";
 import UserModel, { IUser } from "../models/user.model";
 import { AllowedNestedArrayPaths, NestedArrayValueType } from "../types/candidateNestedArrayPaths.type";
+import { CreateUserDTO } from "../types/user.repository.types";
 
-type CreateUserDTO = Pick<IUser, "name" | "email" | "password" | "isVerified"|"role"|"field">;
+
 export const UserRepository = {
   createUser: (data:CreateUserDTO) => {
     

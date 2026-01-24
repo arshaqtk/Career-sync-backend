@@ -5,10 +5,10 @@ import { CustomError } from "../../../shared/utils/customError";
 
 export const getRecruiterJobController=expressAsyncHandler(async(req:Request,res:Response)=>{
      const { page = 1, limit = 10, location, jobType,status,search,sortByApplication } = req.query
-     const recruiterId=req.user?.id as string
+     const recruiterId=req.auth?.id as string
 
     if(!recruiterId){
-         throw new CustomError("unAuthorized",401)
+         throw new CustomError("unAuthorized User Not Found",401)
     }
 
     const result=await getEmployerJobService(recruiterId,{

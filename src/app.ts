@@ -18,6 +18,8 @@ import chatRoutes from "./modules/chat/routes/chat.route";
 
 import { errorHandler } from "./middlewares/errorHandler";
 import { CustomError } from "./shared/utils/customError";
+import passport from "passport";
+import "./modules/auth/oauth/google.strategy"
 
  
 
@@ -60,7 +62,7 @@ app.use(cookieParser());
 app.use(express.json({limit:'10mb'}))
 app.use(express.urlencoded({extended:true}))
 
-
+app.use(passport.initialize())
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/job", jobRoutes);

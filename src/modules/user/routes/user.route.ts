@@ -1,4 +1,4 @@
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { Router } from "express";
 import { UserController } from "../controllers/user.controller";
 import { upload } from "../../../middlewares/upload";
@@ -6,7 +6,7 @@ import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.midd
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 
 const router=Router();
-router.use(authMiddleware)
+router.use(requireauthMiddleware)
 router.use(ensureUserIsActive)
 router.get("/profile",UserController.getProfile)
 router.put("/update-profile-basic",UserController.updateUserProfileBasic)

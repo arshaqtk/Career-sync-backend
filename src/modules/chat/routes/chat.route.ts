@@ -1,13 +1,13 @@
 import { catchAsync } from "../../../middlewares/asyncHandler";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { Router } from "express";
 import { getConversationListController, getMessagesController } from "../controllers/chat.controller";
 
 
 const router=Router()
 
-router.get("/conversations",authMiddleware,catchAsync(getConversationListController))
-router.get("/conversations/:conversationId/messages",authMiddleware,catchAsync(getMessagesController))
+router.get("/conversations",requireauthMiddleware,catchAsync(getConversationListController))
+router.get("/conversations/:conversationId/messages",requireauthMiddleware,catchAsync(getMessagesController))
 
 
 export default router

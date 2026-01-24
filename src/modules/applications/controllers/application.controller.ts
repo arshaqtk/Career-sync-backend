@@ -10,14 +10,14 @@ const applicationService = ApplicationService();
 //--------------------Candidate------------------------
 
 export const applyToJob=async(req:Request,res:Response)=>{    
-  const data=await applicationService.applyForJob(req.user?.id as string,req.body)
+  const data=await applicationService.applyForJob(req.auth?.id as string,req.body)
   res.status(201).json({ success: true, data,message:"Applied to job successfully" });
 }
 
 
 //application by candidate
 export const getMyApplicationsController = expressAsyncHandler(async (req:Request,res:Response) => {  
-  const id=req.user?.id as string
+  const id=req.auth?.id as string
       const {page = 1, limit = 10 ,sortBy,status } = req.query
   const response = await applicationService.getMyApplications(id,{
    page: Number(page),
@@ -40,10 +40,10 @@ export const getApplicationController = expressAsyncHandler(async (req:Request,r
 
 //recruiter get all applications which have status interview 
 export const getRecruiterApplicationsController=async(req:Request,res:Response)=>{
-  const recruiterId=req.user?.id
+  const recruiterId=req.auth?.id
    const { page = 1, limit = 10,status,sortBy,search } = req.query
   if(!recruiterId){
-    throw new CustomError("unAuthorized",401)
+    throw new CustomError("unAuthorized User Not Found",401)
   } 
     const response = await applicationService.getRecruiterApplications(recruiterId,{
       page: Number(page),

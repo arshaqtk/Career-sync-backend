@@ -48,7 +48,7 @@ return {
 
    const getRecruiterDashboardDataService=async(recruiterId:string)=>{
       if(!recruiterId){
-         throw new CustomError("Unauthorized",401)
+         throw new CustomError("unAuthorized User Not Found",401)
       }
 
         const startOfToday = startOfDay(new Date())

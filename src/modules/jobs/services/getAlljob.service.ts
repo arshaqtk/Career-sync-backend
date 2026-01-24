@@ -2,32 +2,37 @@ import { ApplicationModel } from "../../../modules/applications/models/applicati
 import { UserRepository } from "../../../modules/user/repository/user.repository";
 import { jobRepository } from "../repository/job.repository";
 
-export const CandidategetJobsService = async (
-  candidateId: string,
-  query: JobQuery
+export const CandidategetJobsService = async ({candidateId,query}:
+  {candidateId?: string,
+    query: JobQuery}
 ) => {
   const { page, limit, location, jobType, status, search,
     remote,experienceMin,experienceMax,field } = query;
-
-  const candidate = await UserRepository
+    let candidate=undefined
+if(candidateId){
+   candidate = await UserRepository
     .findById(candidateId)
     .select("field skills");
+}
 
-  if (!candidate) {
-    throw new Error("Candidate not found");
-  }
+  // if (!candidate) {
+  //   throw new Error("Candidate not found");
+  // }
 
   const appliedJobIds = await ApplicationModel.find({
   candidateId
 }).distinct("jobId");
 
   const filter: any = {
-    field: candidate.field,
     status:"open"
   };
+  
+  if(candidate?.field){
+    filter.field= candidate?.field
+  }
 
-  if (candidate.candidateData?.skills?.length) {
-    filter.skillsRequired = { $in: candidate.candidateData.skills };
+  if (candidate?.candidateData?.skills?.length) {
+    filter.skillsRequired = { $in: candidate?.candidateData.skills };
   }
 
   if (search) {
@@ -51,6 +56,7 @@ export const CandidategetJobsService = async (
   }
 }
 
+
   const jobs = await jobRepository.findByQuery(filter)
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
@@ -58,7 +64,7 @@ export const CandidategetJobsService = async (
 
   const total = await jobRepository.countByQuery(filter);
 
-const appliedJobIdStrings = appliedJobIds.map(id => id.toString());
+const appliedJobIdStrings = appliedJobIds.map(id => id.toString()); 
 
 const jobsWithAppliedFlag = jobs.map(job => ({
   ...job,

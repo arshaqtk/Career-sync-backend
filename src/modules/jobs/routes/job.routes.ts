@@ -2,7 +2,7 @@ import { Router } from "express";
 import { validate } from "../../../middlewares/validate.middleware";
 import { createJobSchema } from "../validators/createJob.schema";
 import { addJobController } from "../controller/addJob.controller";
-import { authMiddleware } from "../../../middlewares/auth.middleware";
+import { requireauthMiddleware} from "../../../middlewares/requireAuth.middleware";
 import { CandidategetJobs } from "../controller/getAllJobs.controller";
 import { getRecruiterJobController } from "../controller/getRecruiterJobs.controller";
 import { getJobByIdController } from "../controller/getJobById.controller";
@@ -14,16 +14,19 @@ import { updateJobStatusController } from "../controller/changeJobStatus.control
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
 import { getJobSuggestionController } from "../controller/searchJobSuggestion.controller";
+import { optionAuthMiddleware } from "../../../middlewares/optionalAuth.middleware";
+import { catchAsync } from "../../../middlewares/asyncHandler";
 
-const router = Router();
-router.use(authMiddleware)
-router.use(ensureUserIsActive)
+const router = Router(); 
 
 // Public / user routes
-router.get("/jobs", CandidategetJobs);
-router.get("/jobs/suggestions", getJobSuggestionController);
-router.get("/jobs/:id", getJobByIdController);
 
+router.get("/jobs",optionAuthMiddleware, catchAsync(CandidategetJobs));
+router.get("/jobs/suggestions",optionAuthMiddleware, catchAsync(getJobSuggestionController));
+router.get("/jobs/:id", optionAuthMiddleware,catchAsync(getJobByIdController));
+
+router.use(requireauthMiddleware)
+router.use(ensureUserIsActive)
 
 // Employer job CRUD
 router.post("/employer/jobs",authorizeRoles("recruiter"), validate(createJobSchema), addJobController);

@@ -39,7 +39,7 @@ export const adminGetJobDetail = async (req: Request, res: Response) => {
 
 
 export const adminBlockJob = async (req: Request, res: Response) => {
-  const adminId=req.user?.id
+  const adminId=req.auth?.id
   const  jobId = req.params.id as string
   const { reason } = req.body
   if(!adminId){
@@ -61,7 +61,7 @@ export const adminBlockJob = async (req: Request, res: Response) => {
 export const adminUnblockJob = async (req: Request, res: Response) => {
   const  jobId = req.params.id as string
 
-const adminId=req.user?.id
+const adminId=req.auth?.id
 
 if(!adminId){
     throw new CustomError("SomeThing went wrong....")

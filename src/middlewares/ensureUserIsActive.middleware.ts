@@ -7,11 +7,11 @@ export const ensureUserIsActive = async (
   _res: Response,
   next: NextFunction
 ) => {
-  if (!req.user?.id) {
-    return next(new CustomError("Unauthorized", 401))
+  if (!req.auth?.id) {
+    return next(new CustomError("unAuthorized , User Not Found", 401))
   }
 
-  const user = await UserRepository.findById(req.user.id)
+  const user = await UserRepository.findById(req.auth.id)
 
   if (!user) {
     return next(new CustomError("User not found", 401))

@@ -12,11 +12,19 @@ export interface RegisterDTO{
 export interface LoginDTO{
     email:string;
     password:string;
-    role:"candidate" | "recruiter"| "admin";
+    // role:"candidate" | "recruiter"| "admin";
 }
 
 export interface UserDTO{
  name:string;
     email:string;
     role:"candidate" |"recruiter"| "admin";
+}
+
+export interface OAuthIdentity {
+  email: string
+  name: string
+  provider: "google"
+  providerId: string
+  profilePictureUrl?: string
 }

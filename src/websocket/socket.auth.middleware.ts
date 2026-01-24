@@ -22,7 +22,7 @@ export const socketAuth=(io:Server)=>{
              const token = cookies.accessToken
       console.log("ACCESS TOKEN:", token)
             if(!token){
-                throw new CustomError("Unauthorized");
+                throw new CustomError("unAuthorized  Token Not Found");
             }
 
             const decoded=jwt.verify(token,ENV.ACCESS_JWT_SECRET) as AuthJwtPayload
@@ -38,4 +38,4 @@ export const socketAuth=(io:Server)=>{
       next(new CustomError("Invalid token"))
     }
     }) 
-}
+} 

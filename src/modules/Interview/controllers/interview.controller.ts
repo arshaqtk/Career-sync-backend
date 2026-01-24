@@ -7,7 +7,7 @@ import { scheduledInterviewSchema } from "../validators/interviewSchedule.shema"
 const interviewServices=InterviewServices()
 
 export const recruiterGetInterviewsController=async(req:Request,res:Response)=>{
-    const recruiterId=String(req.user?.id)
+    const recruiterId=String(req.auth?.id)
     const { page = 1, limit = 10,sortBy,status,roundType,search }:InterviewQuery = req.query 
   const response=await interviewServices.recruiterGetInterviews(recruiterId,{sortBy,status,roundType,limit,page,search})
   res.status(200).json({
@@ -31,7 +31,7 @@ export const recruiterGetInterviewByIdController=async(req:Request,res:Response)
 
 export const recruiterScheduleInterviewController=async(req:Request,res:Response)=>{
   const {applicationId}=req.params
-  const recruiterId=String(req.user?.id)
+  const recruiterId=String(req.auth?.id)
   const payload = scheduledInterviewSchema.parse(req.body)
   const scheduleMode:"initial" | "next_round"=payload.scheduleMode
   const response=await interviewServices.recruiterScheduleInterview({recruiterId:String(recruiterId),applicationId:String(applicationId),
@@ -44,7 +44,7 @@ export const recruiterScheduleInterviewController=async(req:Request,res:Response
 }
 
 export const rescheduleInterviewController = async (req:Request,res:Response) => {
-  const recruiterId = String(req.user?.id)
+  const recruiterId = String(req.auth?.id)
   const interviewId = req.params.interviewId as string;
 
   const interview = await interviewServices.recruiterRescheduleInterview({
@@ -62,7 +62,7 @@ export const rescheduleInterviewController = async (req:Request,res:Response) =>
 
 //------------------Fetch all the interview by each application--------------------------------------
 export const recruiterGetInterviewsByApplicationController=async(req:Request,res:Response)=>{
-    const recruiterId=String(req.user?.id)
+    const recruiterId=String(req.auth?.id)
      const  applicationId  = String(req.params.applicationId)
 
   const response=await interviewServices.recruiterGetInterviewsByApplicationId({applicationId:String(applicationId),recruiterId:String(recruiterId)})
@@ -77,7 +77,7 @@ export const recruiterGetInterviewsByApplicationController=async(req:Request,res
 
 export const recruiterUpdateInterviewStatusController=async(req:Request,res:Response)=>{
  const interviewId = req.params.interviewId as string;
-  const recruiterId=req.user?.id as string
+  const recruiterId=req.auth?.id as string
   const payload=req.body
    const response=await interviewServices.recruiterUpdateInterviewStatus({recruiterId:String(recruiterId),
     interviewId:String(interviewId),payload})
@@ -89,7 +89,7 @@ export const recruiterUpdateInterviewStatusController=async(req:Request,res:Resp
 }
 
 export const recruiterFinalizeCandidateController=async(req:Request,res:Response)=>{
-  const recruiterId=req.user?.id as string
+  const recruiterId=req.auth?.id as string
   const  applicationId  = req.params.applicationId as string;
   const {decision,note}=req.body
    const response=await interviewServices.finalizeCandidateService({recruiterId:String(recruiterId),applicationId:String(applicationId),decision,note})
@@ -103,7 +103,7 @@ export const recruiterFinalizeCandidateController=async(req:Request,res:Response
 
 
 export const candidateGetInterviewsController=async (req:Request,res:Response)=>{
-  const candidateId=req.user?.id as string
+  const candidateId=req.auth?.id as string
     const { page = 1, limit = 10,sortBy,status,roundType,search }:InterviewQuery = req.query
   
   const response=await interviewServices.candidateGetInterviews(candidateId,{sortBy,status,roundType,limit,page,search})
@@ -115,7 +115,7 @@ export const candidateGetInterviewsController=async (req:Request,res:Response)=>
 }
 
 export const candidateGetInterviewDetailController=async (req:Request,res:Response)=>{
-  const candidateId=req.user?.id as string
+  const candidateId=req.auth?.id as string
     const interviewId = req.params.interviewId as string;
   
   const response=await interviewServices.candidateGetInterviewById(String(candidateId),String(interviewId))
