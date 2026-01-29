@@ -1,9 +1,8 @@
-import { Types } from "mongoose"
+import { QueryFilter, Types } from "mongoose"
 import { ConversationModel } from "../models/conversatin.model"
 import { MessageModel } from "../models/message.model"
-import { MessagePayload } from "../types/message.type"
+import { IMessage, MessagePayload } from "../types/message.type"
 import { CustomError } from "../../../shared/utils/customError"
-import { createNotificationService } from "../../../modules/notification/services/createNotification.service"
 
 export const createConversation=async({user1,user2}:{user1:string,user2:string})=>{
   if(!user1||!user2){
@@ -146,22 +145,45 @@ export const getMessagesService=async({conversationId,userId,}:
   if (!conversation) {
     throw new CustomError("unAuthorized User Not Found", 403)
   }
-  const limit=20
-  const page=1
-  const skip=limit*page
+  // const limit=20
+  // const page=1
+  // const skip=limit*page
 
-  const messages=await MessageModel.find({conversationId:conversationId}).sort({createdAt:1}).lean()
+  const clearedAt = conversation.clearedAt.get(userId);
+const query: QueryFilter<IMessage> = { conversationId };
+
+if (clearedAt) {
+  query.createdAt = { $gt: clearedAt };
+}
+
+const messages = await MessageModel
+  .find(query)
+  .sort({ createdAt: 1 })
+  .lean();
 
   return messages 
 }
 
-export const clearMessageService=async({conversationId}:{conversationId:string})=>{
+export const clearMessageService=async({conversationId,userId}:{conversationId:string,userId:string})=>{
    if(!conversationId){
     throw new CustomError("Failed to clear history", 400)
   }
-  const clearMessage= await MessageModel.deleteMany({conversationId:conversationId})
-  const clearLastMessage = await ConversationModel.findByIdAndUpdate({_id:conversationId },{ lastMessage: "" },{ new: true });
-  return {clearMessage,clearLastMessage}
+
+   const conversation = await ConversationModel.findOne({
+    _id: conversationId,
+    participants: userId,
+  });
+
+  if (!conversation) {
+    throw new CustomError("Unauthorized", 403);
+  }
+
+  // const clearMessage= await MessageModel.deleteMany({conversationId:conversationId})
+
+  // const clearLastMessage = await ConversationModel.findByIdAndUpdate({_id:conversationId },{ lastMessage: "" },{ new: true });
+
+  await ConversationModel.updateOne({ _id: conversationId },{ $set: {[`clearedAt.${userId}`]: new Date()}});
+    return { success: true };
 }
 
 export const deleteConversationService = async ({

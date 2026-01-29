@@ -16,6 +16,11 @@ participants:{
     lastMessageAt: {
       type: Date,
     },
+    clearedAt: {
+    type: Map,
+    of: Date,
+    default: {}
+  },
 },{timestamps:true})
 
 

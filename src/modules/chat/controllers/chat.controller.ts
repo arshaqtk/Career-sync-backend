@@ -33,7 +33,8 @@ export const getMessagesController=async(req:Request,res:Response)=>{
 
 export const clearMessageController=async(req:Request,res:Response)=>{
    const conversationId=req.params.conversationId as string
-  await clearMessageService({conversationId})
+      const userId=req.auth?.id as string
+  await clearMessageService({conversationId,userId})
 
   return res.status(200).json({
     success: true,
