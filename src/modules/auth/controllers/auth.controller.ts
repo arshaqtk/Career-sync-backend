@@ -31,14 +31,14 @@ export const AuthController = {
 
         res.cookie("accessToken", result.accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
            sameSite: "none",
             maxAge: 15 * 60 * 1000
         });
 
         res.cookie("refreshToken", result.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
@@ -69,14 +69,14 @@ export const AuthController = {
 
         res.cookie("accessToken", result.accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
            sameSite: "none",
             maxAge: 15 * 60 * 1000
         });
 
         res.cookie("refreshToken", result.refreshToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
@@ -149,7 +149,7 @@ if(result.success){
         const accessToken = await Authservice.refreshTokens(refreshToken)
         res.cookie("accessToken", accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === "production",
+            secure: true,
             sameSite: "none",
             maxAge: 15 * 60 * 1000
         });
@@ -161,7 +161,7 @@ if(result.success){
 
     res.clearCookie("accessToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // change to true in production
+        secure: true, // change to true in production
         sameSite: "none",
         path: "/",
     });
@@ -169,7 +169,7 @@ if(result.success){
     
     res.clearCookie("refreshToken", {
         httpOnly: true,
-        secure: process.env.NODE_ENV === "production", // change to true in production
+        secure: true, // change to true in production
         sameSite: "none",
         path: "/",
     });
