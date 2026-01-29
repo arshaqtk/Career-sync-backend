@@ -20,7 +20,6 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { CustomError } from "./shared/utils/customError";
 import passport from "passport";
 import "./modules/auth/oauth/google.strategy"
-import { ENV } from "./config/env";
 
  
 
