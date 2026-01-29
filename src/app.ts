@@ -20,13 +20,14 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { CustomError } from "./shared/utils/customError";
 import passport from "passport";
 import "./modules/auth/oauth/google.strategy"
+import { ENV } from "./config/env";
 
  
 
 const app=express()
 
 const allowedOrigins = [
- "https://career-sync-frontend.vercel.app", 
+ `${ENV.CLIENT_URL}`, 
   "https://careersync.duckdns.org",
   "http://localhost:5173"
 ];
