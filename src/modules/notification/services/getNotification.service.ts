@@ -6,9 +6,9 @@ export const getMyNotifications=async({userId,query}:{userId:string,query: { pag
      .skip((query.page - 1) * query.limit)
     .limit(query.limit).lean();
 
-    const total=await NotificationModel.countDocuments()
+    const total=await NotificationModel.countDocuments({recipientId:userId})
 
-    return {notifications, pagination: {
+    return {notifications, pagination: { 
       parseArgs:query.page,
       limit:query.limit,
       total,

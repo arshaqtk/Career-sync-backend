@@ -154,3 +154,32 @@ export const getMessagesService=async({conversationId,userId,}:
 
   return messages 
 }
+
+export const clearMessageService=async({conversationId}:{conversationId:string})=>{
+   if(!conversationId){
+    throw new CustomError("Failed to clear history", 400)
+  }
+  const clearMessage= await MessageModel.deleteMany({conversationId:conversationId})
+  const clearLastMessage = await ConversationModel.findByIdAndUpdate({_id:conversationId },{ lastMessage: "" },{ new: true });
+  return {clearMessage,clearLastMessage}
+}
+
+export const deleteConversationService = async ({
+  conversationId,
+}: {
+  conversationId: string
+}) => {
+  if (!conversationId) {
+    throw new CustomError("Conversation ID is required", 400)
+  }
+
+  const conversation = await ConversationModel.findByIdAndDelete(
+    conversationId
+  )
+
+  if (!conversation) {
+    throw new CustomError("Conversation not found", 404)
+  }
+
+  await MessageModel.deleteMany({ conversationId })
+}
