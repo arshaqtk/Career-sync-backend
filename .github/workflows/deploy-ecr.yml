@@ -53,6 +53,6 @@ jobs:
 
             docker run -d \
               --name careersync-backend \
-              --env-file ~/careersync.env \
+              --env-file .env \
               -p 5000:5000 \
               922730022529.dkr.ecr.ap-south-1.amazonaws.com/${{ secrets.ECR_REPOSITORY }}:$IMAGE_TAG
