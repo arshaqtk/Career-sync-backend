@@ -27,7 +27,7 @@ import { ENV } from "./config/env";
 const app=express()
 
 const allowedOrigins = [
- `${ENV.CLIENT_URL}`, 
+ "https://career-sync-ten.vercel.app", 
   "https://careersync.duckdns.org",
   "http://localhost:5173"
 ];
