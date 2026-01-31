@@ -24,7 +24,11 @@ export interface IEducation {
 
 export interface ICandidateData {
   about?: string;
-  resumeUrl?: string;
+  resume: {
+    key: string,          // S3 object key
+    originalName: string,
+    uploadedAt: Date
+  }
   experience?: IExperience[];
   skills?: string[];
   education?: IEducation[];

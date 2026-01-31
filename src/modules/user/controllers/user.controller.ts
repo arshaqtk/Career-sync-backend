@@ -2,7 +2,7 @@ import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { CustomError } from "../../../shared/utils/customError";
-import { CloudinaryService } from "../services/cloudinary.service";
+import { uploadProfileImage } from "../services/profileImage.service";
 
 
 export const UserController = {
@@ -41,9 +41,11 @@ export const UserController = {
     if (!req.file) {
       throw new CustomError("Image can't find", 401);
     }
-    const imageUrl = await CloudinaryService.uploadProfilePic(req.file);
-    const profilePictureUrl = imageUrl as string;
-    const result = await UserService.updateUserAvatar(id, profilePictureUrl)
+   const { key, url } = await uploadProfileImage(req.file, id);
+    const result = await UserService.updateUserAvatar(id, {
+    key,
+    url,
+  })
     res.status(200).json({
       success: true,
       message: "Profile updated successfully",

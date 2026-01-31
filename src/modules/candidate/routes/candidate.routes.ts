@@ -5,7 +5,7 @@ import { updateCandidateProfileSkill } from "../controllers/candidateSkill.contr
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { addCandidateEducationController, updateCandidateEducationController } from "../controllers/candidateEducation.controller";
 import { upload } from "../../../middlewares/upload";
-import { updateResumeController } from "../controllers/candidateResume.controller";
+import { candidateDeleteResumeController, candidateGetResumeUrlController, updateResumeController } from "../controllers/candidateResume.controller";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
 import { catchAsync } from "../../../middlewares/asyncHandler";
 import { getCandidateProfileStats } from "../controllers/candidateStats.controller";
@@ -21,6 +21,8 @@ router.post("/profile/education",authorizeRoles("candidate"),addCandidateEducati
 router.put("/profile/education/:id",authorizeRoles("candidate"),updateCandidateEducationController)
 router.put("/profile/resume",upload.single("resume"),updateResumeController)
 router.get("/profile/stats",catchAsync(getCandidateProfileStats))
+router.get("/profile/resume",authorizeRoles("candidate"),catchAsync(candidateGetResumeUrlController))
+router.delete("/profile/resume",authorizeRoles("candidate"),catchAsync(candidateDeleteResumeController))
 
 
 

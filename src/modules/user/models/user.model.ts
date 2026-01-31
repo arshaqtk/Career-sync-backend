@@ -9,7 +9,11 @@ export interface IUser extends Document {
   name: string;
   email: string;
   phone?: string;
-  profilePictureUrl?: string;
+  profilePicture?: {
+    key:string,
+    url:string,
+    updatedAt:Date
+  };
 
    // AUTH
   password?: string; 
@@ -66,8 +70,10 @@ const userSchema = new Schema<IUser>(
       select: false,
     },
 
-    profilePictureUrl: {
-      type: String,
+    profilePicture: {
+      key:{type:String},
+      url:{type:String},
+      updatedAt:{type:Date ,default: Date.now}
     },
 
     authProvider:{
@@ -114,9 +120,9 @@ const userSchema = new Schema<IUser>(
       role: { type: String },
       about: { type: String },
       resume: {
-        url: { type: String },
+        key: { type: String },
         originalName: { type: String },
-        uploadedAt: { type: Date, default: Date.now }
+        uploadedAt: { type: Date, }
       },
       experience: { type: [ExperienceSchema], default: [] },
       skills: { type: [String], default: [] },

@@ -33,21 +33,26 @@ return {
     return updatedUser
   },
 
-  updateUserAvatar:async(id:string,profilePictureUrl:string)=>{
-    console.log(profilePictureUrl)
-    const updatedUser=await UserRepository.updateById(id,{profilePictureUrl})
+  updateUserAvatar:async(id:string,{key,url}:{key:string,url:string})=>{
+    const updatedUser=await UserRepository.updateById(id,{
+      profilePicture: {
+        key:key,
+        url:url,
+        updatedAt: new Date(), 
+      },
+    })
     return updatedUser
   },
 
   updateUserNestedField:async (
   userId: string,
-  fieldPath: string,  
+  fieldPath: string,   
   value: any
 ) => {
   const updateData: Record<string, any> = {
     [fieldPath]: value,
   };
-  console.log(updateData)
+  
 
   const updatedUser = await UserRepository.updateById(userId, updateData);
   return updatedUser;
@@ -60,7 +65,7 @@ return {
     companyLocation,
     companyDescription,
   } = payload
-console.log(payload)
+
   const user = await UserRepository.updateById(
     recruiterId,
      {
@@ -70,7 +75,7 @@ console.log(payload)
         "recruiterData.companyDescription": companyDescription,
       }
   )
-  console.log(user)
+
   return user
 }
  

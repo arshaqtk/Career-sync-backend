@@ -25,9 +25,11 @@ export const UserRepository = {
   },
 
   updateById: (id: string | Types.ObjectId, updateData: any) => {
-
-
     return UserModel.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+  },
+
+   removeFieldById: (id: string | Types.ObjectId, updateData: any) => {
+    return UserModel.findByIdAndUpdate(id, { $unset: updateData }, { new: true });
   },
 
   updateNestedArray: <P extends AllowedNestedArrayPaths>( id: string,path: P,value: NestedArrayValueType<P>) => {
