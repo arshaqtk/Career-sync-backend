@@ -6,7 +6,7 @@ import jwt from "jsonwebtoken";
 export const requireauthMiddleware=(req:Request,res:Response,next:NextFunction)=>{
 
   const token = req.cookies?.accessToken;
-console.log("token=====>",token)
+console.log("AWS REGION:", process.env.AWS_REGION);
     if(!token){
         return res.status(401).json({message:"Access Denied"})
     }
