@@ -19,6 +19,8 @@ chatSocket(io)
 
     httpServer.listen(PORT,()=>{
         console.log(`CareerSync API running on port ${PORT}`)
+        console.log("AWS REGION:", process.env.AWS_REGION);
+
     })
 }
  
