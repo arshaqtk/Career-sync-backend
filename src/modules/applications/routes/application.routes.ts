@@ -1,6 +1,6 @@
 import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { Router } from "express";
-import { applyToJob, getApplicantDetailsController, getApplicationController, getApplicationsByJobController, getMyApplicationsController, getRecruiterApplicationsController, updateApplicationStatusController } from "../controllers/application.controller";
+import { applyToJob, getApplicantDetailsController, getApplicationController, getApplicationsByJobController, getMyApplicationsController, getRecruiterApplicationsController, getResumeUrl, updateApplicationStatusController } from "../controllers/application.controller";
 import { catchAsync } from "../../../middlewares/asyncHandler";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
@@ -18,5 +18,5 @@ router.get("/recruiter",authorizeRoles("recruiter"),getRecruiterApplicationsCont
 router.get("/job/:jobId",authorizeRoles("recruiter"),catchAsync(getApplicationsByJobController))
 router.get("/:applicationId",authorizeRoles("recruiter"),catchAsync(getApplicantDetailsController))
 router.patch( "/:applicationId/status",authorizeRoles("recruiter"),catchAsync(updateApplicationStatusController));
-// router.get("/:applicationId/resume/download")
+router.post("/:applicationId/resume",catchAsync(getResumeUrl))
 export default router

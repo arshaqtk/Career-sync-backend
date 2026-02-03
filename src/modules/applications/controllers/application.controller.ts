@@ -7,6 +7,14 @@ import { ApplicationQuery } from "../types/applicationQuery.types";
 const applicationService = ApplicationService();
 
 
+export const getResumeUrl=async(req:Request,res:Response)=>{   
+  const applicationId=req.params.applicationId
+  const key=req.body.data
+  console.log(key,"--------------------")
+  const resumeUrl=await applicationService.ViewResumeService(applicationId,key)
+  res.status(201).json({ success: true, resumeUrl,message:"Resume fetched successfully" });
+}
+
 //--------------------Candidate------------------------
 
 export const applyToJob=async(req:Request,res:Response)=>{    

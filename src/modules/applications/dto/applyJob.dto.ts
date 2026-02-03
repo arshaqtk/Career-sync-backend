@@ -1,6 +1,7 @@
 export interface IApplyJobDTO {
   jobId: string;
-  resumeUrl: string;
+  resumeKey:string,
+  resumeOriginalName:string;
   coverLetter?: string;
   experience:string;
   currentRole:string;

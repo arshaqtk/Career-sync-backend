@@ -19,9 +19,9 @@ const applicationSchema = new Schema<IApplication>(
       ref: "User",
       required: true,
     },
-    resumeUrl: {
-      type: String,
-      required: true,
+    resume: {
+        key:{type:String,required: true},
+        originalName:{type:String}
     },
     currentRole:{
       type:String,

@@ -6,7 +6,7 @@ export interface RecruiterApplicationDTO {
     name: string;
     email: string;
     skills: string[];
-    resumeUrl: string;
+    resume:string ;
   };
   
   job: {

@@ -5,7 +5,7 @@ export interface IApplication extends Document {
   candidateId: Types.ObjectId | string;
   recruiterId:Types.ObjectId | string;
   jobId: Types.ObjectId |string ;
-  resumeUrl: string;
+  resume:{key:string,originalName:string};
   status: "Pending" | "Shortlisted" | "Selected" | "Rejected";
   experience:string;
   currentRole:string;
@@ -31,7 +31,7 @@ export interface IPopulatedCandidate {
   email: string;
   candidateData: {
     skills: string[];
-    resumeUrl: {url:string};
+    resume: {key:string,originalName:string};
   };
 }
 export interface IPopulatedRecruiter{

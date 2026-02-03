@@ -12,6 +12,7 @@ import { InterviewRepository } from "../../../modules/Interview/repository/inter
 import { INTERVIEW_STATUS, InterviewRoundType, InterviewStatus } from "../../../modules/Interview/types/interview.type";
 import { createNotificationService } from "../../../modules/notification/services/createNotification.service";
 import { io } from "../../../server";
+import { getResumeDownloadUrl } from "../../../shared/utils/getResumeDownloadUrl";
 
  
 const applicationRepository = ApplicationRepository()
@@ -20,7 +21,7 @@ const interviewRepository=InterviewRepository()
 export const ApplicationService = () => {
 
   const applyForJob = async (candidateId: string, data: IApplyJobDTO) => {
-
+console.log(data)
     if (!candidateId) throw new CustomError("User Not Found", 404)
 
     const job = await jobRepository.findById(data.jobId);
@@ -40,7 +41,10 @@ export const ApplicationService = () => {
       candidateId,
       recruiterId:job.postedBy as string,
       jobId: data.jobId,
-      resumeUrl: data.resumeUrl,
+      resume: {
+    key: data.resumeKey,
+    originalName: data.resumeOriginalName,
+  },
       coverLetter: data.coverLetter,
       currentRole: data.currentRole,
       experience: data.experience,
@@ -189,7 +193,7 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
       name: app.candidateId.name,
       email: app.candidateId.email,
       skills: app.candidateId.candidateData.skills,
-      resumeUrl: app.candidateId.candidateData.resumeUrl?.url
+      resume: app.candidateId.candidateData.resume?.key
     },
     job: {
       id: app.jobId._id,
@@ -237,7 +241,7 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
         name: app.candidateId.name,
         email: app.candidateId.email,
         skills: app.candidateId.candidateData.skills,
-        resumeUrl: app.candidateId.candidateData.resumeUrl?.url
+        resume: app.candidateId.candidateData.resume?.key
       },
       job: {
         id: app.jobId._id,
@@ -318,9 +322,19 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
     return updated
   }
 
+  const ViewResumeService=async(applicationId:string,key:string)=>{
+    console.log(key)
+    const Applicationresume=await applicationRepository.findById({id:applicationId,select:"resume"})
+     if (Applicationresume?.resume.key!=key) throw new CustomError("Resume not found", 404);
+
+     const resumeUrl=await getResumeDownloadUrl(key,"view")
+     return resumeUrl
+  }
 
 
   return {
+    ViewResumeService,
+
     applyForJob,
     getCandidateApplicationDetailService,
     getMyApplications,
