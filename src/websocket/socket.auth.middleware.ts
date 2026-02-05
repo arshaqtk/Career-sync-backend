@@ -13,14 +13,12 @@ export const socketAuth=(io:Server)=>{
     io.use((socket:Socket,next:(err?: Error) => void)=>{
         try{
           const cookieHeader=socket.handshake.headers.cookie
-          // console.log("COOKIE HEADER",cookieHeader)
+         
             if(!cookieHeader){
                 return next(new Error("No cookie"))
             }
  const cookies = cookie.parse(cookieHeader)
-      // console.log("PARSED COOKIES:", cookies)
              const token = cookies.accessToken
-      console.log("ACCESS TOKEN:", token)
             if(!token){
                 throw new CustomError("unAuthorized  Token Not Found");
             }

@@ -5,6 +5,11 @@ import { UserRepository } from "../repository/user.repository"
 
 
 export const UserService = {
+
+  getOnlineUsers:async()=>{
+    const users=await UserRepository.findOnlineUserIds()
+    return users.map((u)=>u._id)
+  },
   getProfile: async (id: string) => {
     const user = await UserRepository.findById(id);
     const notificationCount=await NotificationModel.countDocuments({recipientId:id,isRead:false})

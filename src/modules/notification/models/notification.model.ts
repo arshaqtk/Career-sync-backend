@@ -28,6 +28,7 @@ const notificationSchema=new mongoose.Schema<INotification>({
   "JOB_UNBLOCKED",
   "APPLICATION_SUBMITTED",
   "APPLICATION_UPDATED",
+  "APPLICATION_VIEWED",
   "CANDIDATE_SELECTED",
   "CANDIDATE_REJECTED",
   "NEW_CHAT_MESSAGE"

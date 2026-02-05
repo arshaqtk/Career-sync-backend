@@ -8,6 +8,7 @@ import { ImageUpload } from "../../../middlewares/imageUpload.middleware";
 const router=Router();
 router.use(requireauthMiddleware)
 router.use(ensureUserIsActive)
+router.get("/online",UserController.getOnlineUsers)
 router.get("/profile",UserController.getProfile)
 router.put("/update-profile-basic",UserController.updateUserProfileBasic)
 router.put("/update-profile-about",UserController.updateUserProfileAbout)

@@ -49,7 +49,11 @@ const applicationSchema = new Schema<IApplication>(
     },
     decisionNote:{
       type:String,
-    }
+    },
+    viewedAt: {
+  type: Date,
+  default: null
+}
   },
   { timestamps: true }
 );

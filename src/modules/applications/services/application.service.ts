@@ -262,19 +262,28 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
 
   const getApplicantDetails = async (applicationId: string) => {
 
-    const applicant = await applicationRepository.findById({
+    const application = await applicationRepository.findById({
       id: applicationId, populate: [
         {
-          path: "candidateId", select: "_id name email phone profilePictureUrl location"
+          path: "candidateId", select: "_id name email phone profilePicture location"
         }, {
           path: "jobId", select: "title company location jobType salary",
         },],
-      select: "status resumeUrl coverLetter experience currentRole expectedSalary noticePeriod createdAt"
+      select: "status resume coverLetter experience currentRole expectedSalary noticePeriod createdAt viewedAt"
     });
-
-    if (!applicant) throw new CustomError("Application not found", 404);
-
-    return applicant;
+    if (!application) throw new CustomError("Application not found", 404);
+    if(!application.viewedAt){
+      await applicationRepository.update(applicationId,{viewedAt:new Date()})
+       await createNotificationService(io, {
+    recipientId: application.candidateId._id,
+    senderId: application.recruiterId._id,
+    entityId: applicationId,
+    title: "Application Viewed",
+    message: `A recruiter has viewed your application for "${application.jobId.title}".`,
+    type: "APPLICATION_VIEWED",
+  })
+    }
+    return application;
   }
 
 
@@ -323,7 +332,7 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
   }
 
   const ViewResumeService=async(applicationId:string,key:string)=>{
-    console.log(key)
+
     const Applicationresume=await applicationRepository.findById({id:applicationId,select:"resume"})
      if (Applicationresume?.resume.key!=key) throw new CustomError("Resume not found", 404);
 

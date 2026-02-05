@@ -58,5 +58,8 @@ findByQuery: (query: QueryFilter<IUser>) => {
    countByQuery: (query: QueryFilter<IUser>) => {
       return UserModel.countDocuments(query); 
     },
+    findOnlineUserIds: async () => {
+  return UserModel.find({ isOnline: true }).select("_id");
+}
 
 };

@@ -1,12 +1,19 @@
-import asyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { UserService } from "../services/user.service";
 import { CustomError } from "../../../shared/utils/customError";
 import { uploadProfileImage } from "../services/profileImage.service";
+import { catchAsync } from "../../../middlewares/asyncHandler";
 
 
 export const UserController = {
-  getProfile: asyncHandler(async (req: Request, res: Response) => {
+  getOnlineUsers:catchAsync(async (req: Request, res: Response) => {
+    const users = await UserService.getOnlineUsers();
+    res.status(200).json({
+    users,
+    count: users.length
+  });
+  }),
+  getProfile: catchAsync(async (req: Request, res: Response) => {
     const id = req.auth?.id;
     if (!id) {
       throw new CustomError("unAuthorized User Not Found", 401);
@@ -17,7 +24,7 @@ export const UserController = {
   }),
 
 
-  updateUserProfileBasic: asyncHandler(async (req: Request, res: Response) => {
+  updateUserProfileBasic: catchAsync(async (req: Request, res: Response) => {
     const id = req.auth?.id as string;
     if (!id) {
       throw new CustomError("unAuthorized User Not Found", 401);
@@ -32,7 +39,7 @@ export const UserController = {
     });
   }),
 
-  updateuserAvatar: asyncHandler(async (req: Request, res: Response) => {
+  updateuserAvatar: catchAsync(async (req: Request, res: Response) => {
     const id = req.auth?.id
     console.log(req.file)
     if (!id) {
@@ -53,7 +60,7 @@ export const UserController = {
     });
   }),
   
-  updateUserProfileAbout: asyncHandler(async (req: Request, res: Response) => {
+  updateUserProfileAbout: catchAsync(async (req: Request, res: Response) => {
     const id = req.auth?.id as string;
     if (!id) {
       throw new CustomError("unAuthorized User Not Found", 401);

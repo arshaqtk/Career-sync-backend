@@ -79,14 +79,14 @@ export const ApplicationRepository = (): IApplicationRepository => {
     }
 
     const pipeline = [
-      // 1️⃣ Match application
+    
       {
         $match: {
           _id: new Types.ObjectId(applicationId),
         },
       },
 
-      // 2️⃣ Lookup Job
+      
       {
         $lookup: {
           from: "jobs",
@@ -97,7 +97,7 @@ export const ApplicationRepository = (): IApplicationRepository => {
       },
       { $unwind: "$job" },
 
-      // 3️⃣ Lookup Recruiter
+      
       {
         $lookup: {
           from: "users",
@@ -108,7 +108,7 @@ export const ApplicationRepository = (): IApplicationRepository => {
       },
       { $unwind: "$recruiter" },
 
-      // 4️⃣ Shape DTO
+     
       {
         $project: {
           _id: 0,

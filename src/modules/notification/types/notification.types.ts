@@ -16,6 +16,7 @@ export type NotificationType =
   |"JOB_UNBLOCKED"
   |"APPLICATION_SUBMITTED"
   |"APPLICATION_UPDATED"
+  |"APPLICATION_VIEWED"
   |"NEW_CHAT_MESSAGE"
 
 export interface INotification{

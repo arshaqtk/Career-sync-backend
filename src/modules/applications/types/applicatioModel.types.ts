@@ -1,4 +1,3 @@
-import { IJob } from "@/modules/jobs/types/JobModel.type";
 import { Document, Types } from "mongoose";
 
 export interface IApplication extends Document {
@@ -13,6 +12,7 @@ export interface IApplication extends Document {
   expectedSalary?: number;
   noticePeriod?: string;
   decisionNote?:string;
+  viewedAt?:Date
   createdAt: Date;     
   updatedAt: Date;  
 }

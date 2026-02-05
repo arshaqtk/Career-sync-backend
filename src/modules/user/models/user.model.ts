@@ -10,23 +10,25 @@ export interface IUser extends Document {
   email: string;
   phone?: string;
   profilePicture?: {
-    key:string,
-    url:string,
-    updatedAt:Date
+    key: string,
+    url: string,
+    updatedAt: Date
   };
 
-   // AUTH
-  password?: string; 
+  // AUTH
+  password?: string;
   authProvider: "local" | "google"
   googleId?: string;
 
 
-  field: string|undefined;
+  field: string | undefined;
   role: "candidate" | "recruiter" | "admin";
 
   isVerified: boolean;
   isActive: boolean;
   isProfileComplete: boolean;
+  isOnline?: boolean;
+  lastSeen?: Date;
 
 
   blockedAt: Date;
@@ -71,18 +73,18 @@ const userSchema = new Schema<IUser>(
     },
 
     profilePicture: {
-      key:{type:String},
-      url:{type:String},
-      updatedAt:{type:Date ,default: Date.now}
+      key: { type: String },
+      url: { type: String },
+      updatedAt: { type: Date, default: Date.now }
     },
 
-    authProvider:{
-      type:String,
-      enum:["local","google"],
+    authProvider: {
+      type: String,
+      enum: ["local", "google"],
       default: "local",
     },
-    googleId:{
-      type:String
+    googleId: {
+      type: String
     },
 
     role: {
@@ -95,15 +97,20 @@ const userSchema = new Schema<IUser>(
       type: Boolean,
       default: false,
     },
-    isProfileComplete:{
-      type:Boolean,
-      default:false
+    isProfileComplete: {
+      type: Boolean,
+      default: false
     },
 
     isActive: {
       type: Boolean,
       default: true,
     },
+
+    isOnline: { type: Boolean, default: false },
+    lastSeen:{ type: Date },
+
+
     blockedAt: {
       type: Date,
     },
