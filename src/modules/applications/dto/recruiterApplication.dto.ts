@@ -15,7 +15,7 @@ export interface RecruiterApplicationDTO {
     company: string;
   };
   
-  status: "Pending" | "Shortlisted" | "Selected" | "Rejected";
+  status: "Pending" | "Shortlisted" | "Selected" | "Rejected"|"Viewed";
   currentRole:string;
   experience: string;
   coverLetter?: string;

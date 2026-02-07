@@ -82,7 +82,7 @@ export const chatSocket = (io: Server) => {
             } else {
                 onlineUsers.set(userId, count);
             }
-            //   console.log(`User disconnected from chat socket: ${userId}`)
+              console.log(`User disconnected from chat socket: ${userId}`)
         })
 
     })

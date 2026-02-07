@@ -6,6 +6,6 @@ export interface CandidateApplicationDTO {
     company: string;
     location: string;
   };
-  status: "Pending" | "Shortlisted" | "Selected" | "Rejected";
+  status: "Pending" | "Shortlisted" | "Selected" | "Rejected"|"Viewed";
   createdAt: Date;
 }

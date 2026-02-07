@@ -5,7 +5,7 @@ export interface IApplication extends Document {
   recruiterId:Types.ObjectId | string;
   jobId: Types.ObjectId |string ;
   resume:{key:string,originalName:string};
-  status: "Pending" | "Shortlisted" | "Selected" | "Rejected";
+  status: "Pending" | "Shortlisted" | "Selected" | "Rejected"|"Viewed";
   experience:string;
   currentRole:string;
   coverLetter?: string; 

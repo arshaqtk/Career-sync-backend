@@ -3,6 +3,6 @@ interface ApplicationQuery {
   limit: number;
    search?:string;
   status: "all"| "Pending" | "Shortlisted" | "Selected"|"Interview"
-     | "Rejected"
+     | "Rejected"|"Viewed"
       sortBy: "newest" | "oldest";
 }

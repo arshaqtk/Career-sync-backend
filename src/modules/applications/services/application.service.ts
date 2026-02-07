@@ -13,6 +13,7 @@ import { INTERVIEW_STATUS, InterviewRoundType, InterviewStatus } from "../../../
 import { createNotificationService } from "../../../modules/notification/services/createNotification.service";
 import { io } from "../../../server";
 import { getResumeDownloadUrl } from "../../../shared/utils/getResumeDownloadUrl";
+import { error } from "console";
 
  
 const applicationRepository = ApplicationRepository()
@@ -266,22 +267,26 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
       id: applicationId, populate: [
         {
           path: "candidateId", select: "_id name email phone profilePicture location"
-        }, {
+        }, { path: "recruiterId", select: "_id" },{
           path: "jobId", select: "title company location jobType salary",
         },],
       select: "status resume coverLetter experience currentRole expectedSalary noticePeriod createdAt viewedAt"
     });
     if (!application) throw new CustomError("Application not found", 404);
     if(!application.viewedAt){
-      await applicationRepository.update(applicationId,{viewedAt:new Date()})
-       await createNotificationService(io, {
-    recipientId: application.candidateId._id,
-    senderId: application.recruiterId._id,
-    entityId: applicationId,
-    title: "Application Viewed",
-    message: `A recruiter has viewed your application for "${application.jobId.title}".`,
-    type: "APPLICATION_VIEWED",
-  })
+      await applicationRepository.update(applicationId,{viewedAt:new Date(),status:"Viewed"})
+      try{
+        await createNotificationService(io, {
+     recipientId: application.candidateId._id,
+     senderId: application.recruiterId._id,
+     entityId: applicationId,
+     title: "Application Viewed",
+     message: `A recruiter has viewed your application for "${application.jobId.title}".`,
+     type: "APPLICATION_VIEWED",
+   })
+      }catch(err){
+    console.log("notification error",err)
+      }
     }
     return application;
   }

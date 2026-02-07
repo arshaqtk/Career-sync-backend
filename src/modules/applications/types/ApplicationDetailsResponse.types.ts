@@ -1,7 +1,7 @@
 export interface CandidateApplicationDetailResponse {
   application: {
     id: string
-    status: "Pending" | "Shortlisted" | "Selected" | "Rejected"
+    status: "Pending" | "Shortlisted" | "Selected" | "Rejected"|"Viewed"
 
 
     experience: string

@@ -28,7 +28,8 @@ const app=express()
 const allowedOrigins = [
  "https://career-sync-ten.vercel.app", 
   "https://careersync.duckdns.org",
-  "http://localhost:5173"
+  "http://localhost:5173",
+  "http://localhost:5175"
 ];
   
 app.use(helmet())
