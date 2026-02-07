@@ -293,7 +293,7 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
 
 
 
-  const updateApplicationStatusService = async (applicationId: string, status: ApplicationStatus) => {
+  const updateApplicationStatusService = async (applicationId: string, status: Exclude<ApplicationStatus,"Viewed">) => {
  
     if (!Object.values(APPLICATION_STATUS).includes(status)) {
       throw new CustomError("Invalid application status", 400);

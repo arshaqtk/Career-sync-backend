@@ -25,7 +25,7 @@ export const sendApplicationStatusUpdateEmail = async ({
   companyName: string;
   jobLocation: string;
   employmentType?: string;
-  newStatus: ApplicationStatus;
+  newStatus: Exclude<ApplicationStatus,"Viewed">;
 }) => {
   
   const templateFn =
