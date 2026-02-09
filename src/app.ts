@@ -28,8 +28,6 @@ const app=express()
 const allowedOrigins = [
  "https://career-sync-ten.vercel.app", 
   "https://careersync.duckdns.org",
-  "http://localhost:5173",
-  "http://localhost:5175"
 ];
   
 app.use(helmet())
@@ -53,7 +51,7 @@ app.use(cors({
 app.use(morgan('combined'))
 
 
-app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 100,
+app.use(rateLimit({ windowMs: 15 * 60 * 1000, max: 250,
   handler:(req,res,next)=>{
     next(new CustomError("Too many requests, please try again later.",429))
   }
