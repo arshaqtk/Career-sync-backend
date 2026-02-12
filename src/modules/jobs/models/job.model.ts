@@ -96,5 +96,6 @@ wasClosedByRecruiter: {
     timestamps: true, // automatically creates createdAt & updatedAt
   }
 );
-
+JobSchema.index({ postedBy: 1 }); 
+JobSchema.index({ status: 1, createdAt: -1 });
 export const JobModel = model("Job", JobSchema);

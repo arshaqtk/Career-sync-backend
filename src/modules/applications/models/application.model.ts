@@ -57,5 +57,5 @@ const applicationSchema = new Schema<IApplication>(
   },
   { timestamps: true }
 );
-
+applicationSchema.index({ candidateId: 1 });
 export const ApplicationModel = model("Application", applicationSchema);

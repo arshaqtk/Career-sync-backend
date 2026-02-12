@@ -95,26 +95,5 @@ location: {
     timestamps: true, 
   }
 );
-
+interviewSchema.index({ candidateId: 1, startTime: 1 });
 export const InterviewModel=model<IInterview>("Interview",interviewSchema)
-
-
-// interviewSchema.pre("save", function (next) {
-//   // auto calculate duration if not provided
-//   if (!this.durationMinutes && this.startTime && this.endTime) {
-//     const diff =
-//       (this.endTime.getTime() - this.startTime.getTime()) / (1000 * 60);
-//     this.durationMinutes = Math.max(Math.round(diff), 1);
-//   }
-
-//   // mode-based validation
-//   if (this.mode === "external_link" && !this.externalLink) {
-//     return next(new Error("External link is required for external_link mode"));
-//   }
-
-//   if (this.mode === "webrtc" && !this.webrtcRoomId) {
-//     return next(new Error("WebRTC roomId is required for webrtc mode"));
-//   }
-
-//   next();
-// });

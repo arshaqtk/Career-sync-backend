@@ -1,7 +1,11 @@
 import { catchAsync } from "../../../middlewares/asyncHandler";
 import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { Router } from "express";
-import { clearMessageController, deleteConversationController, getConversationListController, getMessagesController } from "../controllers/chat.controller";
+import { getConversationListController } from "../controllers/getConversationList.controller";
+import { getMessagesController } from "../controllers/getMessages.controller";
+import { clearMessageController } from "../controllers/clearMessage.controller";
+import { deleteConversationController } from "../controllers/deleteMessages.controller";
+
 
 
 const router=Router()
