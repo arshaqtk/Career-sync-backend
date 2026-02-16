@@ -16,14 +16,9 @@
     "resolveJsonModule": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "baseUrl": ".", 
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"], 
-      "@utils/*": ["src/shared/utils/*"],
-      "@modules/*": ["src/modules/*"],
-      "@middlewares/*": ["src/middlewares/*"],
-      "@config/*": ["src/config/*"],
-      "@core/*": ["src/core/*"]
+      "@/*": ["src/*"]
     }
   },
   "include": ["src/**/*","src/types"],

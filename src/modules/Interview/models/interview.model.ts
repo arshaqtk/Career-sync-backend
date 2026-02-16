@@ -37,13 +37,13 @@ const interviewSchema = new Schema<IInterview>(
       ref: "Application",
       required: true,
     },
-roundNumber:{
+    roundNumber: {
       type: Number,
       required: true,
     },
     roundType: {
-       type: Schema.Types.String,
-        enum: Object.values(InterviewRoundType),
+      type: Schema.Types.String,
+      enum: Object.values(InterviewRoundType),
       default: InterviewRoundType.HR,
     },
 
@@ -55,7 +55,7 @@ roundNumber:{
       type: Date,
     },
 
- 
+
 
     status: {
       type: Schema.Types.String,
@@ -67,24 +67,29 @@ roundNumber:{
       default: [],
     },
 
-    mode: { 
+    mode: {
       type: String,
-      enum: ["Online" , "Offline"],
+      enum: ["Online", "Offline"],
     },
 
     meetingLink: {
-  type: String,
-  required: function () {
-    return this.mode === "Online";
-  },
-},
-location: {
-  type: String,
-  required: function () {
-    return this.mode === "Offline";
-  },
-},
-
+      type: String,
+      required: function () {
+        return this.mode === "Online";
+      },
+    },
+    location: {
+      type: String,
+      required: function () {
+        return this.mode === "Offline";
+      },
+    },
+    interviewerEmail: {
+      type: String
+    },
+    interviewerName: {
+      type: String
+    },
 
     notes: {
       type: String,
@@ -92,8 +97,8 @@ location: {
     },
   },
   {
-    timestamps: true, 
+    timestamps: true,
   }
 );
 interviewSchema.index({ candidateId: 1, startTime: 1 });
-export const InterviewModel=model<IInterview>("Interview",interviewSchema)
+export const InterviewModel = model<IInterview>("Interview", interviewSchema)

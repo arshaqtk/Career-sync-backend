@@ -186,7 +186,7 @@ const getRecruiterApplications=async(recruiterId:string,query:ApplicationQuery):
         { path: "candidateId" }
       ],sort:{createdAt:sort},limit,skip
     }) as unknown as IApplicationPopulated[]
-
+console.log(applications)
     const mappedApplications=applications.map((app) => ({
     id: app._id.toString(),
     candidate: {

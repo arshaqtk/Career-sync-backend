@@ -5,6 +5,7 @@ import {
   interviewCancelledTemplate,
   interviewCompletedTemplate,
 } from "../emails";
+import { interviewerScheduledTemplate } from "../emails/interviewerScheduled.template";
 import { INTERVIEW_STATUS, InterviewStatus } from "../types/interview.type"; 
 
 type InterviewEmailPayload = {
@@ -16,6 +17,7 @@ type InterviewEmailPayload = {
   time?: string;
   meetingLink?: string;
   reason?: string;
+  interviewerName?:string;
 };
 
 export const sendInterviewEmail = async (
@@ -28,6 +30,7 @@ export const sendInterviewEmail = async (
     case INTERVIEW_STATUS.SCHEDULED:
       email = interviewScheduledTemplate(payload as any);
       break;
+      
 
     case INTERVIEW_STATUS.RESCHEDULED:
       email = interviewRescheduledTemplate({

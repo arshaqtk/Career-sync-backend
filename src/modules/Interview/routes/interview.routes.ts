@@ -2,8 +2,16 @@ import { catchAsync } from "../../../middlewares/asyncHandler";
 import { requireauthMiddleware } from "../../../middlewares/requireAuth.middleware";
 import { authorizeRoles } from "../../../middlewares/role.middleware";
 import { Router } from "express";
-import { candidateGetInterviewDetailController, candidateGetInterviewsController, recruiterFinalizeCandidateController, recruiterGetInterviewByIdController, recruiterGetInterviewsByApplicationController, recruiterGetInterviewsController, recruiterScheduleInterviewController, recruiterUpdateInterviewStatusController, rescheduleInterviewController } from "../controllers/interview.controller";
 import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.middleware";
+import { recruiterGetInterviewsController } from "../controllers/recruiterGetInterviews.controller";
+import { recruiterGetInterviewsByApplicationController } from "../controllers/recruiterGetInterviewsByApplication.controller";
+import { recruiterGetInterviewByIdController } from "../controllers/recruiterGetInterviewById.controller";
+import { recruiterScheduleInterviewController } from "../controllers/recruiterScheduleInterview.controller";
+import { rescheduleInterviewController } from "../controllers/rescheduleInterview.controller";
+import { recruiterUpdateInterviewStatusController } from "../controllers/recruiterUpdateInterviewStatus.controller";
+import { recruiterFinalizeCandidateController } from "../controllers/recruiterFinalizeCandidate.controller";
+import { candidateGetInterviewsController } from "../controllers/candidateGetInterviews.controller";
+import { candidateGetInterviewDetailController } from "../controllers/candidateGetInterviewDetail.controller";
 
 const router=Router();
 router.use(requireauthMiddleware)

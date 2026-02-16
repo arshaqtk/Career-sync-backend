@@ -25,6 +25,8 @@ export interface IInterview extends Document{
 
   mode?: InterviewMode;
   meetingLink?: string;
+  interviewerEmail?:string;
+  interviewerName?:string;
   location?: string; 
  
 

@@ -27,7 +27,9 @@ const app=express()
 
 const allowedOrigins = [
  "https://career-sync-ten.vercel.app", 
-  "https://careersync.duckdns.org",];
+  "https://careersync.duckdns.org",
+  "http://localhost:5173"
+];
   
 app.use(helmet())
 app.use(cors({
@@ -52,7 +54,7 @@ app.use(morgan('combined'))
 app.set('trust proxy', 1);
 app.use(rateLimit({
    windowMs: 15 * 60 * 1000,
-   max: 250,
+   max: 100,
    standardHeaders: true, // Returns rate limit info in headers
   legacyHeaders: false,
   handler:(req,res,next)=>{

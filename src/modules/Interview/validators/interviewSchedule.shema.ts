@@ -9,6 +9,7 @@ export const scheduledInterviewSchema=z.object({
     mode:z.enum(["Online","Offline"]),
     scheduleMode:z.enum(["initial" , "next_round"]),
 meetingLink: z.url().optional(),
+interviewerEmail:z.email().optional(),
     location: z.string().optional(),
 }).superRefine((data,ctx)=>{
     if(data.mode==="Online"&&!data.meetingLink){
