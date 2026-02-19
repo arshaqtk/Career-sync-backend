@@ -9,11 +9,12 @@ export interface CandidateData {
 }
 
 export interface RecruiterData {
-  companyName?: string;
-  companyWebsite?: string;
-  companyLogo?: string;
-  companyLocation?: string;
-  companyDescription?: string;
+  // companyName?: string;
+  // companyWebsite?: string;
+  // companyLogo?: string;
+  // companyLocation?: string;
+  // companyDescription?: string;
+   company?: string;
 }
 
 export type UpdateUserProfileDTO = {
@@ -21,10 +22,14 @@ export type UpdateUserProfileDTO = {
   phone?: string;
 };
 
-export type updateRecruiterCompanyDTO={
- companyName?: string;
-  companyWebsite?: string;
-  companyLogo?: string;
-  companyLocation?: string;
-  companyDescription?: string;
+// export type updateRecruiterCompanyDTO={
+//  companyName?: string;
+//   companyWebsite?: string;
+//   companyLogo?: string;
+//   companyLocation?: string;
+//   companyDescription?: string;
+// }
+
+export type updateRecruiterCompanyDTO = {
+  company?: string;
 }

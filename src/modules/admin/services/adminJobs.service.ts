@@ -8,6 +8,7 @@ import { jobUnblockedEmail } from "../templates/jobUnblockedEmail"
 import { IUser } from "../../../modules/user/models/user.model"
 import { createNotificationService } from "../../../modules/notification/services/createNotification.service"
 import { io } from "../../../server"
+import { CompanyModel } from "@/modules/company/models/company.model"
 
 
 
@@ -234,18 +235,20 @@ export const blockJobByAdminService = async ({
     }
   )
 
-  const user=await UserRepository.findById(job.postedBy.toString()).select("_id email name recruiterData.companyName")
+  const user=await UserRepository.findById(job.postedBy.toString()).select("_id email name recruiterData.company")
 
   if(user){
  try {
+    const companyId = user.recruiterData?.company;
+    const company = companyId ? await CompanyModel.findById(companyId).select("name").lean() : null;
       await sendEmail({
         to: user.email,
         subject: `Your Job ${job.title} Has Been Unblocked`,
         html: jobBlockedEmail({
           recruiterName: user.name,
           jobTitle:job.title,
-          companyName:user?.recruiterData?.companyName,
-          reason:reason
+          companyName: company?.name,
+        reason: reason ?? "Blocked by admin",
         }),
       })
     } catch (error) {
@@ -298,18 +301,20 @@ export const unblockJobByAdminService = async ({
 
   // 🔹 Fetch recruiter
   const user = await UserRepository.findById(job.postedBy.toString())
-    .select("email name recruiterData.companyName")
+    .select("email name recruiterData.company")
     .lean()
 
   if (user?.email) {
     try {
+       const companyId = user.recruiterData?.company;
+    const company = companyId ? await CompanyModel.findById(companyId).select("name").lean() : null;
       await sendEmail({
         to: user.email,
         subject: `Your Job "${job.title}" Has Been Unblocked`,
         html: jobUnblockedEmail({
           recruiterName: user.name,
           jobTitle: job.title,
-          companyName: user.recruiterData?.companyName,
+               companyName: company?.name,
         }),
       })
     } catch (error) {

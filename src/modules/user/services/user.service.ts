@@ -63,26 +63,26 @@ return {
   return updatedUser;
 },
 
- updateRecruiterCompany : async({recruiterId,payload}:{recruiterId:string,payload:updateRecruiterCompanyDTO}) => {
-  const {
-    companyName,
-    companyWebsite,
-    companyLocation,
-    companyDescription,
-  } = payload
+//  updateRecruiterCompany : async({recruiterId,payload}:{recruiterId:string,payload:updateRecruiterCompanyDTO}) => {
+//   const {
+//     companyName,
+//     companyWebsite,
+//     companyLocation,
+//     companyDescription,
+//   } = payload
 
-  const user = await UserRepository.updateById(
-    recruiterId,
-     {
-        "recruiterData.companyName": companyName,
-        "recruiterData.companyWebsite": companyWebsite,
-        "recruiterData.companyLocation": companyLocation,
-        "recruiterData.companyDescription": companyDescription,
-      }
-  )
+//   const user = await UserRepository.updateById(
+//     recruiterId,
+//      {
+//         "recruiterData.companyName": companyName,
+//         "recruiterData.companyWebsite": companyWebsite,
+//         "recruiterData.companyLocation": companyLocation,
+//         "recruiterData.companyDescription": companyDescription,
+//       }
+//   )
 
-  return user
-}
+//   return user
+// }
  
 };
 

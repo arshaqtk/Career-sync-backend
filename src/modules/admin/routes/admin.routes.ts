@@ -6,6 +6,11 @@ import { adminDashboardStats, getAdminDashboardData } from "../controllers/admin
 import { adminGetRecruiters, blockRecruiterByAdminController, getAdminRecruiterDetailController, unblockRecruiterByAdminController } from "../controllers/adminRecruters.controller";
 import { adminGetCandidates, blockCandidateByAdminController, getAdminCandidateDetailController, unblockCandidateByAdminController } from "../controllers/adminCandidates.controller";
 import { adminBlockJob, adminGetJobDetail, adminGetJobs, adminUnblockJob } from "../controllers/adminJobs.controller";
+import {
+    adminApproveCompanyController,
+    adminRejectCompanyController,
+    adminBlockCompanyController
+} from "../../company/controllers/createCompany.controller";
 
 const router=Router()
 
@@ -33,7 +38,9 @@ router.patch("/jobs/:id/block",requireauthMiddleware,authorizeRoles("admin"),cat
 router.patch("/jobs/:id/unblock",requireauthMiddleware,authorizeRoles("admin"),catchAsync(adminUnblockJob));
 
 
-
+router.patch("/companies/:id/approve", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminApproveCompanyController));
+router.patch("/companies/:id/reject", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminRejectCompanyController));
+router.patch("/companies/:id/block", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminBlockCompanyController));
 
  
 export default router;

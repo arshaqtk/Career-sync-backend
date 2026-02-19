@@ -14,7 +14,7 @@ router.put("/update-profile-basic",UserController.updateUserProfileBasic)
 router.put("/update-profile-about",UserController.updateUserProfileAbout)
 // router.put("/update-profile-experience",UserController.updateUserProfileExperience)
 router.put("/update-profile-avatar",ImageUpload.single("image"),UserController.updateuserAvatar)
-router.put("/company",authorizeRoles("recruiter"),UserController.updateRecruiterCompany)
+// router.put("/company",authorizeRoles("recruiter"),UserController.updateRecruiterCompany)
 
 
 

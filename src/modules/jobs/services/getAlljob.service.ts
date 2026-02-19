@@ -1,5 +1,6 @@
 import { ApplicationModel } from "../../../modules/applications/models/application.model";
 import { UserRepository } from "../../../modules/user/repository/user.repository";
+import { JobModel } from "../models/job.model";
 import { jobRepository } from "../repository/job.repository";
 
 export const CandidategetJobsService = async ({candidateId,query}:
@@ -57,7 +58,16 @@ if(candidateId){
 }
 
 
-  const jobs = await jobRepository.findByQuery(filter)
+  // const jobs = await jobRepository.findByQuery(filter)
+   const jobs = await JobModel.find(filter)
+    .populate({
+      path: 'postedBy',
+      select: 'recruiterData.company',
+      populate: {
+        path: 'recruiterData.company',
+        select: 'name logo'
+      }
+    })
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
     .limit(limit).lean();
@@ -66,8 +76,10 @@ if(candidateId){
 
 const appliedJobIdStrings = appliedJobIds.map(id => id.toString()); 
 
-const jobsWithAppliedFlag = jobs.map(job => ({
+const jobsWithAppliedFlag = jobs.map((job:any) => ({
   ...job,
+   companyId: job.postedBy?.recruiterData?.company?._id || null,
+  companyLogo: job.postedBy?.recruiterData?.company?.logo?.url || null,
   hasApplied: appliedJobIdStrings.includes(job._id.toString()),
 }));
 

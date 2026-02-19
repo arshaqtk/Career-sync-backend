@@ -5,6 +5,7 @@ import UserModel from "../../../modules/user/models/user.model";
 import { sendEmail } from "../../../shared/email/email.service";
 import { recruiterUnblockedEmail } from "../templates/recruiterUnblockedEmail";
 import { recruiterBlockedEmail } from "../templates/recruiterBlockedEmail";
+import { CompanyModel } from "@/modules/company/models/company.model";
 
 interface BlockRecruiterByAdminInput{
     recruiterId:string;
@@ -144,12 +145,14 @@ export const blockRecruiterByAdminService = async ({
   })
 
   try {
+     const companyId = user.recruiterData?.company;
+        const company = companyId ? await CompanyModel.findById(companyId).select("name").lean():null;
     await sendEmail({
       to: user.email,
       subject: "Your Account Has Been Blocked",
       html: recruiterBlockedEmail({
         name: user.name,
-       companyName:user.recruiterData?.companyName,
+       companyName:company?.name,
        reason:reason ?? "Blocked by admin"
       }),
     })
@@ -184,12 +187,14 @@ export const unblockRecruiterByAdminService = async ({
     blockReason: null,
   })
  try {
+   const companyId = user.recruiterData?.company;
+        const company = companyId ? await CompanyModel.findById(companyId).select("name").lean():null;
     await sendEmail({
       to: user.email,
       subject: "Your Account Has Been Unblocked",
       html: recruiterUnblockedEmail({
         name: user.name,
-       companyName:user.recruiterData?.companyName
+       companyName:company?.name
       }),
     })
   } catch (error) {

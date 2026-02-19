@@ -75,28 +75,28 @@ export const UserController = {
   }),
   
 
- updateRecruiterCompany :async (req: Request, res: Response) => {
-  const userId = req.auth?.id
-if (!userId) {
-      throw new CustomError("unAuthorized User Not Found", 401);
-    }
-  const {
-    companyName,
-    companyWebsite,
-    companyLocation,
-    companyDescription,
-  } = req.body
-  const user=await UserService.updateRecruiterCompany({recruiterId:userId,payload:{
-    companyName,
-    companyWebsite,
-    companyLocation,
-    companyDescription,
-  }})
-  res.json({
-    message: "Company details updated",
-    recruiterData: user,
-  })
-}
+//  updateRecruiterCompany :async (req: Request, res: Response) => {
+//   const userId = req.auth?.id
+// if (!userId) {
+//       throw new CustomError("unAuthorized User Not Found", 401);
+//     }
+//   const {
+//     companyName,
+//     companyWebsite,
+//     companyLocation,
+//     companyDescription,
+//   } = req.body
+//   const user=await UserService.updateRecruiterCompany({recruiterId:userId,payload:{
+//     companyName,
+//     companyWebsite,
+//     companyLocation,
+//     companyDescription,
+//   }})
+//   res.json({
+//     message: "Company details updated",
+//     recruiterData: user,
+//   })
+// }
 
 };
 

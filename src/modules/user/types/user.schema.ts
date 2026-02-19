@@ -1,3 +1,5 @@
+import { Types } from "mongoose";
+
 export interface IExperience {
   _id?: string;
   company: string;
@@ -37,11 +39,12 @@ role?: string;
 }
 
 export interface IRecruiterData {
-  companyName?: string;
-  companyWebsite?: string;
-  companyLogo?: string;
-  companyLocation?: string;
-  companyDescription?: string;
+  company?:Types.ObjectId
+  // companyName?: string;
+  // companyWebsite?: string;
+  // companyLogo?: string;
+  // companyLocation?: string;
+  // companyDescription?: string;
 }
 
 

@@ -14,6 +14,7 @@ import interviewRoutes from "./modules/Interview/routes/interview.routes"
 import adminRoutes from "./modules/admin/routes/admin.routes";
 import notificationRoutes from "./modules/notification/routes/notification.routes";
 import chatRoutes from "./modules/chat/routes/chat.route";
+import companyRoutes from "./modules/company/routes/company.routes";
 
 
 import { errorHandler } from "./middlewares/errorHandler";
@@ -77,7 +78,7 @@ app.use("/api/interview",interviewRoutes)
 app.use("/api/admin",adminRoutes) 
 app.use("/api/notifications",notificationRoutes)
 app.use("/api/chat",chatRoutes)
-
+app.use("/api/companies", companyRoutes);
 
 
 

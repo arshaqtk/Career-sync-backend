@@ -140,11 +140,12 @@ const userSchema = new Schema<IUser>(
 
     // RECRUITER FIELDS ------------------------------------------------------
     recruiterData: {
-      companyName: { type: String },
-      companyWebsite: { type: String },
-      companyLogo: { type: String },
-      companyLocation: { type: String },
-      companyDescription: { type: String },
+      company: { type: Schema.Types.ObjectId, ref: "Company" },
+      // companyName: { type: String },
+      // companyWebsite: { type: String },
+      // companyLogo: { type: String },
+      // companyLocation: { type: String },
+      // companyDescription: { type: String },
     },
     lastLoginAt: {
       type: Date,
