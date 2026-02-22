@@ -141,11 +141,10 @@ const userSchema = new Schema<IUser>(
     // RECRUITER FIELDS ------------------------------------------------------
     recruiterData: {
       company: { type: Schema.Types.ObjectId, ref: "Company" },
-      // companyName: { type: String },
-      // companyWebsite: { type: String },
-      // companyLogo: { type: String },
-      // companyLocation: { type: String },
-      // companyDescription: { type: String },
+      companyApprovalStatus: {
+        type: String,
+        enum: ["pending", "approved", "rejected"],
+      },
     },
     lastLoginAt: {
       type: Date,

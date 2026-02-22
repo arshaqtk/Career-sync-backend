@@ -5,9 +5,9 @@ export const createJobSchema = z.object({
     .string()
     .min(1, "Job title is required"),
 
-  company: z
-    .string()
-    .min(1, "Company name is required"),
+  // company: z
+  //   .string()
+  //   .min(1, "Company name is required"),
 
   description: z.string().optional(),
 

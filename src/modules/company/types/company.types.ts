@@ -20,7 +20,8 @@ export interface ICompany {
   foundedYear?: number;
 
   owner: Types.ObjectId;
-  recruiters: Types.ObjectId[];     // All recruiters in this company
+  recruiters: Types.ObjectId[]; 
+  pendingRecruiters: Types.ObjectId[];
 
   // VERIFICATION ------------------------------------------------
   verificationStatus: CompanyVerificationStatus;

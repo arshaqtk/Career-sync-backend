@@ -1,8 +1,8 @@
-import { Document, Schema } from "mongoose";
+import { Document, Schema, Types } from "mongoose";
 
 export interface IJob extends Document {
   title: string;
-  company: string;
+  company:Types.ObjectId
   description?: string;
   skills?: string[];
   experienceMin?: number;
@@ -12,7 +12,7 @@ export interface IJob extends Document {
   location?: string;
   remote?: boolean;
   jobType: "full-time" | "part-time" | "internship";
-  postedBy: Schema.Types.ObjectId|string;
+  postedBy: Types.ObjectId
   status: "open" | "closed" | "paused"; 
   applicationCount?: number;
    blockedAt:Date|null;

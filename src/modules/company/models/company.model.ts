@@ -56,6 +56,12 @@ const companySchema = new Schema<ICompany>(
         ref: "User",
       },
     ],
+    pendingRecruiters: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
 
     // VERIFICATION ---------------------------------------
 
@@ -95,6 +101,5 @@ const companySchema = new Schema<ICompany>(
 
 companySchema.index({ name: 1 });
 companySchema.index({ owner: 1 });
-companySchema.index({ verificationStatus: 1 });
 
 export const CompanyModel = model<ICompany>("Company", companySchema);

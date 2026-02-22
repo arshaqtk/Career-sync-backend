@@ -12,11 +12,10 @@ const JobSchema = new Schema<IJob>(
     },
 
     company: {
-      type: String,
-      required: [true, "Company name is required"],
-      trim: true,
+         type: Types.ObjectId,
+      ref: "Company",
+      required: [true, "Company Id is required"],
     },
-
     description: {
       type: String,
       required: false,

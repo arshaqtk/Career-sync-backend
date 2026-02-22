@@ -11,122 +11,122 @@ import { IUser } from "@/modules/user/models/user.model"
 
 
 export const Authservice = {
-    register: async (data: RegisterDTO) => {
-        const { confirmPassword, email, name, password, role,field } = data
-        
-        const exists = await UserRepository.findByEmail(email);
+  register: async (data: RegisterDTO) => {
+    const { confirmPassword, email, name, password, role, field } = data
 
-        if (exists) {
-            throw new CustomError("User already exists", 400);
-        }
-        if (confirmPassword != password) {
-            throw new CustomError("Password and Confirm password Doesn't Match");
-        }
+    const exists = await UserRepository.findByEmail(email);
 
-        const hashedPassword = await bcrypt.hash(password, 10)
+    if (exists) {
+      throw new CustomError("User already exists", 400);
+    }
+    if (confirmPassword != password) {
+      throw new CustomError("Password and Confirm password Doesn't Match");
+    }
 
-        await UserRepository.createUser({
-            email, name, role,field,
-            password: hashedPassword,
-            isVerified: false,
-            authProvider:"local",
-             isProfileComplete:true
-        })
+    const hashedPassword = await bcrypt.hash(password, 10)
 
-        const otp = generateOtp()
+    await UserRepository.createUser({
+      email, name, role, field,
+      password: hashedPassword,
+      isVerified: false,
+      authProvider: "local",
+      isProfileComplete: true
+    })
 
-        await saveRegisterOtp(email, otp)
+    const otp = generateOtp()
 
-        await sendRegisterOtpEmail(email, otp)
+    await saveRegisterOtp(email, otp)
 
-        return { email, message: "Registerd Succesffully" }
-    },
+    await sendRegisterOtpEmail(email, otp)
+
+    return { email, message: "Registerd Succesffully" }
+  },
 
 
   login: async (data: LoginDTO) => {
 
     const user = await UserRepository.findByEmail(data.email).select("+password")
-    
+
     if (!user) {
       throw new CustomError("Invalid credentials", 400)
     }
-    
-    if (user.authProvider !== "local"){
-      throw new CustomError(`Use ${user.authProvider} login`,400)
+
+    if (user.authProvider !== "local") {
+      throw new CustomError(`Use ${user.authProvider} login`, 400)
     }
 
-  const match = await bcrypt.compare(data.password, user.password!)
-  // const roleAuthenticated = user.role === data.role
+    const match = await bcrypt.compare(data.password, user.password!)
+    // const roleAuthenticated = user.role === data.role
 
-  if (!match) {
-    throw new CustomError("Invalid credentials", 400)
-  }
+    if (!match) {
+      throw new CustomError("Invalid credentials", 400)
+    }
 
- return await createLoginSession(user) 
-},
+    return await createLoginSession(user)
+  },
 
-oauthLogin:async(data:{
-email: string
-  name: string
-  provider: "google"
-  providerId: string
-  profilePictureUrl?: string
-})=>{
+  oauthLogin: async (data: {
+    email: string
+    name: string
+    provider: "google"
+    providerId: string
+    profilePictureUrl?: string
+  }) => {
 
-  let user=await UserRepository.findByEmail(data.email)
+    let user = await UserRepository.findByEmail(data.email)
 
-  if(!user){
-    user=await UserRepository.createUser({
-      email:data.email,
-      name:data.name,
-      authProvider:data.provider,
-      isVerified:true,
-      googleId:data.providerId,
-       role:"candidate",
-       isProfileComplete:false,
-       field:undefined,
-    })
-  }
-return await createLoginSession(user) 
-},
+    if (!user) {
+      user = await UserRepository.createUser({
+        email: data.email,
+        name: data.name,
+        authProvider: data.provider,
+        isVerified: true,
+        googleId: data.providerId,
+        role: "candidate",
+        isProfileComplete: false,
+        field: undefined,
+      })
+    }
+    return await createLoginSession(user)
+  },
 
-    verifyRegisterOtp: async (email: string, otp: string) => {
-        return await verifyRegisterOtp(email, otp);
-    },
+  verifyRegisterOtp: async (email: string, otp: string) => {
+    return await verifyRegisterOtp(email, otp);
+  },
 
-    resendRegisterOtp: async (email: string) => {
-        const user = await UserRepository.findByEmail(email);
-        if (!user) {
-            throw new Error("User does not exist");
-        }
-        if (user.isVerified) {
-            throw new Error("User already verified");
-        }
-        const otp = generateOtp()
+  resendRegisterOtp: async (email: string) => {
+    const user = await UserRepository.findByEmail(email);
+    if (!user) {
+      throw new Error("User does not exist");
+    }
+    if (user.isVerified) {
+      throw new Error("User already verified");
+    }
+    const otp = generateOtp()
 
-        await saveRegisterOtp(email, otp)
+    await saveRegisterOtp(email, otp)
 
-        await sendRegisterOtpEmail(email, otp)
+    await sendRegisterOtpEmail(email, otp)
 
-        return { success: true, message: "OTP sent successfully" };
-    },
-    refreshTokens:(async(refreshToken:string)=>{
-        return await verifyRefreshToken(refreshToken)
-    })
+    return { success: true, message: "OTP sent successfully" };
+  },
+  refreshTokens: (async (refreshToken: string) => {
+    return await verifyRefreshToken(refreshToken)
+  })
 
 }
 
 
-const createLoginSession=async (user:IUser)=>{
+const createLoginSession = async (user: IUser) => {
 
   if (!user.isActive) {
-  throw new CustomError(
-    user.blockReason
-      ? `Your account has been blocked. Reason: ${user.blockReason}.Please contact support.`
-      : "Your account has been blocked. Please contact support.",
-    403
-  )
-}
+    throw new CustomError(
+      user.blockReason
+        ? `Your account has been blocked. Reason: ${user.blockReason}.Please contact support.`
+        : "Your account has been blocked. Please contact support.",
+      403
+    )
+  }
 
   if (!user.isVerified) {
     const otp = generateOtp()
@@ -139,16 +139,21 @@ const createLoginSession=async (user:IUser)=>{
       isVerified: false,
       message: "Your account is not verified. A new OTP has been sent.",
       email: user.email,
-     
+
     }
   }
 
-//update last login
-  await UserRepository.updateById(user._id, {
-  lastLoginAt: new Date(),
-})
+  // Check for recruiter company approval
+  if (user.role === "recruiter" && user.recruiterData?.company && user.recruiterData?.companyApprovalStatus === "pending") {
+    throw new CustomError("Your joining request is pending approval from the company owner.", 403);
+  }
 
- const token = generateTokens({
+  //update last login
+  await UserRepository.updateById(user._id, {
+    lastLoginAt: new Date(),
+  })
+
+  const token = generateTokens({
     id: user._id,
     email: user.email,
     role: user.role,
@@ -163,7 +168,7 @@ const createLoginSession=async (user:IUser)=>{
     role: user.role,
     refreshToken: token.refreshToken,
     accessToken: token.accessToken,
-    id:user._id,
+    id: user._id,
   }
 
 }

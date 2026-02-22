@@ -8,19 +8,19 @@ export interface IExperience {
   endDate?: Date;
   description?: string;
   location?: string;
-  jobType?:string
+  jobType?: string
 }
 
 export interface IEducation {
-  _id?:string;
-  school:string;
-  standard:"High School"|"Higher Secondary"|   "Diploma"|   "Undergraduate"|   "Postgraduate"| "Doctorate"|  "Other";
-  startDate:Date;
-  endDate?:Date;
-  isCurrent?:boolean;
-  location?:string;
-  description?:string;
-  gradeOrPercentage?:string;
+  _id?: string;
+  school: string;
+  standard: "High School" | "Higher Secondary" | "Diploma" | "Undergraduate" | "Postgraduate" | "Doctorate" | "Other";
+  startDate: Date;
+  endDate?: Date;
+  isCurrent?: boolean;
+  location?: string;
+  description?: string;
+  gradeOrPercentage?: string;
 }
 
 
@@ -35,16 +35,12 @@ export interface ICandidateData {
   skills?: string[];
   education?: IEducation[];
   portfolioUrl?: string;
-role?: string;
+  role?: string;
 }
 
 export interface IRecruiterData {
-  company?:Types.ObjectId
-  // companyName?: string;
-  // companyWebsite?: string;
-  // companyLogo?: string;
-  // companyLocation?: string;
-  // companyDescription?: string;
+  company?: Types.ObjectId
+  companyApprovalStatus?: "pending" | "approved" | "rejected"
 }
 
 

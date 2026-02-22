@@ -40,7 +40,7 @@ console.log(data)
 
     const application = await applicationRepository.create({
       candidateId,
-      recruiterId:job.postedBy as string,
+      recruiterId:job.postedBy,
       jobId: data.jobId,
       resume: {
     key: data.resumeKey,
@@ -59,7 +59,7 @@ console.log(data)
     }
 
      await createNotificationService(io,{
-  recipientId: job.postedBy as string, 
+  recipientId: job.postedBy, 
   senderId: candidateId,               
   entityId: data.jobId,
   title: `New application received`,

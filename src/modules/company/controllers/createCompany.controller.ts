@@ -13,18 +13,17 @@ export const createCompanyController = async (req: Request, res: Response) => {
 export const getMyCompanyController = async (req: Request, res: Response) => {
     const { id: recruiterId } = (req as any).auth;
     const company = await CompanyService.getCompanyByRecruiter(recruiterId);
-
-    // If null, it means recruiter has no company linked or company not found.
-    // User flow: "Recruiter only -> Fetch recruiter -> Get companyId -> Populate -> Response"
-    // If no company, return 404 or empty data?
-    // User provided API response for create, not for get.
-    // Assuming standard response.
     if (!company) {
         return res.status(404).json({ success: false, message: "No company found for this recruiter" });
     }
-
     res.status(200).json({ success: true, data: company });
 };
+
+export const getCompanyJobsController = async (req: Request, res: Response) => {
+    const id = req.params.id
+    const jobs = await CompanyService.getCompanyJobs(id);
+    res.status(200).json({ success: true, data: jobs });
+}
 
 // 3. Update Company
 export const updateCompanyController = async (req: Request, res: Response) => {
@@ -34,6 +33,17 @@ export const updateCompanyController = async (req: Request, res: Response) => {
     res.status(200).json({ success: true, message: "Company updated successfully", data: company });
 };
 
+export const adminGetCompaniesController = async (req: Request, res: Response) => {
+    const { page, limit, search, verificationStatus, isActive } = req.query;
+    const result = await CompanyService.adminGetCompanies({
+        page: page ? Number(page) : undefined,
+        limit: limit ? Number(limit) : undefined,
+        search: search as string,
+        verificationStatus: verificationStatus as any,
+        isActive: isActive as any
+    });
+    res.status(200).json({ success: true, data: result });
+};
 // 4. Admin - Approve
 export const adminApproveCompanyController = async (req: Request, res: Response) => {
     const { id: adminId } = (req as any).auth;
@@ -58,6 +68,13 @@ export const adminBlockCompanyController = async (req: Request, res: Response) =
     res.status(200).json({ success: true, message: "Company blocked", data: company });
 };
 
+// 6.1 Admin - Unblock
+export const adminUnblockCompanyController = async (req: Request, res: Response) => {
+    const { id: companyId } = req.params;
+    const company = await CompanyService.unblockCompany(companyId);
+    res.status(200).json({ success: true, message: "Company unblocked", data: company });
+};
+
 
 // 7. Search Companies
 export const searchCompaniesController = async (req: Request, res: Response) => {
@@ -79,7 +96,7 @@ export const joinCompanyController = async (req: Request, res: Response) => {
     }
 
     const company = await CompanyService.joinCompany(recruiterId, companyId);
-    res.status(200).json({ success: true, message: "Successfully joined company", data: company });
+    res.status(200).json({ success: true, message: "Join request sent. Waiting for company owner approval.", data: company });
 };
 
 // 9. Get Company By ID
@@ -87,4 +104,28 @@ export const getCompanyByIdController = async (req: Request, res: Response) => {
     const { id } = req.params;
     const company = await CompanyService.getCompanyById(id);
     res.status(200).json({ success: true, data: company });
+};
+
+// 10. Recruiter Management
+export const getPendingRecruitersController = async (req: Request, res: Response) => {
+    const { id: ownerId } = (req as any).auth;
+    const { id: companyId } = req.params;
+    const pending = await CompanyService.getPendingRecruiters(ownerId, companyId);
+    res.status(200).json({ success: true, data: pending });
+};
+
+export const approveRecruiterController = async (req: Request, res: Response) => {
+    const { id: ownerId } = (req as any).auth;
+    const { id: companyId } = req.params;
+    const { recruiterId } = req.body;
+    const company = await CompanyService.approveRecruiter(ownerId, companyId, recruiterId);
+    res.status(200).json({ success: true, message: "Recruiter approved successfully", data: company });
+};
+
+export const rejectRecruiterController = async (req: Request, res: Response) => {
+    const { id: ownerId } = (req as any).auth;
+    const { id: companyId } = req.params;
+    const { recruiterId } = req.body;
+    const company = await CompanyService.rejectRecruiter(ownerId, companyId, recruiterId);
+    res.status(200).json({ success: true, message: "Recruiter request rejected", data: company });
 };

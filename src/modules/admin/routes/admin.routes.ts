@@ -9,7 +9,9 @@ import { adminBlockJob, adminGetJobDetail, adminGetJobs, adminUnblockJob } from 
 import {
     adminApproveCompanyController,
     adminRejectCompanyController,
-    adminBlockCompanyController
+    adminBlockCompanyController,
+    adminGetCompaniesController,
+    adminUnblockCompanyController
 } from "../../company/controllers/createCompany.controller";
 
 const router=Router()
@@ -37,10 +39,12 @@ router.get("/jobs/:id",requireauthMiddleware,authorizeRoles("admin"),catchAsync(
 router.patch("/jobs/:id/block",requireauthMiddleware,authorizeRoles("admin"),catchAsync(adminBlockJob));
 router.patch("/jobs/:id/unblock",requireauthMiddleware,authorizeRoles("admin"),catchAsync(adminUnblockJob));
 
-
+router.get("/companies", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminGetCompaniesController));
 router.patch("/companies/:id/approve", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminApproveCompanyController));
 router.patch("/companies/:id/reject", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminRejectCompanyController));
 router.patch("/companies/:id/block", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminBlockCompanyController));
+router.patch("/companies/:id/unblock", requireauthMiddleware, authorizeRoles("admin"), catchAsync(adminUnblockCompanyController));
+
 
  
 export default router;

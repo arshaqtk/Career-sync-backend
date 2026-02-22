@@ -109,7 +109,7 @@ export const getAdminRecruiterDetailService=async(recruiterId:string)=>{
     if(!recruiterId){
         throw new CustomError("Required identifier not found", 400);
     }
-    const candidate=await UserRepository.findById(recruiterId)
+   const candidate = await UserRepository.findById(recruiterId).populate("recruiterData.company")
 
     if (!candidate || candidate.role !== "recruiter") {
     throw new CustomError("Recruiter not found", 404)

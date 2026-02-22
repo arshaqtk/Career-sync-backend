@@ -3,37 +3,55 @@ import { UserRepository } from "../../../modules/user/repository/user.repository
 import { JobModel } from "../models/job.model";
 import { jobRepository } from "../repository/job.repository";
 
-export const CandidategetJobsService = async ({candidateId,query}:
-  {candidateId?: string,
-    query: JobQuery}
-) => {
-  const { page, limit, location, jobType, status, search,
-    remote,experienceMin,experienceMax,field } = query;
-    let candidate=undefined
-if(candidateId){
-   candidate = await UserRepository
-    .findById(candidateId)
-    .select("field skills");
-}
+export const CandidategetJobsService = async ({
+  candidateId,
+  query
+}: {
+  candidateId?: string;
+  query: JobQuery;
+}) => {
 
-  // if (!candidate) {
-  //   throw new Error("Candidate not found");
-  // }
+  const {
+    page,
+    limit,
+    location,
+    jobType,
+    status,
+    search,
+    remote,
+    experienceMin,
+    experienceMax,
+    field,
+    recommended
+  } = query;
 
-  const appliedJobIds = await ApplicationModel.find({
-  candidateId
-}).distinct("jobId");
+  let candidate;
 
-  const filter: any = {
-    status:"open"
-  };
-  
-  if(candidate?.field){
-    filter.field= candidate?.field
+  if (candidateId && recommended) {
+    candidate = await UserRepository
+      .findById(candidateId)
+      .select("field candidateData.skills")
+      .lean();
   }
 
-  if (candidate?.candidateData?.skills?.length) {
-    filter.skillsRequired = { $in: candidate?.candidateData.skills };
+  const appliedJobIds = candidateId
+    ? await ApplicationModel.find({ candidateId }).distinct("jobId")
+    : [];
+
+  const filter: any = {
+    status: "open"
+  };
+
+  if (recommended) {
+    if (candidate?.field) {
+      filter.field = candidate.field;
+    }
+
+    if (candidate?.candidateData?.skills?.length) {
+      filter.skillsRequired = {
+        $in: candidate.candidateData.skills
+      };
+    }
   }
 
   if (search) {
@@ -44,45 +62,36 @@ if(candidateId){
     filter.location = { $regex: location, $options: "i" };
   }
 
-
-  if (remote !== undefined) filter.remote =remote
-  if (field) filter.field = { $regex: field, $options: "i" }
+  if (remote !== undefined) filter.remote = remote;
+  if (field) filter.field = { $regex: field, $options: "i" };
   if (jobType && jobType !== "all") filter.jobType = jobType;
   if (status && status !== "all") filter.status = status;
 
   if (experienceMin || experienceMax) {
-  filter.experienceMin = {
-    ...(experienceMin && { $gte: experienceMin }),
-    ...(experienceMax && { $lte: experienceMax }),
+    filter.experienceMin = {
+      ...(experienceMin && { $gte: experienceMin }),
+      ...(experienceMax && { $lte: experienceMax }),
+    };
   }
-}
-
-
-  // const jobs = await jobRepository.findByQuery(filter)
-   const jobs = await JobModel.find(filter)
+  const jobs = await JobModel.find(filter)
     .populate({
-      path: 'postedBy',
-      select: 'recruiterData.company',
-      populate: {
-        path: 'recruiterData.company',
-        select: 'name logo'
-      }
+      path: "company",
+      select: "name"
     })
     .sort({ createdAt: -1 })
     .skip((page - 1) * limit)
-    .limit(limit).lean();
+    .limit(limit)
+    .lean();
+  console.log(jobs)
+  const total = await JobModel.countDocuments(filter);
 
-  const total = await jobRepository.countByQuery(filter);
+  const appliedSet = new Set(appliedJobIds.map(id => id.toString()));
 
-const appliedJobIdStrings = appliedJobIds.map(id => id.toString()); 
-
-const jobsWithAppliedFlag = jobs.map((job:any) => ({
-  ...job,
-   companyId: job.postedBy?.recruiterData?.company?._id || null,
-  companyLogo: job.postedBy?.recruiterData?.company?.logo?.url || null,
-  hasApplied: appliedJobIdStrings.includes(job._id.toString()),
-}));
-
+  const jobsWithAppliedFlag = jobs.map((job: any) => ({
+    ...job,
+    hasApplied: appliedSet.has(job._id.toString())
+  }));
+  console.log(jobsWithAppliedFlag)
   return {
     pagination: {
       page,
@@ -90,6 +99,6 @@ const jobsWithAppliedFlag = jobs.map((job:any) => ({
       total,
       totalPages: Math.ceil(total / limit),
     },
-    jobsWithAppliedFlag,
+    jobs: jobsWithAppliedFlag,
   };
 };
