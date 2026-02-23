@@ -1,4 +1,4 @@
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { ScheduleInterview } from "../types/interviewSchedule.type";
 import { INTERVIEW_STATUS } from "../types/interview.type";
 import { APPLICATION_STATUS } from "../../applications/types/applicationStatus.types";

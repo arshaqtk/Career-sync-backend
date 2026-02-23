@@ -7,17 +7,17 @@ import { JobModel } from "../../jobs/models/job.model";
 
 export const CompanyService = {
     createCompany: async (recruiterId: string, data: Partial<ICompany>) => {
-        // 1. Check recruiter exists
+        //  Check recruiter exists
         const recruiter = await UserRepository.findById(recruiterId);
         if (!recruiter) throw new CustomError("Recruiter not found", 404);
         if (recruiter.role !== "recruiter") throw new CustomError("Only recruiters can create a company", 403);
 
-        // 2. Check if already linked
+        //  Check if already linked
         if (recruiter.recruiterData?.company) {
             throw new CustomError("Recruiter already linked to a company", 400);
         }
 
-        // 3. Check duplicate name (case-insensitive)
+        //  Check duplicate name (case-insensitive)
         const existingCompany = await CompanyModel.findOne({
             name: { $regex: `^${data.name}$`, $options: "i" },
         });
@@ -25,7 +25,7 @@ export const CompanyService = {
             throw new CustomError("Company with this name already exists", 400);
         }
 
-        // 4. Create company
+        //  Create company
         const company = await CompanyModel.create({
             ...data,
             owner: new Types.ObjectId(recruiterId),
@@ -35,7 +35,7 @@ export const CompanyService = {
             isActive: true,
         });
 
-        // 5. Link recruiter to company and set as approved
+        //  Link recruiter to company and set as approved
         await UserRepository.updateById(recruiterId, {
             "recruiterData.company": company._id,
             "recruiterData.companyApprovalStatus": "approved"
