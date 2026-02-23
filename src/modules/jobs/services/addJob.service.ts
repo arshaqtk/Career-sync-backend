@@ -1,6 +1,6 @@
 import { Types } from "mongoose";
 import { jobRepository } from "../repository/job.repository";
-import { CompanyModel } from "@/modules/company/models/company.model";
+import { CompanyModel } from "../../company/models/company.model";
 import { IJob } from "../types/JobModel.type";
 
 export const addJobService = async (
