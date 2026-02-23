@@ -1,6 +1,6 @@
-import { ApplicationRepository } from "@/modules/applications/repository/application.repositories";
+import { ApplicationRepository } from "../repository/application.repositories";
 import { InterviewRepository } from "../repository/interview.repository";
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { RecruiterInterviewsDTO } from "../dto/recruiter.allInterviews.dto";
 import { InterviewQuery } from "../types/interview.query.type";
 
