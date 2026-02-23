@@ -1,4 +1,4 @@
-import { ApplicationRepository } from "../repository/application.repositories";
+import { ApplicationRepository } from "../../applications/repository/application.repositories";
 import { InterviewRepository } from "../repository/interview.repository";
 import { CustomError } from "../../../shared/utils/customError";
 import { RecruiterInterviewsDTO } from "../dto/recruiter.allInterviews.dto";
