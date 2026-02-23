@@ -1,4 +1,4 @@
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { Types } from "mongoose";
 import { InterviewRepository } from "../repository/interview.repository";
 import { RecruiterInterviewTimeLineDto } from "../dto/recruiter.allInterviews.dto";

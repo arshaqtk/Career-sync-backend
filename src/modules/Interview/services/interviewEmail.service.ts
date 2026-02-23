@@ -5,7 +5,6 @@ import {
   interviewCancelledTemplate,
   interviewCompletedTemplate,
 } from "../emails";
-import { interviewerScheduledTemplate } from "../emails/interviewerScheduled.template";
 import { INTERVIEW_STATUS, InterviewStatus } from "../types/interview.type"; 
 
 type InterviewEmailPayload = {

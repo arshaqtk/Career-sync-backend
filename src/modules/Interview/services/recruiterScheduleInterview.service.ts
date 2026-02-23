@@ -1,14 +1,14 @@
 import { CustomError } from "@/shared/utils/customError";
 import { ScheduleInterview } from "../types/interviewSchedule.type";
 import { INTERVIEW_STATUS } from "../types/interview.type";
-import { APPLICATION_STATUS } from "@/modules/applications/types/applicationStatus.types";
+import { APPLICATION_STATUS } from "../../applications/types/applicationStatus.types";
 import { sendInterviewEmail } from "./interviewEmail.service";
 import { interviewerScheduledTemplate } from "../emails/interviewerScheduled.template";
-import { sendEmail } from "@/shared/email/email.service";
-import { createNotificationService } from "@/modules/notification/services/createNotification.service";
+import { sendEmail } from "../../../shared/email/email.service";
+import { createNotificationService } from "../../notification/services/createNotification.service";
 import { InterviewRepository } from "../repository/interview.repository";
-import { ApplicationRepository } from "@/modules/applications/repository/application.repositories";
-import { io } from "@/server";
+import { ApplicationRepository } from "../../applications/repository/application.repositories";
+import { io } from "../../../server";
 
 
 const interviewRepository = InterviewRepository();

@@ -1,4 +1,4 @@
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { CandidateInterviewsDTO } from "../dto/candidateInterviews.dto";
 import { InterviewRepository } from "../repository/interview.repository";
 import { InterviewQuery } from "../types/interview.query.type";

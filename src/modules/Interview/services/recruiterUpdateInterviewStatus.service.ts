@@ -1,8 +1,8 @@
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { INTERVIEW_STATUS, InterviewStatus } from "../types/interview.type";
 import { InterviewPopulated } from "../types/interview.populated.type";
-import { io } from "@/server";
-import { createNotificationService } from "@/modules/notification/services/createNotification.service";
+import { io } from "../../../server";
+import { createNotificationService } from "../../notification/services/createNotification.service";
 import { sendInterviewEmail } from "./interviewEmail.service";
 import { InterviewRepository } from "../repository/interview.repository";
 

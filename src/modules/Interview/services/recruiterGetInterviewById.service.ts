@@ -1,4 +1,4 @@
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { InterviewDetails } from "../dto/recruiter.interviewDetail.dto";
 import { InterviewRepository } from "../repository/interview.repository";
 import mongoose from "mongoose";

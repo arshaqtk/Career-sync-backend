@@ -1,10 +1,10 @@
-import { ApplicationRepository } from "@/modules/applications/repository/application.repositories";
+import { ApplicationRepository } from "../../applications/repository/application.repositories";
 import { InterviewRepository } from "../repository/interview.repository";
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { INTERVIEW_STATUS } from "../types/interview.type";
 import { sendInterviewEmail } from "./interviewEmail.service";
-import { createNotificationService } from "@/modules/notification/services/createNotification.service";
-import { io } from "@/server";
+import { createNotificationService } from "../../notification/services/createNotification.service";
+import { io } from "../../../server";
 
   const interviewRepository = InterviewRepository();
   const applicationRepository = ApplicationRepository();

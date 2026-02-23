@@ -1,10 +1,10 @@
-import { ApplicationRepository } from "@/modules/applications/repository/application.repositories";
-import { sendEmail } from "@/shared/email/email.service";
-import { CustomError } from "@/shared/utils/customError";
+import { ApplicationRepository } from "../../applications/repository/application.repositories";
+import { sendEmail } from "../../../shared/email/email.service";
+import { CustomError } from "../../../shared/utils/customError";
 import { interviewFinalSelectedEmail } from "../emails/interviewFinalSelectedEmail";
 import { interviewFinalRejectedEmail } from "../emails/interviewFinalRejectedEmail";
-import { createNotificationService } from "@/modules/notification/services/createNotification.service";
-import { io } from "@/server";
+import { createNotificationService } from "../../notification/services/createNotification.service";
+import { io } from "../../../server";
 
 const applicationRepository = ApplicationRepository();
 

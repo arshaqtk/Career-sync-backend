@@ -1,5 +1,5 @@
 import { InterviewRepository } from "../repository/interview.repository";
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import mongoose, { Types } from "mongoose";
 import { CandidateInterviewsDTO } from "../dto/candidateInterviews.dto";
 

@@ -3,7 +3,7 @@ import { CompanyModel } from "../models/company.model";
 import { UserRepository } from "../../../modules/user/repository/user.repository";
 import { ICompany } from "../types/company.types";
 import { CustomError } from "../../../shared/utils/customError";
-import { JobModel } from "@/modules/jobs/models/job.model";
+import { JobModel } from "../../jobs/models/job.model";
 
 export const CompanyService = {
     createCompany: async (recruiterId: string, data: Partial<ICompany>) => {
