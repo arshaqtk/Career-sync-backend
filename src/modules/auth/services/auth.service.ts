@@ -6,7 +6,7 @@ import { generateOtp } from "../../../shared/utils/generateOtp"
 import { sendRegisterOtpEmail, sendResetOtpEmail } from "./email.service"
 import { saveRegisterOtp, verifyRegisterOtp } from "./otp.service"
 import { CustomError } from "../../../shared/utils/customError"
-import { IUser } from "@/modules/user/models/user.model"
+import { IUser } from "../../user/models/user.model"
 
 
 

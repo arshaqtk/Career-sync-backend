@@ -1,11 +1,11 @@
 import { CustomError } from "../../../shared/utils/customError";
-import { UserRepository } from "../../../modules/user/repository/user.repository"
+import { UserRepository } from "../../user/repository/user.repository"
 import { RecruiterList, RecruiterListResponse } from "../types/Recruiters.types";
-import UserModel from "../../../modules/user/models/user.model";
+import UserModel from "../../user/models/user.model";
 import { sendEmail } from "../../../shared/email/email.service";
 import { recruiterUnblockedEmail } from "../templates/recruiterUnblockedEmail";
 import { recruiterBlockedEmail } from "../templates/recruiterBlockedEmail";
-import { CompanyModel } from "@/modules/company/models/company.model";
+import { CompanyModel } from "../../company/models/company.model";
 
 interface BlockRecruiterByAdminInput{
     recruiterId:string;

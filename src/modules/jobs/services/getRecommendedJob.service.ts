@@ -1,4 +1,4 @@
-import { UserRepository } from "@/modules/user/repository/user.repository";
+import { UserRepository } from "../../user/repository/user.repository";
 import { JobModel } from "../models/job.model";
 
 interface JobQuery {

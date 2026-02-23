@@ -1,14 +1,14 @@
 import { CustomError } from "../../../shared/utils/customError"
-import { JobModel } from "../../../modules/jobs/models/job.model"
+import { JobModel } from "../../jobs/models/job.model"
 import { Types } from "mongoose"
-import { UserRepository } from "../../../modules/user/repository/user.repository"
+import { UserRepository } from "../../user/repository/user.repository"
 import { sendEmail } from "../../../shared/email/email.service"
 import { jobBlockedEmail } from "../templates/jobBlockedEmail"
 import { jobUnblockedEmail } from "../templates/jobUnblockedEmail"
-import { IUser } from "../../../modules/user/models/user.model"
-import { createNotificationService } from "../../../modules/notification/services/createNotification.service"
+import { IUser } from "../../user/models/user.model"
+import { createNotificationService } from "../../notification/services/createNotification.service"
 import { io } from "../../../server"
-import { CompanyModel } from "@/modules/company/models/company.model"
+import { CompanyModel } from "../../company/models/company.model"
 
 
 

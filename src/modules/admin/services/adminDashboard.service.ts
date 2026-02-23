@@ -1,9 +1,9 @@
 import { endOfDay, startOfDay, subDays } from "date-fns"
-import { ApplicationRepository } from "../../../modules/applications/repository/application.repositories"
-import { jobRepository } from "../../../modules/jobs/repository/job.repository"
-import { UserRepository } from "../../../modules/user/repository/user.repository"
-import UserModel from "../../../modules/user/models/user.model"
-import { JobModel } from "../../../modules/jobs/models/job.model"
+import { ApplicationRepository } from "../../applications/repository/application.repositories"
+import { jobRepository } from "../../jobs/repository/job.repository"
+import { UserRepository } from "../../user/repository/user.repository"
+import UserModel from "../../user/models/user.model"
+import { JobModel } from "../../jobs/models/job.model"
 const applicationRepository = ApplicationRepository()
 
 

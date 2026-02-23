@@ -9,11 +9,9 @@ import { APPLICATION_STATUS, ApplicationStatus } from "../types/applicationStatu
 import { sendApplicationStatusUpdateEmail } from "./sendEmail.service";
 import { ApplicationQuery } from "../types/applicationQuery.types";
 import { InterviewRepository } from "../../../modules/Interview/repository/interview.repository";
-import { INTERVIEW_STATUS, InterviewRoundType, InterviewStatus } from "../../../modules/Interview/types/interview.type";
 import { createNotificationService } from "../../../modules/notification/services/createNotification.service";
 import { io } from "../../../server";
 import { getResumeDownloadUrl } from "../../../shared/utils/getResumeDownloadUrl";
-import { error } from "console";
 
 
 const applicationRepository = ApplicationRepository()

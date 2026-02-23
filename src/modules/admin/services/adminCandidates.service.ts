@@ -1,6 +1,6 @@
 import { CustomError } from "../../../shared/utils/customError";
-import { UserRepository } from "../../../modules/user/repository/user.repository"
-import UserModel from "../../../modules/user/models/user.model";
+import { UserRepository } from "../../user/repository/user.repository"
+import UserModel from "../../user/models/user.model";
 import { candidateBlockedEmail } from "../templates/candidateBlockedEmail";
 import { sendEmail } from "../../../shared/email/email.service";
 import { candidateUnblockedEmail } from "../templates/candidateUnblockedEmail";
