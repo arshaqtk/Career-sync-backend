@@ -20,7 +20,7 @@ export const getMyCompanyController = async (req: Request, res: Response) => {
 };
 
 export const getCompanyJobsController = async (req: Request, res: Response) => {
-    const id = req.params.id
+    const id = req.params.id as string;
     const jobs = await CompanyService.getCompanyJobs(id);
     res.status(200).json({ success: true, data: jobs });
 }
@@ -28,7 +28,7 @@ export const getCompanyJobsController = async (req: Request, res: Response) => {
 // 3. Update Company
 export const updateCompanyController = async (req: Request, res: Response) => {
     const { id: recruiterId } = (req as any).auth;
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const company = await CompanyService.updateCompany(recruiterId, companyId, req.body);
     res.status(200).json({ success: true, message: "Company updated successfully", data: company });
 };
@@ -47,7 +47,7 @@ export const adminGetCompaniesController = async (req: Request, res: Response) =
 // 4. Admin - Approve
 export const adminApproveCompanyController = async (req: Request, res: Response) => {
     const { id: adminId } = (req as any).auth;
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const company = await CompanyService.approveCompany(adminId, companyId);
     res.status(200).json({ success: true, message: "Company approved", data: company });
 };
@@ -55,14 +55,14 @@ export const adminApproveCompanyController = async (req: Request, res: Response)
 // 5. Admin - Reject
 export const adminRejectCompanyController = async (req: Request, res: Response) => {
     const { id: adminId } = (req as any).auth;
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const company = await CompanyService.rejectCompany(adminId, companyId);
     res.status(200).json({ success: true, message: "Company rejected", data: company });
 };
 
 // 6. Admin - Block
 export const adminBlockCompanyController = async (req: Request, res: Response) => {
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const { reason } = req.body;
     const company = await CompanyService.blockCompany(companyId, reason);
     res.status(200).json({ success: true, message: "Company blocked", data: company });
@@ -70,7 +70,7 @@ export const adminBlockCompanyController = async (req: Request, res: Response) =
 
 // 6.1 Admin - Unblock
 export const adminUnblockCompanyController = async (req: Request, res: Response) => {
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const company = await CompanyService.unblockCompany(companyId);
     res.status(200).json({ success: true, message: "Company unblocked", data: company });
 };
@@ -101,7 +101,7 @@ export const joinCompanyController = async (req: Request, res: Response) => {
 
 // 9. Get Company By ID
 export const getCompanyByIdController = async (req: Request, res: Response) => {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const company = await CompanyService.getCompanyById(id);
     res.status(200).json({ success: true, data: company });
 };
@@ -109,14 +109,14 @@ export const getCompanyByIdController = async (req: Request, res: Response) => {
 // 10. Recruiter Management
 export const getPendingRecruitersController = async (req: Request, res: Response) => {
     const { id: ownerId } = (req as any).auth;
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const pending = await CompanyService.getPendingRecruiters(ownerId, companyId);
     res.status(200).json({ success: true, data: pending });
 };
 
 export const approveRecruiterController = async (req: Request, res: Response) => {
     const { id: ownerId } = (req as any).auth;
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const { recruiterId } = req.body;
     const company = await CompanyService.approveRecruiter(ownerId, companyId, recruiterId);
     res.status(200).json({ success: true, message: "Recruiter approved successfully", data: company });
@@ -124,7 +124,7 @@ export const approveRecruiterController = async (req: Request, res: Response) =>
 
 export const rejectRecruiterController = async (req: Request, res: Response) => {
     const { id: ownerId } = (req as any).auth;
-    const { id: companyId } = req.params;
+    const companyId = req.params.id as string;
     const { recruiterId } = req.body;
     const company = await CompanyService.rejectRecruiter(ownerId, companyId, recruiterId);
     res.status(200).json({ success: true, message: "Recruiter request rejected", data: company });
