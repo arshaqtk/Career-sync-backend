@@ -2,6 +2,7 @@ import { ENV } from "../config/env";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import UserModel from "../modules/user/models/user.model";
+import redis from "@/config/redis";
 
 export const requireauthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies?.accessToken;
@@ -16,25 +17,45 @@ export const requireauthMiddleware = async (req: Request, res: Response, next: N
       role: string;
     };
 
-    // Fetch user from DB to ensure session is still valid and status is active
-    const user = await UserModel.findById(decoded.id).select("role isActive blockedAt blockReason recruiterData");
+    const cacheKey=`auth:user:${decoded.id}`;
+    const cachedUser=await redis.get(cacheKey)
 
-    if (!user) {
+    let userData;
+
+    if(cachedUser){
+      userData=JSON.parse(cachedUser)
+    }else{
+
+      const user = await UserModel.findById(decoded.id).select("role isActive blockedAt blockReason recruiterData");
+     
+      if (!user) {
       return res.status(401).json({ message: "User not found" });
     }
 
-    if (!user.isActive) {
-      return res.status(403).json({
-        message: user.blockReason
-          ? `Your account has been blocked. Reason: ${user.blockReason}`
-          : "Your account has been blocked."
-      });
+    userData={
+       id: user._id.toString(),
+        role: user.role,
+        isActive: user.isActive,
+        blockReason: user.blockReason,
+        companyApprovalStatus:user.recruiterData?.companyApprovalStatus || null
+      };
+
+      await redis.set(cacheKey,JSON.stringify(userData),{EX:600})
     }
 
+ 
+  
+  if (!userData.isActive) {
+    return res.status(403).json({
+      message: userData.blockReason
+        ? `Your account has been blocked. Reason: ${userData.blockReason}`
+        : "Your account has been blocked."
+    });
+  }
     // Recruiter approval check
-    if (user.role === "recruiter" &&
-      user.recruiterData?.company &&
-      user.recruiterData?.companyApprovalStatus === "pending") {
+    if (userData.role === "recruiter" &&
+      userData.recruiterData?.company &&
+      userData.recruiterData?.companyApprovalStatus === "pending") {
 
       // Allow them to access the profile, logout, and company onboarding routes
       const allowedPaths = ["/onboarding", "/profile", "/logout", "/companies/search", "/companies/join", "/companies"];
@@ -49,9 +70,9 @@ export const requireauthMiddleware = async (req: Request, res: Response, next: N
     }
 
     (req as any).auth = {
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role,
+      id: userData.id,
+      email: userData.email,
+      role: userData.role,
     };
 
     next();
