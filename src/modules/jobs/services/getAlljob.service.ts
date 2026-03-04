@@ -1,7 +1,7 @@
+import redis from "@/config/redis";
 import { ApplicationModel } from "../../../modules/applications/models/application.model";
 import { UserRepository } from "../../../modules/user/repository/user.repository";
 import { JobModel } from "../models/job.model";
-import { jobRepository } from "../repository/job.repository";
 
 export const CandidategetJobsService = async ({
   candidateId,
@@ -12,8 +12,8 @@ export const CandidategetJobsService = async ({
 }) => {
 
   const {
-    page,
-    limit,
+    page = 1,
+    limit = 10,
     location,
     jobType,
     status,
@@ -27,6 +27,7 @@ export const CandidategetJobsService = async ({
 
   let candidate;
 
+  // Fetch candidate data only if recommended jobs requested
   if (candidateId && recommended) {
     candidate = await UserRepository
       .findById(candidateId)
@@ -34,15 +35,25 @@ export const CandidategetJobsService = async ({
       .lean();
   }
 
+  // Jobs applied by user
   const appliedJobIds = candidateId
     ? await ApplicationModel.find({ candidateId }).distinct("jobId")
     : [];
 
-  const filter: any = {
-    status: "open"
-  };
+  const appliedSet = new Set(appliedJobIds.map(id => id.toString()));
 
+  const filter: any = {};
+
+  // Default job status
+  if (status && status !== "all") {
+    filter.status = status;
+  } else {
+    filter.status = "open";
+  }
+
+  // Recommended logic
   if (recommended) {
+
     if (candidate?.field) {
       filter.field = candidate.field;
     }
@@ -63,9 +74,14 @@ export const CandidategetJobsService = async ({
   }
 
   if (remote !== undefined) filter.remote = remote;
-  if (field) filter.field = { $regex: field, $options: "i" };
-  if (jobType && jobType !== "all") filter.jobType = jobType;
-  if (status && status !== "all") filter.status = status;
+
+  if (field) {
+    filter.field = { $regex: field, $options: "i" };
+  }
+
+  if (jobType && jobType !== "all") {
+    filter.jobType = jobType;
+  }
 
   if (experienceMin || experienceMax) {
     filter.experienceMin = {
@@ -73,30 +89,81 @@ export const CandidategetJobsService = async ({
       ...(experienceMax && { $lte: experienceMax }),
     };
   }
-  const jobs = await JobModel.find(filter)
-    .populate({
-      path: "company",
-      select: "name"
-    })
-    .sort({ createdAt: -1 })
-    .skip((page - 1) * limit)
-    .limit(limit)
-    .lean();
-  const total = await JobModel.countDocuments(filter);
 
-  const appliedSet = new Set(appliedJobIds.map(id => id.toString()));
+  // Create unique cache key based on query
+  const queryKey = Buffer.from(JSON.stringify({
+    page,
+    limit,
+    location,
+    jobType,
+    status,
+    search,
+    remote,
+    experienceMin,
+    experienceMax,
+    field,
+    recommended
+  })).toString("base64");
 
+  const jobsCacheKey = `jobs:list:${queryKey}`;
+  const countCacheKey = `jobs:count:${queryKey}`;
+
+  let jobs;
+  let total;
+
+  // -------- JOB LIST CACHE --------
+  const cachedJobs = await redis.get(jobsCacheKey);
+
+  if (cachedJobs) {
+    jobs = JSON.parse(cachedJobs);
+  } else {
+
+    jobs = await JobModel.find(filter)
+      .populate({
+        path: "company",
+        select: "name"
+      })
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit)
+      .lean();
+
+    await redis.set(
+      jobsCacheKey,
+      JSON.stringify(jobs),
+      { EX: 60 }
+    );
+  }
+
+  // -------- COUNT CACHE --------
+  const cachedCount = await redis.get(countCacheKey);
+
+  if (cachedCount) {
+    total = Number(cachedCount);
+  } else {
+
+    total = await JobModel.countDocuments(filter);
+
+    await redis.set(
+      countCacheKey,
+      total.toString(),
+      { EX: 300 }
+    );
+  }
+
+  // -------- USER SPECIFIC LOGIC --------
   const jobsWithAppliedFlag = jobs.map((job: any) => ({
     ...job,
     hasApplied: appliedSet.has(job._id.toString())
   }));
+
   return {
     pagination: {
       page,
       limit,
       total,
-      totalPages: Math.ceil(total / limit),
+      totalPages: Math.ceil(total / limit)
     },
-    jobs: jobsWithAppliedFlag,
+    jobs: jobsWithAppliedFlag
   };
 };
