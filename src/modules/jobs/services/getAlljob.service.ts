@@ -82,7 +82,6 @@ export const CandidategetJobsService = async ({
     .skip((page - 1) * limit)
     .limit(limit)
     .lean();
-  console.log(jobs)
   const total = await JobModel.countDocuments(filter);
 
   const appliedSet = new Set(appliedJobIds.map(id => id.toString()));
@@ -91,7 +90,6 @@ export const CandidategetJobsService = async ({
     ...job,
     hasApplied: appliedSet.has(job._id.toString())
   }));
-  console.log(jobsWithAppliedFlag)
   return {
     pagination: {
       page,

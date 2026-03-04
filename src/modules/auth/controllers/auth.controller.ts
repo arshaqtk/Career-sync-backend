@@ -6,15 +6,14 @@ import { OAuthIdentity } from "../types/auth.types";
 
 export const AuthController = {
     register: asyncHandler(async (req: Request, res: Response) => {
-        console.log(req.body)
         const result = await Authservice.register(req.body);
         res.status(201).json(result);
         return;
-    }),   
+    }),
 
     login: asyncHandler(async (req: Request, res: Response) => {
         const result = await Authservice.login(req.body);
- 
+
         if (!result.success) {
             res.status(200).json({
                 success: false,
@@ -32,14 +31,14 @@ export const AuthController = {
         res.cookie("accessToken", result.accessToken, {
             httpOnly: true,
             secure: true,
-           sameSite: "none",
+            sameSite: "none",
             maxAge: 15 * 60 * 1000
         });
 
         res.cookie("refreshToken", result.refreshToken, {
             httpOnly: true,
             secure: true,
-           sameSite: "none",
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
 
@@ -48,8 +47,8 @@ export const AuthController = {
             success: true,
             message: result.message,
             user: {
-                id:result.id,
-                role:result.role,
+                id: result.id,
+                role: result.role,
                 status: result.status,
                 email: result.email,
                 isVerified: result.isVerified
@@ -59,50 +58,50 @@ export const AuthController = {
 
     }),
 
-     googleCallback:async(req:Request, res:Response)=>{
-        
-  if (!req.user) {
-    throw new CustomError("OAuth authentication failed", 401)
-  }
-        const identity=req.user as OAuthIdentity
-    const result = await Authservice.oauthLogin(identity)
+    googleCallback: async (req: Request, res: Response) => {
+
+        if (!req.user) {
+            throw new CustomError("OAuth authentication failed", 401)
+        }
+        const identity = req.user as OAuthIdentity
+        const result = await Authservice.oauthLogin(identity)
 
         res.cookie("accessToken", result.accessToken, {
             httpOnly: true,
             secure: true,
-           sameSite: "none",
+            sameSite: "none",
             maxAge: 15 * 60 * 1000
         });
 
         res.cookie("refreshToken", result.refreshToken, {
             httpOnly: true,
             secure: true,
-           sameSite: "none",
+            sameSite: "none",
             maxAge: 7 * 24 * 60 * 60 * 1000
         });
-if(result.success){
-    if(result.role=="candidate"){
-        res.redirect(`${process.env.CLIENT_URL}/home`)
-    }
-    if(result.role=="recruiter"){
-        res.redirect(`${process.env.CLIENT_URL}/recruiter`)
-    }
-}
+        if (result.success) {
+            if (result.role == "candidate") {
+                res.redirect(`${process.env.CLIENT_URL}/home`)
+            }
+            if (result.role == "recruiter") {
+                res.redirect(`${process.env.CLIENT_URL}/recruiter`)
+            }
+        }
 
- res.status(200).json({
+        res.status(200).json({
             success: true,
             message: result.message,
             user: {
-                id:result.id,
-                role:result.role,
+                id: result.id,
+                role: result.role,
                 status: result.status,
                 email: result.email,
                 isVerified: result.isVerified
             }
         });
-  },
+    },
 
-    verifyRegisterOtp: asyncHandler(async (req: Request, res: Response) => { 
+    verifyRegisterOtp: asyncHandler(async (req: Request, res: Response) => {
         const { email, otp } = req.body;
         const result = await Authservice.verifyRegisterOtp(email, otp);
 
@@ -121,10 +120,10 @@ if(result.success){
         return;
     }),
 
-    resendOtp:asyncHandler(async(req:Request,res:Response)=>{
-        const {email}=req.body
+    resendOtp: asyncHandler(async (req: Request, res: Response) => {
+        const { email } = req.body
 
-         const result = await Authservice.resendRegisterOtp(email);
+        const result = await Authservice.resendRegisterOtp(email);
 
         if (!result.success) {
             res.status(400).json({
@@ -159,23 +158,23 @@ if(result.success){
     }),
     logout: asyncHandler(async (req: Request, res: Response) => {
 
-    res.clearCookie("accessToken", {
-        httpOnly: true,
-        secure: true, // change to true in production
-        sameSite: "none",
-        path: "/",
-    });
+        res.clearCookie("accessToken", {
+            httpOnly: true,
+            secure: true, // change to true in production
+            sameSite: "none",
+            path: "/",
+        });
 
-    
-    res.clearCookie("refreshToken", {
-        httpOnly: true,
-        secure: true, // change to true in production
-        sameSite: "none",
-        path: "/",
-    });
 
-    
-     res.status(204).send();
-})
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true, // change to true in production
+            sameSite: "none",
+            path: "/",
+        });
+
+
+        res.status(204).send();
+    })
 
 };

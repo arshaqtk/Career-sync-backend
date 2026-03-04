@@ -4,7 +4,7 @@ import UserModel from "../../user/models/user.model";
 
 export const chatSocket = (io: Server) => {
     const onlineUsers = new Map<string, number>();
-    io.on("connection", async(socket) => {
+    io.on("connection", async (socket) => {
 
         const userId = socket.user.id
         socket.join((`user:${userId}`))
@@ -12,11 +12,10 @@ export const chatSocket = (io: Server) => {
             isOnline: true,
             lastSeen: null
         });
-         socket.broadcast.emit("user-online", { userId });
+        socket.broadcast.emit("user-online", { userId });
         onlineUsers.set(userId, (onlineUsers.get(userId) || 0) + 1);
-        console.log(`User connected: ${userId}`)
 
-       
+
         socket.on("chat:joinConversation", async (receiverId: string, callback?: (res: {
             success: boolean,
             conversationId?: string
@@ -27,9 +26,6 @@ export const chatSocket = (io: Server) => {
                 const conversation = await createConversation({ user1: userId, user2: receiverId })
                 socket.join(`conversation:${conversation._id}`)
 
-                console.log(
-                    `User ${userId} joined room conversation:${conversation._id}`
-                )
                 callback?.({
                     success: true,
                     conversationId: conversation._id.toString()
@@ -82,7 +78,6 @@ export const chatSocket = (io: Server) => {
             } else {
                 onlineUsers.set(userId, count);
             }
-              console.log(`User disconnected from chat socket: ${userId}`)
         })
 
     })

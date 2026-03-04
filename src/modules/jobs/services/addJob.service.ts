@@ -7,7 +7,6 @@ export const addJobService = async (
   data: IJob,
   userId: string
 ) => {
-  console.log(data)
 
   const company = await CompanyModel.findOne({
     $or: [

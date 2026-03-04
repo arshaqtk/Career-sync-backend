@@ -5,8 +5,8 @@ import { CreateUserDTO } from "../types/user.repository.types";
 
 
 export const UserRepository = {
-  createUser: (data:CreateUserDTO) => {
-    
+  createUser: (data: CreateUserDTO) => {
+
     return UserModel.create(data);
   },
   findByEmail: (email: string) => {
@@ -28,38 +28,36 @@ export const UserRepository = {
     return UserModel.findByIdAndUpdate(id, { $set: updateData }, { new: true });
   },
 
-   removeFieldById: (id: string | Types.ObjectId, updateData: any) => {
+  removeFieldById: (id: string | Types.ObjectId, updateData: any) => {
     return UserModel.findByIdAndUpdate(id, { $unset: updateData }, { new: true });
   },
 
-  updateNestedArray: <P extends AllowedNestedArrayPaths>( id: string,path: P,value: NestedArrayValueType<P>) => {
-    return UserModel.findByIdAndUpdate(id, { $push: { [path]: value } },{ new: true });
+  updateNestedArray: <P extends AllowedNestedArrayPaths>(id: string, path: P, value: NestedArrayValueType<P>) => {
+    return UserModel.findByIdAndUpdate(id, { $push: { [path]: value } }, { new: true });
 
   },
-  
-  updateExperience:(userId: string, experienceId: string, updates: Record<string, any>)=>{
-    console.log(userId,experienceId,updates)
-    return UserModel.findOneAndUpdate( {_id: userId,  "candidateData.experience._id": experienceId},{$set: updates},
-    {
-      new: true
-    });
+
+  updateExperience: (userId: string, experienceId: string, updates: Record<string, any>) => {
+    return UserModel.findOneAndUpdate({ _id: userId, "candidateData.experience._id": experienceId }, { $set: updates },
+      {
+        new: true
+      });
   },
 
-  updateEducation:(userId: string, educationId: string, updates: Record<string, any>)=>{
-    console.log(userId,educationId,updates)
-    return UserModel.findOneAndUpdate( {_id: userId,  "candidateData.education._id": educationId},{$set: updates},
-    {
-      new: true
-    });
+  updateEducation: (userId: string, educationId: string, updates: Record<string, any>) => {
+    return UserModel.findOneAndUpdate({ _id: userId, "candidateData.education._id": educationId }, { $set: updates },
+      {
+        new: true
+      });
   },
-findByQuery: (query: QueryFilter<IUser>) => {
-     return UserModel.find(query)
-   },
-   countByQuery: (query: QueryFilter<IUser>) => {
-      return UserModel.countDocuments(query); 
-    },
-    findOnlineUserIds: async () => {
-  return UserModel.find({ isOnline: true }).select("_id");
-}
+  findByQuery: (query: QueryFilter<IUser>) => {
+    return UserModel.find(query)
+  },
+  countByQuery: (query: QueryFilter<IUser>) => {
+    return UserModel.countDocuments(query);
+  },
+  findOnlineUserIds: async () => {
+    return UserModel.find({ isOnline: true }).select("_id");
+  }
 
 };

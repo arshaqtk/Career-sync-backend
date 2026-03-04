@@ -14,7 +14,7 @@ export const requireauthMiddleware = async (req: Request, res: Response, next: N
     const decoded = jwt.verify(token, ENV.ACCESS_JWT_SECRET as string) as {
       id: string;
       email: string;
-      role: string;
+      role: string; 
     };
 
     const cacheKey=`auth:user:${decoded.id}`;

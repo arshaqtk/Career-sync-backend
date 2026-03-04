@@ -25,7 +25,6 @@ export const CandidategetJobs = async (req: Request, res: Response) => {
       field: field as string
     }
   });
-  console.log(result.jobs)
   res.status(200).json({
     success: true,
     jobs: result.jobs,
