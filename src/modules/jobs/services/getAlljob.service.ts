@@ -1,4 +1,4 @@
-import redis from "@/config/redis";
+import redis from "../../../config/redis";
 import { ApplicationModel } from "../../../modules/applications/models/application.model";
 import { UserRepository } from "../../../modules/user/repository/user.repository";
 import { JobModel } from "../models/job.model";

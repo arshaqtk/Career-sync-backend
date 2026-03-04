@@ -2,7 +2,7 @@ import { ENV } from "../config/env";
 import { Request, Response, NextFunction } from "express";
 import jwt from "jsonwebtoken";
 import UserModel from "../modules/user/models/user.model";
-import redis from "@/config/redis";
+import redis from "../config/redis";
 
 export const requireauthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies?.accessToken;
