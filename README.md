@@ -11,7 +11,7 @@ CareerSync is a comprehensive platform designed to bridge the gap between job se
 - **Caching:** [Redis](https://redis.io/)
 - **Real-time:** [Socket.io](https://socket.io/)
 - **Authentication:** [Passport.js](https://www.passportjs.org/) (JWT & Google OAuth 2.0)
-- **File Storage:** [Cloudinary](https://cloudinary.com/) / AWS S3
+- **File Storage:**  AWS S3
 - **Validation:** [Zod](https://zod.dev/)
 
 ## 🛠️ Getting Started
