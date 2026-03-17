@@ -20,8 +20,8 @@ export const CandidategetJobs = async (req: Request, res: Response) => {
       status: status as "open" | "closed" | "all",
       recommended: recommended === "true",
       remote: remote === "true" ? true : remote == "false" ? false : undefined,
-      experienceMin: Number(experienceMin),
-      experienceMax: Number(experienceMax),
+      experienceMin: experienceMin ? Number(experienceMin) : undefined,
+      experienceMax: experienceMax ? Number(experienceMax) : undefined,
       field: field as string
     }
   });

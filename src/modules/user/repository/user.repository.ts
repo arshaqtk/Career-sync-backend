@@ -47,11 +47,11 @@ export const UserRepository = {
   updateEducation: (userId: string, educationId: string, updates: Record<string, any>) => {
     return UserModel.findOneAndUpdate({ _id: userId, "candidateData.education._id": educationId }, { $set: updates },
       {
-        new: true
+        new: true 
       });
   },
   findByQuery: (query: QueryFilter<IUser>) => {
-    return UserModel.find(query)
+    return UserModel.find(query) 
   },
   countByQuery: (query: QueryFilter<IUser>) => {
     return UserModel.countDocuments(query);

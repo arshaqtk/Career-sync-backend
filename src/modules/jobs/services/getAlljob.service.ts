@@ -47,9 +47,11 @@ export const CandidategetJobsService = async ({
   // Default job status
   if (status && status !== "all") {
     filter.status = status;
-  } else {
+  } else if (!status) {
+    // Default to open only if no status is provided at all
     filter.status = "open";
   }
+  // if status is "all", we don't add it to the filter, showing everything.
 
   // Recommended logic
   if (recommended) {
@@ -59,7 +61,7 @@ export const CandidategetJobsService = async ({
     }
 
     if (candidate?.candidateData?.skills?.length) {
-      filter.skillsRequired = {
+      filter.skills = {
         $in: candidate.candidateData.skills
       };
     }
@@ -73,7 +75,7 @@ export const CandidategetJobsService = async ({
     filter.location = { $regex: location, $options: "i" };
   }
 
-  if (remote !== undefined) filter.remote = remote;
+  if (remote === true) filter.remote = true;
 
   if (field) {
     filter.field = { $regex: field, $options: "i" };
@@ -83,11 +85,13 @@ export const CandidategetJobsService = async ({
     filter.jobType = jobType;
   }
 
-  if (experienceMin || experienceMax) {
-    filter.experienceMin = {
-      ...(experienceMin && { $gte: experienceMin }),
-      ...(experienceMax && { $lte: experienceMax }),
-    };
+  if (experienceMin !== undefined || experienceMax !== undefined) {
+    if (experienceMin !== undefined && !isNaN(experienceMin)) {
+      filter.experienceMin = { $gte: experienceMin };
+    }
+    if (experienceMax !== undefined && !isNaN(experienceMax)) {
+      filter.experienceMax = { $lte: experienceMax };
+    }
   }
 
   // Create unique cache key based on query

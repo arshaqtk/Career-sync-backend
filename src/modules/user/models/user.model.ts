@@ -1,47 +1,46 @@
-import { Schema, model, Document } from "mongoose";
-import { ICandidateData, IRecruiterData } from "../types/user.schema";
+import { Schema, model } from "mongoose";
+import { IUser } from "../types/user.schema";
 import { EducationSchema, ExperienceSchema } from "../schemas/index"
 
+const ResumeDataSchema = new Schema(
+  {
+    fullName: String,
+    email: String,
+    phone: String,
+    location: String,
+    currentTitle: String,
+    totalYearsExp: Number,
+    summary: String,
 
-export interface IUser extends Document {
+    skills: {
+      type: [String],
+      default: []
+    },
 
-  // COMMON FIELDS
-  name: string;
-  email: string;
-  phone?: string;
-  profilePicture?: {
-    key: string,
-    url: string,
-    updatedAt: Date
-  };
+    languages: {
+      type: [String],
+      default: []
+    },
 
-  // AUTH
-  password?: string;
-  authProvider: "local" | "google"
-  googleId?: string;
-
-
-  field: string | undefined;
-  role: "candidate" | "recruiter" | "admin";
-
-  isVerified: boolean;
-  isActive: boolean;
-  isProfileComplete: boolean;
-  isOnline?: boolean;
-  lastSeen?: Date;
-
-
-  blockedAt: Date;
-  blockReason?: string;
-
-  candidateData?: ICandidateData;
-  recruiterData?: IRecruiterData;
-  lastLoginAt: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-
+    education: [
+      {
+        degree: String,
+        institution: String,
+        year: Number
+      }
+    ],
+    experience: [
+      {
+        title: String,
+        company: String,
+        startDate: String,
+        endDate: String,
+        description: String
+      }
+    ]
+  },
+  { _id: false }
+);
 const userSchema = new Schema<IUser>(
   {
     // COMMON FIELDS ---------------------------------------------------------
@@ -49,7 +48,7 @@ const userSchema = new Schema<IUser>(
       type: String,
       required: true,
       minlength: 2,
-      trim: true,
+      trim: true, 
     },
 
     email: {
@@ -131,6 +130,16 @@ const userSchema = new Schema<IUser>(
         originalName: { type: String },
         uploadedAt: { type: Date, }
       },
+       resumeData: {
+    type: ResumeDataSchema
+  },
+      coverLetters: [{
+  jobId: { type:Schema.Types.ObjectId, ref: 'Job' },
+  content: String,
+  tone: String,
+  createdAt: { type: Date, default: Date.now }
+}],
+
       experience: { type: [ExperienceSchema], default: [] },
       skills: { type: [String], default: [] },
       education: { type: [EducationSchema], default: [] },

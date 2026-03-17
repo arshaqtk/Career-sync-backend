@@ -16,6 +16,7 @@ import { ensureUserIsActive } from "../../../middlewares/ensureUserIsActive.midd
 import { getJobSuggestionController } from "../controller/searchJobSuggestion.controller";
 import { optionAuthMiddleware } from "../../../middlewares/optionalAuth.middleware";
 import { catchAsync } from "../../../middlewares/asyncHandler";
+import { generateCoverLetter } from "../../Ai/coverLetter.controller";
 
 const router = Router(); 
 
@@ -24,6 +25,7 @@ const router = Router();
 router.get("/jobs",optionAuthMiddleware, catchAsync(CandidategetJobs));
 router.get("/jobs/suggestions",optionAuthMiddleware, catchAsync(getJobSuggestionController));
 router.get("/jobs/:id", optionAuthMiddleware,catchAsync(getJobByIdController));
+router.post("/jobs/coverletter",requireauthMiddleware, catchAsync(generateCoverLetter));   
 
 router.use(requireauthMiddleware)
 router.use(ensureUserIsActive)

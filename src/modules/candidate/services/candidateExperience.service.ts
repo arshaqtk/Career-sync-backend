@@ -1,6 +1,5 @@
 import { UserRepository } from "../../../modules/user/repository/user.repository";
 import { IExperience } from "../../../modules/user/types/user.schema";
-import { IUser } from "../../user/models/user.model";
 
 export const addCandidateExperienceService = (userId: string, experience: IExperience) => {
     return UserRepository.updateNestedArray(userId, "candidateData.experience", experience)

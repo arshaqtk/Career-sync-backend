@@ -108,7 +108,14 @@ export const ApplicationService = () => {
     const [applications, total] = await Promise.all([
       applicationRepository.findMany({
         filter,
-        populate: "jobId",
+       populate: {
+    path: "jobId",
+    select: "title company location salary",
+    populate: {
+      path: "company", 
+      select: "name logo"
+    }
+  },
         sort: { createdAt: sortOrder },
         skip,
         limit: limitNumber,

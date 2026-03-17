@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors"
 import helmet from "helmet"
 import morgan from "morgan"
-import { rateLimit } from 'express-rate-limit'
 import cookieParser from "cookie-parser"
 import authRoutes from "./modules/auth/routes/auth.routes"
 import userRoutes from "./modules/user/routes/user.route"
@@ -15,12 +14,11 @@ import adminRoutes from "./modules/admin/routes/admin.routes";
 import notificationRoutes from "./modules/notification/routes/notification.routes";
 import chatRoutes from "./modules/chat/routes/chat.route";
 import companyRoutes from "./modules/company/routes/company.routes";
-
-
+import aiRoutes from "./modules/Ai/aiRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
-import { CustomError } from "./shared/utils/customError";
 import passport from "passport";
 import "./modules/auth/oauth/google.strategy"
+import { rateLimiter } from "./middlewares/rateLimiter.middleware";
 
  
 
@@ -47,27 +45,26 @@ app.use(cors({
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
+  exposedHeaders: [         
+    "Ratelimit-Limit",
+    "Ratelimit-Remaining",
+    "Ratelimit-Reset",
+    "Ratelimit-Policy",
+  ]
 }));
 
 
 app.use(morgan('combined'))
 
 app.set('trust proxy', 1);
-app.use(rateLimit({
-   windowMs: 15 * 60 * 1000,
-   max: 100,
-   standardHeaders: true, // Returns rate limit info in headers
-  legacyHeaders: false,
-  handler:(req,res,next)=>{
-    next(new CustomError("Too many requests, please try again later.",429))
-  }
-}));
 
 app.use(cookieParser());
 app.use(express.json({limit:'10mb'}))
 app.use(express.urlencoded({extended:true}))
 
 app.use(passport.initialize())
+app.use(rateLimiter);
+
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
 app.use("/api/job", jobRoutes);
@@ -79,6 +76,7 @@ app.use("/api/admin",adminRoutes)
 app.use("/api/notifications",notificationRoutes)
 app.use("/api/chat",chatRoutes)
 app.use("/api/companies", companyRoutes);
+app.use("/api/ai",aiRoutes)
 
 
 

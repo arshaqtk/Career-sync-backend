@@ -6,6 +6,7 @@ import redis from "../config/redis";
 
 export const requireauthMiddleware = async (req: Request, res: Response, next: NextFunction) => {
   const token = req.cookies?.accessToken;
+  console.log("token",token);
   if (!token) {
     return res.status(401).json({ message: "Access Denied" });
   }
