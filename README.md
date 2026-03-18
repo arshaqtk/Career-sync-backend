@@ -1,44 +1,32 @@
 # CareerSync Backend
 
-The backend for CareerSync, a powerful and scalable job portal API. Built with Node.js, Express, and TypeScript, it provides a robust infrastructure for handling job applications, candidate matching, and real-time communication.
+CareerSync is a comprehensive platform designed to bridge the gap between job seekers and recruiters. This backend serves as the core API, handling authentication, job management, candidate applications, real-time notifications, and messaging.
 
-## 🚀 Key Features
-
-- **Domain-Driven Architecture:** Modular structure for easier maintenance and scalability.
-- **Role-Based Auth:** Secure authentication using JWT and Google OAuth via Passport.js.
-- **Real-time Communication:** Integrated Chat and Notifications using Socket.io and Redis.
-- **Database:** MongoDB for flexible data storage with Mongoose ODM.
-- **Media Support:** File uploads handled via AWS S3 and Cloudinary.
-- **Performance:** Caching and Pub/Sub mechanism powered by Redis.
-- **Validation:** Type-safe request validation with Zod.
-- **Email System:** Professional email handling with Nodemailer and SMTP integration.
-
-## 🛠️ Tech Stack
+## 🚀 Tech Stack
 
 - **Runtime:** [Node.js](https://nodejs.org/)
-- **Framework:** [Express](https://expressjs.com/)
+- **Framework:** [Express.ts](https://expressjs.com/)
 - **Language:** [TypeScript](https://www.typescriptlang.org/)
-- **Database:** [MongoDB](https://www.mongodb.com/) / [Mongoose](https://mongoosejs.com/)
-- **Cache & Pub/Sub:** [Redis](https://redis.io/)
+- **Database:** [MongoDB](https://www.mongodb.com/) (Mongoose ODM)
+- **Caching:** [Redis](https://redis.io/)
 - **Real-time:** [Socket.io](https://socket.io/)
-- **Auth:** [Passport.js](https://www.passportjs.org/) / [JWT](https://jwt.io/)
+- **Authentication:** [Passport.js](https://www.passportjs.org/) (JWT & Google OAuth 2.0)
+- **File Storage:**  AWS S3
 - **Validation:** [Zod](https://zod.dev/)
-- **Storage:** [AWS S3](https://aws.amazon.com/s3/) / [Cloudinary](https://cloudinary.com/)
-- **Deployment:** [Docker](https://www.docker.com/) / [Vercel](https://vercel.com/)
 
-## 🏁 Getting Started
+## 🛠️ Getting Started
 
 ### Prerequisites
 
-- Node.js (v20+)
+- Node.js (v18+)
 - MongoDB (Local or Atlas)
-- Redis instance
+- Redis (Optional but recommended for performance)
 
 ### Installation
 
-1. Navigate to the backend directory:
+1. Clone the repository:
    ```bash
-   cd career-sync-backend
+   git clone <repository-url>
    ```
 
 2. Install dependencies:
@@ -48,75 +36,74 @@ The backend for CareerSync, a powerful and scalable job portal API. Built with N
 
 3. Configure environment variables (see below).
 
-4. Build the project:
-   ```bash
-   npm run build
-   ```
-
-5. Start in development mode:
+4. Run the development server:
    ```bash
    npm run dev
    ```
 
 ## 🔐 Environment Variables
 
-Create a `.env` file in the `career-sync-backend` directory and add the following:
+Create a `.env` file in the root directory and add the following:
 
 ```env
+# Server Configuration
 PORT=8000
-MONGO_URI=your_mongodb_uri
-ACCESS_JWT_SECRET=your_access_secret
-REFRESH_JWT_SECRET=your_refresh_secret
-NODE_ENV=development
-
-# Mail Configuration
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=587
-MAIL_USER=your_email
-MAIL_PASS=your_app_password
-
-# Redis Configuration
-REDIS_HOST=your_redis_host
-REDIS_PORT=your_redis_port
-REDIS_PASSWORD=your_redis_password
-
-# OAuth Configuration
-GOOGLE_CLIENT_ID=your_google_id
-GOOGLE_CLIENT_SECRET=your_google_secret
 CLIENT_URL=http://localhost:5173
 
-# AWS Configuration (Optional)
-AWS_ACCESS_KEY_ID=your_access_key
-AWS_SECRET_ACCESS_KEY=your_secret_key
-AWS_REGION=ap-south-1
-AWS_BUCKET_NAME=your_bucket_name
+# Database
+MONGO_URI=your_mongodb_connection_string
+
+# JWT Secret Keys
+ACCESS_JWT_SECRET=your_access_token_secret
+REFRESH_JWT_SECRET=your_refresh_token_secret
+JWT_EXPIRE=7d
+
+# Email Configuration (Nodemailer)
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USER=your_email@gmail.com
+MAIL_PASS=your_app_password
+MAIL_FROM=CareerSync <noreply@careersync.com>
+
+# Redis Configuration (Optional)
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
+REDIS_USERNAME=
+REDIS_PASSWORD=
+
+# Cloudinary (File Uploads)
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+
+# Google OAuth
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
 ```
 
-## 📁 Project Structure
+## 🔌 API Endpoints
 
-- `src/app.ts`: Express application setup and middleware integration.
-- `src/server.ts`: Entry point for the HTTP & Socket.io server.
-- `src/modules`: Domain-specific logic (Auth, Jobs, Applications, Chat, etc.).
-- `src/middlewares`: Custom Express middlewares (Auth, Error handling, Rate limiting).
-- `src/config`: Database and external service configurations.
-- `src/websocket`: Socket.io event handlers and connection logic.
-- `src/shared`: Generic utilities and constants.
+| Base Path | Description |
+|-----------|-------------|
+| `/api/auth` | Authentication (Login, Register, OTP, Google OAuth) |
+| `/api/user` | User Profile & Management |
+| `/api/job` | Job Posting & Management |
+| `/api/candidate` | Candidate Profile & Resume Management |
+| `/api/recruiter` | Recruiter Dashboard & Management |
+| `/api/application` | Job Application Workflow |
+| `/api/interview` | Interview Scheduling & Status |
+| `/api/admin` | Platform Administration |
+| `/api/notifications` | Real-time & Stored Notifications |
+| `/api/chat` | Messaging & Real-time Chat |
+| `/api/companies` | Company Profile Management |
 
-## 📜 Available Scripts
+## 📜 Scripts
 
-- `npm run dev`: Starts the development server with hot-reload (`ts-node-dev`).
-- `npm run start`: Starts the production server from `dist/`.
-- `npm run build`: Compiles TypeScript to JavaScript.
-- `npm run test`: Executes Jest test suites.
-- `npm run lint`: Runs ESLint for code quality.
-- `npm run format`: Formats code using Prettier.
-
-## 🐳 Docker Support
-
-Run with Docker Compose:
-```bash
-docker-compose up --build
-```
+- `npm run dev`: Start development server with hot-reload.
+- `npm run build`: Compile TypeScript to JavaScript.
+- `npm start`: Run the compiled production server.
+- `npm run lint`: Run ESLint to check for code issues.
+- `npm run format`: Format code using Prettier.
 
 ---
-Developed for CareerSync - Connecting talent with opportunities.
+Developed with ❤️ by the CareerSync Team.
