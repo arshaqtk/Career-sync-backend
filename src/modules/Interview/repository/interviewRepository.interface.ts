@@ -7,7 +7,7 @@ export interface IInterviewRepository{
     create(data:Partial<IInterview>):Promise<IInterview>;
     findOne(filter: Record<string, any>): Promise<IInterview | null>;
     findMany(options?: FindManyOptions): Promise<IInterview[]>;
-    findById(options:FindByIdOptions):Promise<InterviewPopulated>;
+    findById(options:FindByIdOptions):Promise<InterviewPopulated | null>;
     updateById(id:string,payload:any):Promise<IInterview|null>;
     updateByIdAndPopulate(id:string,options:UpdateByIdOptions<IInterview>):Promise<IInterview|null>;
     findLatestRound(applicationId:string):Promise<IInterview|null>

@@ -1,4 +1,4 @@
-interface JobQuery {
+export interface JobQuery {
   page: number;
   limit: number;
   search?: string;

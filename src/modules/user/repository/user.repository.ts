@@ -1,4 +1,4 @@
-import { QueryFilter, Types } from "mongoose";
+import { QueryFilter, Types, UpdateQuery } from "mongoose";
 import UserModel from "../models/user.model";
 import { IUser } from "../types/user.schema";
 import { AllowedNestedArrayPaths, NestedArrayValueType } from "../types/candidateNestedArrayPaths.type";
@@ -21,12 +21,11 @@ export const UserRepository = {
   },
 
   updateByEmail: (email: string, updateData: any) => {
-
     return UserModel.updateOne({ email }, { $set: updateData });
   },
 
   updateById: (id: string | Types.ObjectId, updateData: any) => {
-    return UserModel.findByIdAndUpdate(id, { $set: updateData }, { new: true });
+    return UserModel.findByIdAndUpdate(id, updateData, { new: true });
   },
 
   removeFieldById: (id: string | Types.ObjectId, updateData: any) => {

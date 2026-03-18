@@ -48,7 +48,7 @@ export const deleteResumeService=async({userId}:{userId:string})=>{
 export const updateResumeService = async (
   userId: string,
   file: Express.Multer.File,
-  parsed: any
+  parsed: ParsedResume
 ) => {
 
   if (!file.buffer || file.buffer.length === 0) {

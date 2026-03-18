@@ -10,13 +10,13 @@ export const InterviewRepository = (): IInterviewRepository => {
   const create = async (data: Partial<IInterview>): Promise<IInterview> => {
     return await InterviewModel.create(data)
   }
-  const findOne = async (filter: Record<string, any>): Promise<IInterview | null> => {
+  const findOne = async (filter: QueryFilter<IInterview>): Promise<IInterview | null> => {
     return await InterviewModel.findOne(filter)
   }
 
   const findMany = async (options: FindManyOptions = {}) => {
     const { filter = {}, sort, limit, populate } = options
-    let query = InterviewModel.find(filter);
+    let query: any = InterviewModel.find(filter);
 
     if (sort) query = query.sort(sort);
     if (limit) query = query.limit(limit);
@@ -51,7 +51,7 @@ export const InterviewRepository = (): IInterviewRepository => {
     return query.lean().exec();
   }
 
-  const updateById = async (id: string, updateData: any): Promise<IInterview | null> => {
+  const updateById = async (id: string, updateData: Partial<IInterview>): Promise<IInterview | null> => {
     const updated = InterviewModel.findByIdAndUpdate(
       id,
       updateData,

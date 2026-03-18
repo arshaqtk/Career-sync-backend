@@ -1,4 +1,5 @@
 import { jobRepository } from "../repository/job.repository"
+import { JobQuery } from "../types/jobQuery";
 
 export const getEmployerJobService = async (recruiterId: string, query: JobQuery) => {
 

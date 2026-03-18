@@ -1,11 +1,14 @@
-import { CustomError } from "../../../shared/utils/customError";
+import { QueryFilter } from "mongoose";
 import { UserRepository } from "../../user/repository/user.repository"
 import { RecruiterList, RecruiterListResponse } from "../types/Recruiters.types";
+import { UserQuery } from "../types/user.query";
+import { IUser } from "../../user/types/user.schema";
 import UserModel from "../../user/models/user.model";
 import { sendEmail } from "../../../shared/email/email.service";
 import { recruiterUnblockedEmail } from "../templates/recruiterUnblockedEmail";
 import { recruiterBlockedEmail } from "../templates/recruiterBlockedEmail";
 import { CompanyModel } from "../../company/models/company.model";
+import { CustomError } from "../../../shared/utils/customError";
 
 interface BlockRecruiterByAdminInput{
     recruiterId:string;
@@ -20,7 +23,7 @@ export const adminRecruiterListService = async (
 ): Promise<RecruiterListResponse> => {
   const { page, limit, status, search } = query
 
-  const match: any = { role: "recruiter" }
+  const match: QueryFilter<IUser> = { role: "recruiter" }
 
   if (search) {
     match.$or = [
@@ -38,7 +41,7 @@ export const adminRecruiterListService = async (
 
   const [recruiters, totalResult] = await Promise.all([
     UserModel.aggregate([
-      { $match: match }, 
+      { $match: match as any }, 
       { $sort: { createdAt: -1 } }, 
       { $skip: skip },
       { $limit: limit },
@@ -82,7 +85,7 @@ export const adminRecruiterListService = async (
     UserModel.countDocuments(match),
   ])
 
-  const recruitersData: RecruiterList[] = recruiters.map((r: any) => ({
+  const recruitersData: RecruiterList[] = recruiters.map((r: Record<string, any>) => ({
     id: r._id.toString(),
     name: r.name,
     email: r.email,

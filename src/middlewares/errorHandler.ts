@@ -2,15 +2,18 @@ import { Request, Response, NextFunction } from "express";
 import { CustomError } from "../shared/utils/customError";
 
 export const errorHandler = (
-    err: any,
-    req: Request,
-    res: Response,
-    next: NextFunction
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction
 ) => {
-    console.error("❌ ERROR:", err.message);
-     console.error("🔥 ERROR NAME:", err.name);
-  console.error("🔥 ERROR STACK:", err.stack);
-  console.error("🔥 ERROR STATUS:", err.statusCode || err.status);
+  const statusCode = (err as any).statusCode || (err as any).status || 500;
+  const message = err instanceof Error ? err.message : "Internal server error";
+
+  console.error("❌ ERROR:", message);
+  console.error("🔥 ERROR NAME:", (err as any).name);
+  console.error("🔥 ERROR STACK:", (err as any).stack);
+  console.error("🔥 ERROR STATUS:", statusCode);
 
     // If it is our custom error
     if (err instanceof CustomError) {

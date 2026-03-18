@@ -1,6 +1,6 @@
 import { JobModel } from "../models/job.model";
 import { IJob } from "../types/JobModel.type";
-import { QueryFilter } from "mongoose";
+import { QueryFilter, UpdateQuery } from "mongoose";
 import { PipelineStage } from "mongoose";
 
 export const jobRepository = {
@@ -25,7 +25,7 @@ export const jobRepository = {
   deleteById: (id: string) => {
     return JobModel.findByIdAndDelete(id)
   },
-findJobStats: (pipeline: PipelineStage[]): Promise<any[]> => {
+findJobStats: (pipeline: PipelineStage[]): Promise<Record<string, unknown>[]> => {
   return JobModel.aggregate(pipeline);
 }
 }

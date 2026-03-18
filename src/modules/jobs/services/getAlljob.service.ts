@@ -2,6 +2,9 @@ import redis from "../../../config/redis";
 import { ApplicationModel } from "../../../modules/applications/models/application.model";
 import { UserRepository } from "../../../modules/user/repository/user.repository";
 import { JobModel } from "../models/job.model";
+import { QueryFilter } from "mongoose";
+import { IJob } from "../types/JobModel.type";
+import { JobQuery } from "../types/jobQuery";
 
 export const CandidategetJobsService = async ({
   candidateId,
@@ -42,7 +45,7 @@ export const CandidategetJobsService = async ({
 
   const appliedSet = new Set(appliedJobIds.map(id => id.toString()));
 
-  const filter: any = {};
+  const filter: QueryFilter<IJob> = {};
 
   // Default job status
   if (status && status !== "all") {
@@ -51,7 +54,6 @@ export const CandidategetJobsService = async ({
     // Default to open only if no status is provided at all
     filter.status = "open";
   }
-  // if status is "all", we don't add it to the filter, showing everything.
 
   // Recommended logic
   if (recommended) {
@@ -112,8 +114,8 @@ export const CandidategetJobsService = async ({
   const jobsCacheKey = `jobs:list:${queryKey}`;
   const countCacheKey = `jobs:count:${queryKey}`;
 
-  let jobs;
-  let total;
+  let jobs: any[] = [];
+  let total: number = 0;
 
   // -------- JOB LIST CACHE --------
   const cachedJobs = await redis.get(jobsCacheKey);
@@ -156,7 +158,7 @@ export const CandidategetJobsService = async ({
   }
 
   // -------- USER SPECIFIC LOGIC --------
-  const jobsWithAppliedFlag = jobs.map((job: any) => ({
+  const jobsWithAppliedFlag = jobs.map((job: IJob) => ({
     ...job,
     hasApplied: appliedSet.has(job._id.toString())
   }));

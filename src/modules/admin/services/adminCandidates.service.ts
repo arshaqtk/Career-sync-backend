@@ -1,6 +1,9 @@
+import { QueryFilter } from "mongoose";
 import { CustomError } from "../../../shared/utils/customError";
 import { UserRepository } from "../../user/repository/user.repository"
 import UserModel from "../../user/models/user.model";
+import { UserQuery } from "../types/user.query";
+import { IUser } from "../../user/types/user.schema";
 import { candidateBlockedEmail } from "../templates/candidateBlockedEmail";
 import { sendEmail } from "../../../shared/email/email.service";
 import { candidateUnblockedEmail } from "../templates/candidateUnblockedEmail";
@@ -15,7 +18,7 @@ interface UnblockCandidateByAdminInput{
 export const adminCandidateListService = async (query: UserQuery) => {
   const { page, limit, status, search } = query
 
-  const match: any = { role: "candidate" }
+  const match: QueryFilter<IUser> = { role: "candidate" }
  
   if (search) {
     match.$or = [
@@ -32,7 +35,7 @@ export const adminCandidateListService = async (query: UserQuery) => {
 
   const [candidates, total] = await Promise.all([
     UserModel.aggregate([
-      { $match: match },
+      { $match: match as any },
 
       { $sort: { createdAt: -1 } },
       { $skip: skip },

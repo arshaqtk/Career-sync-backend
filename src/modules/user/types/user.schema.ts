@@ -59,8 +59,8 @@ export interface IUser extends Document {
   lastSeen?: Date;
 
 
-  blockedAt: Date;
-  blockReason?: string;
+  blockedAt?: Date | null;
+  blockReason?: string | null;
 
   candidateData?: ICandidateData;
   recruiterData?: IRecruiterData;

@@ -13,7 +13,7 @@ export const ApplicationRepository = (): IApplicationRepository => {
     return await ApplicationModel.create(data);
   };
 //updated this to i application populted
- const findById = async (options: FindByIdOptions): Promise<IApplicationPopulated|null> => {
+  const findById = async (options: FindByIdOptions): Promise<IApplicationPopulated|null> => {
     const { id, populate, select } = options;
 
     let query: any = ApplicationModel.findById(id);
@@ -40,17 +40,15 @@ export const ApplicationRepository = (): IApplicationRepository => {
 
   
 
-  const findOne = async (filter: Record<string, any>): Promise<IApplication | null> => {
+  const findOne = async (filter: QueryFilter<IApplication>): Promise<IApplication | null> => {
     return await ApplicationModel.findOne(filter);
   };
 
 
-  const findMany = async (options: FindManyOptions = {}) => {
-    const { filter = {}, sort, limit, populate,skip } = options
-
-    let query = ApplicationModel.find(filter);
+  const findMany = async (options: Record<string, any> = {}) => {
+    const { filter = {}, sort, limit, populate } = options
+    let query: any = ApplicationModel.find(filter);
     if (sort) query = query.sort(sort);
-    if (skip) query = query.skip(skip);
     if (limit) query = query.limit(limit);
 
         if (populate) {
@@ -71,22 +69,20 @@ export const ApplicationRepository = (): IApplicationRepository => {
 
 
 
-  const getCandidateApplicationDetail=async(
+  const getCandidateApplicationDetail = async (
     applicationId: string
   ): Promise<CandidateApplicationDetailResponse> => {
     if (!applicationId) {
-      throw new CustomError("Application ID not found", 400)
+      throw new CustomError("Application ID not found", 400);
     }
 
     const pipeline = [
-    
       {
         $match: {
           _id: new Types.ObjectId(applicationId),
         },
       },
 
-      
       {
         $lookup: {
           from: "jobs",
@@ -97,7 +93,6 @@ export const ApplicationRepository = (): IApplicationRepository => {
       },
       { $unwind: "$job" },
 
-      
       {
         $lookup: {
           from: "users",
@@ -108,7 +103,6 @@ export const ApplicationRepository = (): IApplicationRepository => {
       },
       { $unwind: "$recruiter" },
 
-     
       {
         $project: {
           _id: 0,
@@ -145,7 +139,7 @@ export const ApplicationRepository = (): IApplicationRepository => {
           recruiter: {
             name: "$recruiter.name",
             email: "$recruiter.email",
-            id:"$recruiter._id",
+            id: "$recruiter._id",
             company: {
               companyName: "$recruiter.companyName",
               companyWebsite: "$recruiter.companyWebsite",
@@ -156,16 +150,16 @@ export const ApplicationRepository = (): IApplicationRepository => {
           },
         },
       },
-    ]
+    ];
 
-    const result = await ApplicationModel.aggregate(pipeline)
+    const result = await ApplicationModel.aggregate(pipeline);
 
     if (!result.length) {
-      throw new CustomError("Application not found", 404)
+      throw new CustomError("Application not found", 404);
     }
 
-    return result[0]
-}
+    return result[0];
+  };
 
   const update = async (id: string, data: UpdateQuery<IApplication>): Promise<IApplication | null> => {
     return await ApplicationModel.findByIdAndUpdate(id, data, { new: true });

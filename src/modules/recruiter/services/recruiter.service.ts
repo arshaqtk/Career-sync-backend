@@ -35,7 +35,7 @@ export const RecruiterService = () => {
          status: "Selected",
       });
 
-     const [{ jobsPosted = [], activeJobs = [] } = {}] = jobsCount;
+      const [{ jobsPosted = [], activeJobs = [] } = {}] = jobsCount as any;
 
 return {
   jobsPosted: jobsPosted[0]?.count ?? 0,

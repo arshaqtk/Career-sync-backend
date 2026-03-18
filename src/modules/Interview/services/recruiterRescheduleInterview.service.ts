@@ -93,6 +93,9 @@ const time = start.toISOString().split("T")[1].slice(0, 5);
         { path: "jobId", select: "company title" },
       ],
     });
+    if (!populatedinterview) {
+      throw new CustomError("Interview not found after update", 404);
+    }
      try {
          await sendInterviewEmail(INTERVIEW_STATUS.RESCHEDULED, {
            to: populatedinterview.candidateId.email,

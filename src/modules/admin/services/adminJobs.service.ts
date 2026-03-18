@@ -1,6 +1,7 @@
 import { CustomError } from "../../../shared/utils/customError"
 import { JobModel } from "../../jobs/models/job.model"
-import { Types } from "mongoose"
+import { QueryFilter, Types } from "mongoose"
+import { IJob } from "../../jobs/types/JobModel.type"
 import { UserRepository } from "../../user/repository/user.repository"
 import { sendEmail } from "../../../shared/email/email.service"
 import { jobBlockedEmail } from "../templates/jobBlockedEmail"
@@ -21,7 +22,7 @@ export const adminJobListService = async (query: {
 }) => {
   const { page, limit, status, search } = query
 
-  const match: any = {}
+  const match: QueryFilter<IJob> = {}
 
  
   if (search) {
@@ -41,8 +42,7 @@ export const adminJobListService = async (query: {
 
   const [jobs, total] = await Promise.all([
     JobModel.aggregate([
-      { $match: match },
-
+      { $match: match as any },
       { $sort: { createdAt: -1 } },
       { $skip: skip },
       { $limit: limit },
