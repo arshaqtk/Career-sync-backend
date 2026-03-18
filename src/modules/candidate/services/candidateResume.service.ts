@@ -3,11 +3,11 @@ import { UserRepository } from "../../user/repository/user.repository";
 import { getResumeDownloadUrl } from "../../../shared/utils/getResumeDownloadUrl";
 import { uploadResume } from "./resumeUploadS3.service";
 import { deleteFromS3 } from "../../../shared/utils/deleteFromS3";
-import UserModel from "@/modules/user/models/user.model";
+import UserModel from "../../user/models/user.model";
 import { candidateSkillService } from "./candidateSkill.service";
 import { addCandidateExperienceService } from "./candidateExperience.service";
 import { addCandidateEducationeService } from "./candidateEducation.service";
-import { UserService } from "@/modules/user/services/user.service";
+import { UserService } from "../../user/services/user.service";
 import { ParsedResume } from "../types/resume.types";
 
 

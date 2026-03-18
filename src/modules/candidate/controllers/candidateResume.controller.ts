@@ -2,8 +2,8 @@ import expressAsyncHandler from "express-async-handler";
 import { Request, Response } from "express";
 import { CustomError } from "../../../shared/utils/customError";
 import { deleteResumeService, getResumeService, getUserByIdService, initializeProfileFromResumeService, updateResumeService } from "../services/candidateResume.service";
-import { extractText, parseResumeWithAI } from "@/modules/Ai/resumeParser.controller";
-import UserModel from "@/modules/user/models/user.model";
+import { extractText, parseResumeWithAI } from "../../Ai/resumeParser.controller";
+import UserModel from "../../user/models/user.model";
 
 export const candidateGetResumeUrlController = async (req: Request, res: Response) => {
   const userId = req.auth?.id

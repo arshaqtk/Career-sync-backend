@@ -1,4 +1,4 @@
-import { CustomError } from "@/shared/utils/customError";
+import { CustomError } from "../../../shared/utils/customError";
 import { Request, Response } from "express";
 import { RecruiterService } from "../services/recruiter.service";
 
