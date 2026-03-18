@@ -1,4 +1,4 @@
-import { IUser } from "../models/user.model";
+import { IUser, IRecruiterData } from "./user.schema";
 
 type BaseCreateUserDTO = Pick<IUser,"name" | "email" | "role"| "isVerified"|"isProfileComplete">;
 
@@ -6,6 +6,7 @@ export type CreateLocalUserDTO = BaseCreateUserDTO & {
   authProvider: "local";
   password: string;
    field: string;
+   recruiterData?: IRecruiterData;
 };
 
 

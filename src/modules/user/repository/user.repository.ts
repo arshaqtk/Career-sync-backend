@@ -1,5 +1,6 @@
 import { QueryFilter, Types } from "mongoose";
-import UserModel, { IUser } from "../models/user.model";
+import UserModel from "../models/user.model";
+import { IUser } from "../types/user.schema";
 import { AllowedNestedArrayPaths, NestedArrayValueType } from "../types/candidateNestedArrayPaths.type";
 import { CreateUserDTO } from "../types/user.repository.types";
 

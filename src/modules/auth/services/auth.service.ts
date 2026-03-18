@@ -6,7 +6,7 @@ import { generateOtp } from "../../../shared/utils/generateOtp"
 import { sendRegisterOtpEmail, sendResetOtpEmail } from "./email.service"
 import { saveRegisterOtp, verifyRegisterOtp } from "./otp.service"
 import { CustomError } from "../../../shared/utils/customError"
-import { IUser } from "../../user/models/user.model"
+import { IUser } from "../../user/types/user.schema"
 
 
 
@@ -24,13 +24,14 @@ export const Authservice = {
     }
 
     const hashedPassword = await bcrypt.hash(password, 10)
-
+    const recruiterData = role === "recruiter" ? {} : undefined
     await UserRepository.createUser({
       email, name, role, field,
       password: hashedPassword,
       isVerified: false,
       authProvider: "local",
-      isProfileComplete: true
+      isProfileComplete: true,
+      recruiterData
     })
 
     const otp = generateOtp()
@@ -110,6 +111,8 @@ export const Authservice = {
 
     return { success: true, message: "OTP sent successfully" };
   },
+
+
   refreshTokens: (async (refreshToken: string) => {
     return await verifyRefreshToken(refreshToken)
   })
